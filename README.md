@@ -6,7 +6,7 @@ Team repository for **Build with AI: Code for Communities** — GDG Coimbatore
 Everything your team does lives here from day one: the proposal, code, docs, and
 progress. Organizers follow along through this repo, so keep it active.
 
-## Start here
+## Start 
 1. **Fill in [`PROPOSAL.md`](./PROPOSAL.md)** and commit it by **Jul 24, 11:59 PM IST**. That's your Ideation-Phase submission.
 2. **Add your teammates** as collaborators (Settings → Collaborators), or ask your organizer to add them by GitHub username.
 3. **Build in the open** — commit early and often. Put source in `/src`, notes and diagrams in `/docs`.
