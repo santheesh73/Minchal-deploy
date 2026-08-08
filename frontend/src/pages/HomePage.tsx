@@ -4,7 +4,6 @@ import {
   ProblemSection,
   WorkflowSection,
   AIBoundarySection,
-  FeaturesSection,
   AuditPreviewSection,
   ExplainabilitySection,
   SavingsSection,
@@ -30,31 +29,28 @@ export const HomePage: React.FC = () => {
       {/* 4. AI Boundary System Section */}
       <AIBoundarySection />
 
-      {/* 5. Core Platform Features */}
-      <FeaturesSection />
-
-      {/* 6. Dashboard Preview */}
+      {/* 5. Dashboard Preview */}
       <AuditPreviewSection />
 
-      {/* 7. Derivations & Explainability */}
+      {/* 6. Derivations & Explainability */}
       <ExplainabilitySection />
 
-      {/* 8. Action Recommendations */}
+      {/* 7. Action Recommendations */}
       <SavingsSection />
 
-      {/* 9. Why MINCHAL */}
+      {/* 8. Why MINCHAL */}
       <WhyMinchalSection />
 
-      {/* 10. Privacy & Trust */}
+      {/* 9. Privacy & Trust */}
       <TrustSection />
 
-      {/* 11. Impact */}
+      {/* 10. Impact */}
       <AboutImpactSection />
 
-      {/* 12. Final CTA Banner */}
+      {/* 11. Final CTA Banner */}
       <FinalCTASection />
 
-      {/* 13. Landing Footer */}
+      {/* 12. Landing Footer */}
       <LandingFooter />
     </div>
   );

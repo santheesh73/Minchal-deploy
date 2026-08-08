@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
+import { MagicBento } from './MagicBento';
 
 export const SavingsSection: React.FC = () => {
   return (
@@ -20,7 +20,7 @@ export const SavingsSection: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Tier 1: Free Habits */}
-          <Card variant="default" className="p-6 space-y-4 border-emerald-200 bg-emerald-50/20">
+          <MagicBento glowColor="emerald" className="p-6 space-y-4 border-emerald-200 bg-emerald-50/20">
             <div className="flex justify-between items-center">
               <Badge variant="success" size="sm">FREE HABIT</Badge>
               <span className="text-xs font-bold font-mono text-emerald-700">Instant Impact</span>
@@ -32,10 +32,10 @@ export const SavingsSection: React.FC = () => {
             <div className="pt-2 border-t border-emerald-100 font-mono font-bold text-xs text-emerald-800">
               Saves up to ~₹280 / month
             </div>
-          </Card>
+          </MagicBento>
 
           {/* Tier 2: Cheap Fixes */}
-          <Card variant="default" className="p-6 space-y-4 border-brand-200 bg-brand-50/20">
+          <MagicBento glowColor="brand" className="p-6 space-y-4 border-brand-200 bg-brand-50/20">
             <div className="flex justify-between items-center">
               <Badge variant="primary" size="sm">LOW COST</Badge>
               <span className="text-xs font-bold font-mono text-brand-700">Quick Maintenance</span>
@@ -47,10 +47,10 @@ export const SavingsSection: React.FC = () => {
             <div className="pt-2 border-t border-brand-100 font-mono font-bold text-xs text-brand-800">
               Saves up to ~₹95 / month
             </div>
-          </Card>
+          </MagicBento>
 
           {/* Tier 3: Upgrades */}
-          <Card variant="default" className="p-6 space-y-4 border-purple-200 bg-purple-50/20">
+          <MagicBento glowColor="purple" className="p-6 space-y-4 border-purple-200 bg-purple-50/20">
             <div className="flex justify-between items-center">
               <Badge variant="purple" size="sm">UPGRADE</Badge>
               <span className="text-xs font-bold font-mono text-purple-700">Long-term Investment</span>
@@ -62,7 +62,7 @@ export const SavingsSection: React.FC = () => {
             <div className="pt-2 border-t border-purple-100 font-mono font-bold text-xs text-purple-800">
               Payback ~14 months
             </div>
-          </Card>
+          </MagicBento>
         </div>
       </div>
     </section>

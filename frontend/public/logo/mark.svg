@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" fill="none">
+  <!-- 1. Left Teal Roof Arch -->
+  <path d="M 152 54 L 72 134 C 60 146 60 164 72 176 C 84 188 102 188 114 176 L 148 142 C 154 136 160 140 160 148 L 160 172" fill="none" stroke="#006c6d" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- 2. Right Orange Chimney -->
+  <path d="M 212 76 V 46 C 212 40 206 34 200 34 H 192 C 186 34 180 40 180 46 V 102" fill="none" stroke="#f59e0b" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- 3. Right Orange House Frame & Bottom Floor -->
+  <path d="M 152 54 L 232 134 C 244 146 244 164 232 176 L 232 234 C 232 248 218 262 202 262 L 138 262" fill="none" stroke="#f59e0b" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- 4. Central Lightning Bolt (Orange Body) -->
+  <path d="M 166 40 L 110 136 H 146 L 114 248 L 210 114 H 166 Z" fill="#f59e0b" />
+  
+  <!-- 5. Lightning Bolt Lower Sharp Tail (Teal Overlay) -->
+  <path d="M 114 248 L 154 176 H 134 Z" fill="#006c6d" />
+
+  <!-- 6. Inner Bar Chart Columns -->
+  <rect x="156" y="222" width="11" height="16" rx="4.5" fill="#006c6d" />
+  <rect x="173" y="212" width="11" height="26" rx="4.5" fill="#006c6d" />
+  <rect x="190" y="200" width="11" height="38" rx="4.5" fill="#f59e0b" />
+  <rect x="207" y="186" width="11" height="52" rx="4.5" fill="#006c6d" />
+
+  <!-- 7. Upward Trend Line & Arrowhead -->
+  <path d="M 150 218 L 171 197 L 186 206 L 222 164 M 222 164 H 202 M 222 164 V 184" fill="none" stroke="#006c6d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

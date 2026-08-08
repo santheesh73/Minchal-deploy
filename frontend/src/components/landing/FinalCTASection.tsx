@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Zap, ShieldCheck } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { SpecularButton } from './SpecularButton';
 
 export const FinalCTASection: React.FC = () => {
   const navigate = useNavigate();
@@ -33,15 +33,15 @@ export const FinalCTASection: React.FC = () => {
             </p>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button
+              <SpecularButton
                 variant="success"
                 size="lg"
                 onClick={handleStart}
                 rightIcon={<ArrowRight className="w-5 h-5" />}
-                className="w-full sm:w-auto px-8 py-4 text-base font-bold shadow-lg hover:shadow-xl transition-all"
+                className="w-full sm:w-auto px-8 py-4 text-base font-bold shadow-lg"
               >
                 Start Your Energy Audit
-              </Button>
+              </SpecularButton>
             </div>
 
             <div className="pt-2 flex items-center justify-center gap-2 text-xs text-brand-200">

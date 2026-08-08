@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calculator, CheckCircle2, HelpCircle } from 'lucide-react';
-import { Card } from '../ui/Card';
+import { MagicBento } from './MagicBento';
 
 export const ExplainabilitySection: React.FC = () => {
   return (
@@ -19,7 +19,7 @@ export const ExplainabilitySection: React.FC = () => {
         </div>
 
         <div className="max-w-3xl mx-auto">
-          <Card variant="default" className="p-6 sm:p-8 space-y-6 bg-white border-slate-200 shadow-soft-md">
+          <MagicBento glowColor="brand" className="p-6 sm:p-8 space-y-6 bg-white border-slate-200">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
                 <h3 className="font-bold text-slate-900 text-base">Kitchen Refrigerator Estimate Derivation</h3>
@@ -73,7 +73,7 @@ export const ExplainabilitySection: React.FC = () => {
                 </div>
               </div>
             </div>
-          </Card>
+          </MagicBento>
         </div>
       </div>
     </section>

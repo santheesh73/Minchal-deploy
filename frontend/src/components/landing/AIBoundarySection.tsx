@@ -1,6 +1,6 @@
 import React from 'react';
 import { Eye, Calculator, MessageSquare } from 'lucide-react';
-import { Card } from '../ui/Card';
+import { MagicBento } from './MagicBento';
 
 export const AIBoundarySection: React.FC = () => {
   return (
@@ -18,10 +18,10 @@ export const AIBoundarySection: React.FC = () => {
           </p>
         </div>
 
-        {/* 3 Pipeline Stages */}
+        {/* 3 Pipeline Stages using MagicBento Dark */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative max-w-5xl mx-auto items-stretch">
-          {/* Pipeline Stage 1 */}
-          <Card variant="default" className="p-6 space-y-4 bg-slate-800/90 border-slate-700/80 text-white relative">
+          {/* Stage 1 */}
+          <MagicBento variant="dark" glowColor="purple" className="p-6 space-y-4 bg-slate-800/90 border-slate-700/80">
             <div className="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
               <Eye className="w-5 h-5" />
             </div>
@@ -35,10 +35,10 @@ export const AIBoundarySection: React.FC = () => {
             <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-700 text-[11px] text-purple-300 font-mono">
               Input: Image Pixels → Structured JSON
             </div>
-          </Card>
+          </MagicBento>
 
-          {/* Pipeline Stage 2 */}
-          <Card variant="default" className="p-6 space-y-4 bg-gradient-to-b from-brand-900/80 to-slate-800/90 border-brand-500/50 text-white relative shadow-lg">
+          {/* Stage 2 */}
+          <MagicBento variant="dark" glowColor="brand" className="p-6 space-y-4 bg-gradient-to-b from-brand-900/80 to-slate-800/90 border-brand-500/50">
             <div className="w-10 h-10 rounded-2xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">
               <Calculator className="w-5 h-5" />
             </div>
@@ -52,10 +52,10 @@ export const AIBoundarySection: React.FC = () => {
             <div className="p-2.5 rounded-xl bg-slate-900/80 border border-brand-500/40 text-[11px] text-brand-300 font-mono">
               Output: Exact Reproducible Numbers
             </div>
-          </Card>
+          </MagicBento>
 
-          {/* Pipeline Stage 3 */}
-          <Card variant="default" className="p-6 space-y-4 bg-slate-800/90 border-slate-700/80 text-white relative">
+          {/* Stage 3 */}
+          <MagicBento variant="dark" glowColor="emerald" className="p-6 space-y-4 bg-slate-800/90 border-slate-700/80">
             <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
               <MessageSquare className="w-5 h-5" />
             </div>
@@ -69,7 +69,7 @@ export const AIBoundarySection: React.FC = () => {
             <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-700 text-[11px] text-emerald-300 font-mono">
               Output: Clear User Derivations
             </div>
-          </Card>
+          </MagicBento>
         </div>
       </div>
     </section>

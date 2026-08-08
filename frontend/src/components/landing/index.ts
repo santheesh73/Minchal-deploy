@@ -11,3 +11,6 @@ export * from './TrustSection';
 export * from './AboutImpactSection';
 export * from './FinalCTASection';
 export * from './LandingFooter';
+export * from './WebThreads';
+export * from './SpecularButton';
+export * from './MagicBento';

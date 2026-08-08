@@ -1,6 +1,7 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Zap, ShieldCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ShieldCheck } from 'lucide-react';
+import { Logo } from '../ui/Logo';
 
 export const LandingFooter: React.FC = () => {
   const navigate = useNavigate();
@@ -22,14 +23,9 @@ export const LandingFooter: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           {/* Brand Logo & Tagline */}
           <div className="space-y-2 max-w-sm">
-            <Link to="/" className="flex items-center gap-2.5 group w-fit">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-500 flex items-center justify-center text-white shadow-md">
-                <Zap className="w-5 h-5 fill-current text-white" />
-              </div>
-              <span className="font-extrabold text-lg text-white tracking-tight">
-                MINCHAL
-              </span>
-            </Link>
+            <div className="bg-white/90 p-2 rounded-2xl w-fit inline-block">
+              <Logo size="sm" />
+            </div>
             <p className="text-slate-400 text-xs leading-relaxed">
               AI-assisted household energy audit platform. Turn electricity bills into explainable energy insights.
             </p>

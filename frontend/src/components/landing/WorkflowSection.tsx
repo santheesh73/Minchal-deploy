@@ -7,7 +7,7 @@ import {
   Calculator,
   BarChart2,
 } from 'lucide-react';
-import { Card } from '../ui/Card';
+import { MagicBento } from './MagicBento';
 
 export const WorkflowSection: React.FC = () => {
   const steps = [
@@ -70,15 +70,15 @@ export const WorkflowSection: React.FC = () => {
           </p>
         </div>
 
-        {/* 6 Steps Grid */}
+        {/* 6 Steps MagicBento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <Card
+              <MagicBento
                 key={step.number}
-                variant="default"
-                className="p-6 space-y-4 relative hover:border-brand-300 hover:shadow-soft-lg transition-all group bg-white"
+                glowColor="brand"
+                className="p-6 space-y-4 relative group"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-black font-mono text-brand-600/30 group-hover:text-brand-600 transition-colors">
@@ -101,7 +101,7 @@ export const WorkflowSection: React.FC = () => {
                     {step.description}
                   </p>
                 </div>
-              </Card>
+              </MagicBento>
             );
           })}
         </div>

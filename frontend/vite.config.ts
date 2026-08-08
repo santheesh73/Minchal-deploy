@@ -7,12 +7,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['favicon.ico', 'favicon.png', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
         name: 'MINCHAL — Household Electricity Energy Audit',
         short_name: 'MINCHAL',
         description: 'Production-quality responsive PWA for household electricity energy auditing',
-        theme_color: '#1e40af',
+        theme_color: '#0d6e6e',
         background_color: '#f8fafc',
         display: 'standalone',
         orientation: 'portrait',

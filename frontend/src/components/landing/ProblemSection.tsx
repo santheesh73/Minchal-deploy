@@ -1,6 +1,6 @@
 import React from 'react';
 import { HelpCircle, CheckCircle2 } from 'lucide-react';
-import { Card } from '../ui/Card';
+import { MagicBento } from './MagicBento';
 
 export const ProblemSection: React.FC = () => {
   return (
@@ -19,10 +19,10 @@ export const ProblemSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Before vs After Comparison Grid */}
+        {/* Before vs After Comparison Grid using MagicBento */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
-          {/* BEFORE MINCHAL Card */}
-          <Card variant="default" className="p-6 sm:p-8 space-y-5 border-rose-200 bg-rose-50/20 relative">
+          {/* BEFORE MINCHAL MagicBento Card */}
+          <MagicBento glowColor="amber" className="p-6 sm:p-8 space-y-5 border-rose-200 bg-rose-50/20">
             <div className="flex items-center justify-between border-b border-rose-100 pb-4">
               <div className="flex items-center gap-2 text-rose-700 font-bold text-base">
                 <HelpCircle className="w-5 h-5" />
@@ -55,10 +55,10 @@ export const ProblemSection: React.FC = () => {
                 </div>
               </div>
             </div>
-          </Card>
+          </MagicBento>
 
-          {/* AFTER MINCHAL Card */}
-          <Card variant="default" className="p-6 sm:p-8 space-y-5 border-emerald-300 bg-emerald-50/20 relative shadow-soft-lg">
+          {/* AFTER MINCHAL MagicBento Card */}
+          <MagicBento glowColor="emerald" className="p-6 sm:p-8 space-y-5 border-emerald-300 bg-emerald-50/20">
             <div className="flex items-center justify-between border-b border-emerald-100 pb-4">
               <div className="flex items-center gap-2 text-emerald-800 font-bold text-base">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600" />
@@ -108,7 +108,7 @@ export const ProblemSection: React.FC = () => {
                 <span className="font-mono font-extrabold text-emerald-700 text-sm">~₹1,246 / mo</span>
               </div>
             </div>
-          </Card>
+          </MagicBento>
         </div>
       </div>
     </section>

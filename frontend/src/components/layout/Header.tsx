@@ -1,8 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Zap, Globe, ShieldCheck } from 'lucide-react';
+import { Globe, ShieldCheck } from 'lucide-react';
 import { useAudit } from '../../store/AuditContext';
-import { Badge } from '../ui/Badge';
+import { Logo } from '../ui/Logo';
 
 export const Header: React.FC = () => {
   const { state, dispatch } = useAudit();
@@ -16,22 +15,7 @@ export const Header: React.FC = () => {
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
-            <Zap className="w-5 h-5 fill-current" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-extrabold text-lg text-slate-900 tracking-tight leading-tight flex items-center gap-1.5">
-              MINCHAL
-              <Badge variant="primary" size="sm" className="hidden sm:inline-flex">
-                Audit
-              </Badge>
-            </span>
-            <span className="text-[10px] text-slate-500 font-medium tracking-wide">
-              {state.language === 'ta' ? 'மின்சார தணிக்கை' : 'Household Energy Audit'}
-            </span>
-          </div>
-        </Link>
+        <Logo />
 
         {/* Right Action Bar */}
         <div className="flex items-center gap-3">

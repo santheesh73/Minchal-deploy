@@ -1,6 +1,6 @@
 import React from 'react';
 import { Leaf, Heart, Zap, Globe } from 'lucide-react';
-import { Card } from '../ui/Card';
+import { MagicBento } from './MagicBento';
 
 export const AboutImpactSection: React.FC = () => {
   return (
@@ -19,7 +19,7 @@ export const AboutImpactSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs max-w-5xl mx-auto">
-          <Card variant="default" className="p-5 space-y-2 bg-white border-slate-200 text-center">
+          <MagicBento glowColor="emerald" className="p-5 space-y-2 bg-white text-center">
             <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
               <Leaf className="w-5 h-5" />
             </div>
@@ -27,9 +27,9 @@ export const AboutImpactSection: React.FC = () => {
             <p className="text-slate-500 text-[11px] leading-relaxed">
               Every saved unit (kWh) prevents ~0.82 kg of CO₂ grid emissions.
             </p>
-          </Card>
+          </MagicBento>
 
-          <Card variant="default" className="p-5 space-y-2 bg-white border-slate-200 text-center">
+          <MagicBento glowColor="brand" className="p-5 space-y-2 bg-white text-center">
             <div className="w-10 h-10 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
               <Zap className="w-5 h-5" />
             </div>
@@ -37,9 +37,9 @@ export const AboutImpactSection: React.FC = () => {
             <p className="text-slate-500 text-[11px] leading-relaxed">
               Targeted habit adjustments yield up to 20-30% bill savings.
             </p>
-          </Card>
+          </MagicBento>
 
-          <Card variant="default" className="p-5 space-y-2 bg-white border-slate-200 text-center">
+          <MagicBento glowColor="purple" className="p-5 space-y-2 bg-white text-center">
             <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mx-auto">
               <Heart className="w-5 h-5" />
             </div>
@@ -47,9 +47,9 @@ export const AboutImpactSection: React.FC = () => {
             <p className="text-slate-500 text-[11px] leading-relaxed">
               Timely maintenance prevents premature compressor and motor breakdown.
             </p>
-          </Card>
+          </MagicBento>
 
-          <Card variant="default" className="p-5 space-y-2 bg-white border-slate-200 text-center">
+          <MagicBento glowColor="amber" className="p-5 space-y-2 bg-white text-center">
             <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
               <Globe className="w-5 h-5" />
             </div>
@@ -57,7 +57,7 @@ export const AboutImpactSection: React.FC = () => {
             <p className="text-slate-500 text-[11px] leading-relaxed">
               Fully localized for regional accessibility across households.
             </p>
-          </Card>
+          </MagicBento>
         </div>
       </div>
     </section>

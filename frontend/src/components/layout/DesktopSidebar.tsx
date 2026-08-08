@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-  Zap,
   Home,
   FileText,
   Cpu,
@@ -13,7 +12,7 @@ import {
   Globe,
 } from 'lucide-react';
 import { useAudit } from '../../store/AuditContext';
-import { Badge } from '../ui/Badge';
+import { Logo } from '../ui/Logo';
 
 export interface DesktopSidebarProps {
   isCollapsed: boolean;
@@ -49,25 +48,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       {/* Top Header & Branding */}
       <div className="p-4 space-y-6">
         <div className="flex items-center justify-between">
-          <NavLink to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform shrink-0">
-              <Zap className="w-5 h-5 fill-current text-white" />
-            </div>
-
-            {!isCollapsed && (
-              <div className="flex flex-col">
-                <span className="font-extrabold text-base text-slate-900 tracking-tight flex items-center gap-1.5">
-                  MINCHAL
-                  <Badge variant="primary" size="sm">
-                    Audit
-                  </Badge>
-                </span>
-                <span className="text-[10px] text-slate-500 font-medium">
-                  {state.language === 'ta' ? 'மின்சார தணிக்கை' : 'Household Audit'}
-                </span>
-              </div>
-            )}
-          </NavLink>
+          <Logo showText={!isCollapsed} size="md" />
 
           <button
             type="button"

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
-  <circle cx="50" cy="50" r="48" fill="#2563EB"/>
-  <path d="M55 18L25 54H48L43 82L75 46H52L57 18Z" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <rect width="128" height="128" rx="28" fill="#ffffff" />
+  <image href="/logo/mark.png" x="8" y="8" width="112" height="112" preserveAspectRatio="xMidYMid meet" />
 </svg>

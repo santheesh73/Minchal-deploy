@@ -1,12 +1,12 @@
 import React from 'react';
 import { ShieldCheck, Lock, CheckCircle2 } from 'lucide-react';
-import { Card } from '../ui/Card';
+import { MagicBento } from './MagicBento';
 
 export const TrustSection: React.FC = () => {
   return (
     <section className="py-12 sm:py-16 bg-white border-t border-slate-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Card variant="default" className="p-8 sm:p-10 bg-gradient-to-br from-brand-900 via-slate-900 to-slate-900 text-white rounded-3xl border-slate-800 space-y-6 max-w-4xl mx-auto">
+        <MagicBento variant="dark" glowColor="emerald" className="p-8 sm:p-10 bg-gradient-to-br from-brand-900 via-slate-900 to-slate-900 text-white rounded-3xl border-slate-800 space-y-6 max-w-4xl mx-auto">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-brand-500/20 text-brand-400 flex items-center justify-center">
               <ShieldCheck className="w-6 h-6" />
@@ -48,7 +48,7 @@ export const TrustSection: React.FC = () => {
               </p>
             </div>
           </div>
-        </Card>
+        </MagicBento>
       </div>
     </section>
   );
