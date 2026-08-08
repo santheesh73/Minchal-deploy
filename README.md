@@ -1,6 +1,6 @@
 # The Ragnarok · Tech for Good 2026 - Minchal
 
-Team repository for **Build with AI: Code for Communities** — GDG Coimbatore
+Team repository for **Build with AI: Code for Communities** — GDG Coimbator
 (hackathon **Aug 8–9, 2026**, GRD College).  
 
 Everything ur team does lives here from day one: the proposal, code, docs, and
