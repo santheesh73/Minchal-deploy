@@ -1,7 +1,9 @@
 import React, { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { WifiOff } from 'lucide-react';
 import { Header } from './Header';
 import { BottomNavigation } from './BottomNavigation';
+import { DesktopAppShell } from './DesktopAppShell';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 
 export interface AppLayoutProps {
@@ -9,19 +11,45 @@ export interface AppLayoutProps {
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
+  const location = useLocation();
   const { isOnline } = useNetworkStatus();
 
+  // Landing page ('/') MUST remain a standalone page with NO desktop sidebar or app topbar
+  const isLandingPage = location.pathname === '/';
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 pb-16 sm:pb-8">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+      {/* Offline Status Banner */}
       {!isOnline && (
-        <div className="bg-amber-500 text-white text-xs font-semibold px-4 py-2 text-center flex items-center justify-center gap-2 shadow-sm">
+        <div className="bg-amber-500 text-white text-xs font-semibold px-4 py-2 text-center flex items-center justify-center gap-2 shadow-sm z-50">
           <WifiOff className="w-4 h-4 shrink-0" />
           <span>You appear to be offline. Reconnect to perform new energy audits.</span>
         </div>
       )}
-      <Header />
-      <div className="flex-1 w-full">{children}</div>
-      <BottomNavigation />
+
+      {isLandingPage ? (
+        /* Standalone Landing Page View - No Sidebar */
+        <div className="min-h-screen flex flex-col pb-16 sm:pb-8">
+          <Header />
+          <div className="flex-1 w-full">{children}</div>
+          <BottomNavigation />
+        </div>
+      ) : (
+        /* Application Routes View */
+        <>
+          {/* Mobile View (< 1024px): 100% Read-Only Unchanged Mobile Shell */}
+          <div className="lg:hidden min-h-screen flex flex-col pb-16 sm:pb-8">
+            <Header />
+            <div className="flex-1 w-full">{children}</div>
+            <BottomNavigation />
+          </div>
+
+          {/* Desktop View (>= 1024px): Desktop Application Shell with Sidebar */}
+          <div className="hidden lg:block min-h-screen">
+            <DesktopAppShell>{children}</DesktopAppShell>
+          </div>
+        </>
+      )}
     </div>
   );
 };
