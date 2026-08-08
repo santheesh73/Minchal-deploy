@@ -1,0 +1,84 @@
+{
+  "ok": true,
+  "bill_total_rupees": 1500,
+  "breakdown": [
+    {
+      "type": "ac",
+      "label": "Bedroom AC",
+      "units": 120,
+      "rupees": 800,
+      "percent": 40,
+      "rank": 1,
+      "working": [{"label": "Hours", "value": "8/day"}],
+      "assumptions": [{"ok": true, "text": "Used every night"}]
+    },
+    {
+      "type": "fridge",
+      "label": "Kitchen Fridge",
+      "units": 60,
+      "rupees": 400,
+      "percent": 20,
+      "rank": 2,
+      "working": [{"label": "Mode", "value": "24/7"}],
+      "assumptions": [{"ok": true, "text": "Standard efficiency"}]
+    },
+    {
+      "type": "geyser",
+      "label": "Bathroom Geyser",
+      "units": 30,
+      "rupees": 200,
+      "percent": 10,
+      "rank": 3,
+      "working": [{"label": "Usage", "value": "1 hr/day"}],
+      "assumptions": [{"ok": true, "text": "Morning use"}]
+    },
+    {
+      "type": "other",
+      "label": "Other Appliances",
+      "units": 90,
+      "rupees": 600,
+      "percent": 30,
+      "rank": 4,
+      "working": [{"label": "Base Load", "value": "Lights, Fans"}],
+      "assumptions": [{"ok": true, "text": "Estimated 30%"}]
+    }
+  ],
+  "scale_factor": 1.0,
+  "confidence_percent": 85,
+  "confidence_reasons": [{"ok": true, "text": "OCR was clear"}],
+  "meta": {
+    "engine_version": "1.0",
+    "model": "gemini-1.5-pro",
+    "generated_at": "2023-10-01T12:00:00Z",
+    "duration_ms": 1200
+  },
+  "explanation": "Your AC is the biggest driver of your bill.",
+  "actions": [
+    {"tier": "free", "text": "Set AC to 24C", "saves_rupees": 100},
+    {"tier": "cheap", "text": "Service AC", "saves_rupees": 200, "payback_months": 3},
+    {"tier": "investment", "text": "Buy 5-star AC", "saves_rupees": 500, "payback_months": 24}
+  ],
+  "insights": {
+    "efficiency_gap_percent": 15,
+    "efficiency_gap_rupees": 300,
+    "efficiency_driver": "Old AC",
+    "energy_score": 75,
+    "co2_kg_year": 1500,
+    "co2_kg_year_after": 1200,
+    "monthly_savings_rupees": 300,
+    "annual_savings_rupees": 3600,
+    "biggest_surprise": {
+      "type": "ac",
+      "label": "Old AC",
+      "rupees": 400,
+      "line": "Your AC is consuming twice as much as a new one."
+    },
+    "solar": {
+      "size_kw": 3,
+      "coverage_percent": 80,
+      "net_cost_rupees": 120000,
+      "annual_saving_rupees": 18000,
+      "payback_years": 6.5
+    }
+  }
+}

@@ -1,4 +1,4 @@
-# The Ragnarok · Tech for Good 2026
+# The Ragnarok · Tech for Good 2026 - Minchal
 
 Team repository for **Build with AI: Code for Communities** — GDG Coimbatore
 (hackathon **Aug 8–9, 2026**, GRD College).  
@@ -11,19 +11,32 @@ progress. Organizers follow along through this repo, so keep it active.
 2. **Add your teammates** as collaborators (Settings → Collaborators), or ask your organizer to add them by GitHub username.
 3. **Build in the open** — commit early and often. Put source in `/src`, notes and diagrams in `/docs`.
 
-## Repo layout
-| Path | For |
-|------|-----|
-| `PROPOSAL.md` | Your architecture proposal (the submission) |
-| `/src` | Application code |
-| `/docs` | Design notes, diagrams, research |
-| Issues | Track tasks; use the **Progress update** template for weekly check-ins |
+## Minchal - 24-hour hackathon project for energy bill analysis.
 
-## Ground rules
-- Teams are **2–4 people**.
-- Keep the repo **public** — it's part of the open-source, tech-for-good spirit and helps judging.
-- Use the four SDG tracks; build something that helps a real community.
+## Team Roles
+- **FE-1**: Capture flow (BillCapture, AppliancePicker)
+- **FE-2**: Result screen (ResultScreen)
+- **BE-1**: Gemini extraction (prompts & parsing)
+- **BE-2**: Calculation engine & insights
 
-Questions? Ping the organizers in the mixer WhatsApp group or open an issue.
+## API Contract is LOCKED
+All frontend components are built against the mock JSON and types in `frontend/src/types/api.ts`.
+**Do not change the API contract without agreement from all four team members.**
 
-— GDG Coimbatore · TiE Kovai Con · GRD College · Startup Culture
+## Quickstart
+
+**Frontend**
+```bash
+cd frontend
+npm install
+USE_MOCKS=true npm run dev
+```
+
+**Backend**
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8080
+```
