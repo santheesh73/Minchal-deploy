@@ -1,5 +1,38 @@
 # Demo notes — read before the run-through
 
+## The confidence climb — measured, use these numbers
+
+Same bill (735 units / Rs 5,420 / 61 days), same three appliances, live:
+
+| what the user did | confidence | "runtime entered, not assumed" |
+|---|---|---|
+| skipped straight to the result | **60%** | false |
+| refined ONE appliance | **80%** | false |
+| refined both non-fridge appliances | **100%** | true |
+
+Rupees sum to exactly 5,420 at every step — refining changes the CONFIDENCE
+claim, never the arithmetic. There is a test asserting exactly that.
+
+This is the strongest beat available: three taps gets an answer at 60%, and
+refining walks it up. It demonstrates the accuracy/effort tradeoff live rather
+than describing it.
+
+## Before the demo: consider dropping the tunnel entirely
+
+Quick Cloudflare tunnels died FOUR times in one day, each time with the
+cloudflared process still alive and looking healthy — the hostname simply
+stops resolving. That is a pattern, not bad luck.
+
+If the demo runs on one laptop, point the frontend at the backend directly and
+remove an entire class of failure from the critical path:
+
+    frontend/.env
+    VITE_API_BASE_URL=http://localhost:8080
+
+    python scripts/preflight.py --base-url http://127.0.0.1:8080
+
+Keep the tunnel only for teammates developing on separate machines.
+
 ## Run this first, every time
 
 ```bash

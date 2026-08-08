@@ -134,3 +134,93 @@ def test_stock_fixture_still_has_symptoms():
     payload = json.load(open(os.path.join(BASE, "mocks", "analyze_request.json"), encoding="utf-8"))
     assert any(a["symptoms"] for a in payload["appliances"]), \
         "stock fixture lost its symptoms — the cheap-action path is now untested"
+
+
+# ---------------------------------------------------------------------------
+# runtime_confirmed — confidence must reflect who supplied the runtime
+# ---------------------------------------------------------------------------
+
+def _confidence_for(runtime_confirmed):
+    from engine.calculator import confidence
+    apps = [ApplianceInput(**dict(a, runtime_confirmed=runtime_confirmed))
+            for a in appliances()]
+    return confidence(BillData(**BILL), apps, scale=1.0)
+
+
+def test_defaults_do_not_claim_confirmed_runtime():
+    """REGRESSION: the frontend pre-fills hours_band on add, so "a value is
+    present" was always true and confidence read 100% on a path where the user
+    confirmed nothing — while the tick claimed runtime was entered, not
+    assumed. Presence is not confirmation."""
+    pct, reasons = _confidence_for(False)
+    assert pct < 100, "assumed runtime must not score full confidence"
+    assert reasons[1]["ok"] is False, "the runtime tick must read false when assumed"
+
+
+def test_absent_flag_is_treated_as_unconfirmed():
+    """None means not confirmed — never an assertion. Same convention as
+    is_electricity_bill."""
+    pct_none, reasons_none = _confidence_for(None)
+    pct_false, _ = _confidence_for(False)
+    assert pct_none == pct_false
+    assert reasons_none[1]["ok"] is False
+
+
+def test_confirming_runtime_raises_confidence():
+    """The refinement beat: confirming runtime must measurably improve both the
+    tick and the percentage."""
+    low, low_reasons = _confidence_for(False)
+    high, high_reasons = _confidence_for(True)
+    assert high > low, f"confirming runtime did not raise confidence ({low} -> {high})"
+    assert low_reasons[1]["ok"] is False
+    assert high_reasons[1]["ok"] is True
+
+
+def test_partial_confirmation_lands_between():
+    """Refining ONE appliance should sit between the extremes.
+
+    Uses two NON-fridge appliances on purpose: fridges are excluded from the
+    runtime denominator, so a fridge cannot produce a partial state.
+    """
+    from engine.calculator import confidence
+    two_mode_b = [
+        {"id": "ac-1", "type": "ac", "capacity": 1.5, "star": 3, "year": 2023,
+         "hours_band": "6-8", "symptoms": [], "runtime_confirmed": True},
+        {"id": "gey-1", "type": "geyser", "capacity": 15.0, "star": 2, "year": 2024,
+         "hours_band": "1-2", "symptoms": [], "runtime_confirmed": False},
+    ]
+    apps = [ApplianceInput(**a) for a in two_mode_b]
+    mid, _ = confidence(BillData(**BILL), apps, scale=1.0)
+
+    none_conf = [ApplianceInput(**dict(a, runtime_confirmed=False)) for a in two_mode_b]
+    all_conf = [ApplianceInput(**dict(a, runtime_confirmed=True)) for a in two_mode_b]
+    low, _ = confidence(BillData(**BILL), none_conf, scale=1.0)
+    high, _ = confidence(BillData(**BILL), all_conf, scale=1.0)
+    assert low < mid < high, f"expected {low} < {mid} < {high}"
+
+
+def test_assumed_runtime_does_not_zero_out_confidence():
+    """0% is as wrong as the old 100%: assumed runtime is not no information,
+    and every estimate is still normalised against the real bill total."""
+    from engine.calculator import RUNTIME_ASSUMED_FLOOR
+    pct, _ = _confidence_for(False)
+    assert pct >= 50, f"assumed runtime collapsed confidence to {pct}%"
+    assert 0 < RUNTIME_ASSUMED_FLOOR < 1
+
+
+def test_field_is_additive_and_optional():
+    """The contract shape is locked: the field must never be required."""
+    assert not ApplianceInput.model_fields["runtime_confirmed"].is_required()
+    a = ApplianceInput(id="x", type="ac", star=3, year=2020, hours_band="4-6")
+    assert a.runtime_confirmed is None
+
+
+def test_confirmed_runtime_does_not_change_the_estimate():
+    """It affects the CONFIDENCE claim only — the arithmetic must be identical."""
+    from engine.calculator import analyze as engine_analyze
+    bill = BillData(**BILL)
+    a_false = [ApplianceInput(**dict(a, runtime_confirmed=False)) for a in appliances()]
+    a_true = [ApplianceInput(**dict(a, runtime_confirmed=True)) for a in appliances()]
+    r1, r2 = engine_analyze(bill, a_false), engine_analyze(bill, a_true)
+    assert [i["rupees"] for i in r1["breakdown"]] == [i["rupees"] for i in r2["breakdown"]]
+    assert r1["confidence_percent"] != r2["confidence_percent"]

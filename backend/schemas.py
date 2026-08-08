@@ -53,6 +53,16 @@ class ApplianceInput(BaseModel):
     year: int
     hours_band: Optional[HoursBand] = None
     symptoms: List[str] = Field(default_factory=list)
+    # Additive, optional, no existing field touched.
+    #
+    # hours_band alone cannot answer "did the user tell us this, or did we
+    # assume it?" — the frontend pre-fills a sensible per-appliance default the
+    # moment an appliance is added, so a value is always present and confidence
+    # read 100% even when nothing was confirmed. This says who supplied it.
+    #
+    # None means not confirmed, the same convention as is_electricity_bill:
+    # absent is never treated as an assertion. Only an explicit True counts.
+    runtime_confirmed: Optional[bool] = None
 
 class WorkingStep(BaseModel):
     label: str

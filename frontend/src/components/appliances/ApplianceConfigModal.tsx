@@ -53,7 +53,9 @@ export const ApplianceConfigModal: React.FC<ApplianceConfigModalProps> = ({
 
   const handleSave = () => {
     if (formData) {
-      onSave(formData);
+      // The user opened this screen and saved it, so runtime is now confirmed
+      // rather than assumed. This is the ONLY place that may set it true.
+      onSave({ ...formData, runtime_confirmed: true });
       onClose();
     }
   };

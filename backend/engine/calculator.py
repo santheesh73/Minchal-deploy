@@ -184,9 +184,14 @@ def build_assumptions(appliance: Any) -> List[Dict[str, Any]]:
     return assumptions
 
 
+RUNTIME_ASSUMED_FLOOR = 0.60
+
+
 def confidence(bill: Any, appliances: List[Any], scale: float) -> Tuple[int, List[Dict[str, Any]]]:
     """ocr     = non-null bill fields / expected fields
-       runtime = appliances with hours_band set / appliances needing one
+       runtime = 0.60 .. 1.00, by the fraction of appliances whose runtime the
+                 user CONFIRMED (runtime_confirmed=True), not merely those with
+                 a value present — the frontend pre-fills a default on add.
                  (fridges do not need one — exclude from denominator)
        scale_q = 1.0 if 0.85 <= scale <= 1.15
                  0.7 if 0.70 <= scale <= 1.40
@@ -205,21 +210,42 @@ def confidence(bill: Any, appliances: List[Any], scale: float) -> Tuple[int, Lis
     ocr = non_null_fields / len(fields)
 
     # 2. Runtime completeness (Mode B only)
+    #
+    # Counts runtime the USER confirmed, not merely a value that happens to be
+    # present. The frontend pre-fills a per-appliance default on add, so
+    # "hours_band is not None" was always true and this term was always 1.0 —
+    # confidence read 100% on a path where nothing had been confirmed, and the
+    # "runtime entered, not assumed" tick claimed the opposite of the truth.
+    #
+    # runtime_confirmed=None (absent) means not confirmed, never an assertion.
+    # A supplied hours_band still improves the ESTIMATE; it just no longer
+    # inflates the CONFIDENCE. Those are different claims and were conflated.
     mode_b_total = 0
     mode_b_filled = 0
     for app in appliances:
         if isinstance(app, dict):
             app_type = app.get("type")
             hours_band = app.get("hours_band")
+            confirmed = app.get("runtime_confirmed")
         else:
             app_type = getattr(app, "type", None)
             hours_band = getattr(app, "hours_band", None)
-            
+            confirmed = getattr(app, "runtime_confirmed", None)
+
         if app_type != "fridge":
             mode_b_total += 1
-            if hours_band is not None:
+            if hours_band is not None and confirmed is True:
                 mode_b_filled += 1
-    runtime = (mode_b_filled / mode_b_total) if mode_b_total > 0 else 1.0
+    confirmed_fraction = (mode_b_filled / mode_b_total) if mode_b_total > 0 else 1.0
+
+    # The terms multiply, so a raw 0/1 fraction would drive confidence to 0%
+    # the moment nothing is confirmed — and 0% is as wrong as the old 100%.
+    # Assumed runtime is not no information: the per-appliance defaults are
+    # reasonable, and every estimate is still normalised against the real bill
+    # total, which is the strongest signal we have. So assumed runtime floors
+    # this term rather than zeroing it, and confirming appliances walks it up.
+    #   nothing confirmed -> 0.60      all confirmed -> 1.00
+    runtime = RUNTIME_ASSUMED_FLOOR + (1.0 - RUNTIME_ASSUMED_FLOOR) * confirmed_fraction
 
     # 3. Scale quality
     if 0.85 <= scale <= 1.15:

@@ -66,6 +66,9 @@ export function auditReducer(state: AuditState, action: AuditAction): AuditState
           year: 2020,
           hours_band: targetType === 'fridge' ? null : (catalogItem?.defaultHoursBand || '4-6'),
           symptoms: [],
+          // A default we chose, not a value the user gave us. Set true only
+          // when they open the config modal and save.
+          runtime_confirmed: false,
         };
 
         return {

@@ -76,6 +76,9 @@ export function useAnalysis() {
         year: app.year,
         hours_band: app.type === 'fridge' ? null : app.hours_band, // Preserve null for fridge
         symptoms: app.symptoms || [],
+        // Must be forwarded explicitly — this payload is a whitelist, so a new
+        // field is silently dropped unless listed here. Confidence depends on it.
+        runtime_confirmed: app.runtime_confirmed === true,
       })),
       language: state.language || 'en',
     };

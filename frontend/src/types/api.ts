@@ -19,6 +19,11 @@ export interface NameplateData {
 export interface ApplianceInput {
   id: string; type: ApplianceType; capacity: number|null; star: number;
   year: number; hours_band: HoursBand|null; symptoms: string[];
+  // Additive & optional. hours_band is pre-filled with a sensible default the
+  // moment an appliance is added, so its presence cannot answer "did the user
+  // tell us, or did we assume?". Only set true when the user actually opens
+  // the config modal and saves. Absent/false = assumed, and confidence says so.
+  runtime_confirmed?: boolean;
 }
 
 export interface AnalyzeRequest {
