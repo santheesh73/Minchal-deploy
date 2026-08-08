@@ -70,7 +70,7 @@ export const WorkflowSection: React.FC = () => {
           </p>
         </div>
 
-        {/* 6 Steps MagicBento Grid */}
+        {/* 6 Steps MagicBento Grid with Interactive Icons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {steps.map((step) => {
             const Icon = step.icon;
@@ -78,23 +78,24 @@ export const WorkflowSection: React.FC = () => {
               <MagicBento
                 key={step.number}
                 glowColor="brand"
-                className="p-6 space-y-4 relative group"
+                className="p-6 space-y-4 relative group cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-black font-mono text-brand-600/30 group-hover:text-brand-600 transition-colors">
                     {step.number}
                   </span>
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200/60 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200/60 uppercase tracking-wider group-hover:border-brand-400 group-hover:bg-brand-100 transition-colors">
                     {step.badge}
                   </span>
                 </div>
 
-                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-                  <Icon className="w-6 h-6" />
+                {/* Interactive Icon Box with Spring Hover Animation & Glow */}
+                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 group-hover:bg-brand-600 group-hover:text-white group-hover:shadow-glow">
+                  <Icon className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
                 </div>
 
                 <div className="space-y-1.5">
-                  <h3 className="font-bold text-slate-900 text-base">
+                  <h3 className="font-bold text-slate-900 text-base group-hover:text-brand-700 transition-colors">
                     {step.title}
                   </h3>
                   <p className="text-xs text-slate-500 leading-relaxed">

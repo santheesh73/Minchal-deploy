@@ -122,14 +122,21 @@ export const WebThreads: React.FC<WebThreadsProps> = ({
 
   return (
     <div className={`absolute inset-0 pointer-events-none overflow-hidden z-0 ${className}`}>
+      {/* 1. Desktop & Tablet Web Threads Canvas (ReactBits) */}
       <canvas
         ref={canvasRef}
-        className="w-full h-full opacity-70 mix-blend-multiply"
+        className="hidden md:block w-full h-full opacity-70 mix-blend-multiply"
         style={{
           maskImage: 'radial-gradient(ellipse 85% 75% at 50% 40%, black 30%, transparent 95%)',
           WebkitMaskImage: 'radial-gradient(ellipse 85% 75% at 50% 40%, black 30%, transparent 95%)',
         }}
       />
+
+      {/* 2. Mobile App Ambient Energy Orbs Glow (Ultra-Clean Mobile Viewports) */}
+      <div className="block md:hidden absolute inset-0">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full bg-gradient-to-tr from-brand-500/25 via-amber-400/20 to-brand-600/15 blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 left-1/3 w-60 h-60 rounded-full bg-gradient-to-br from-emerald-500/20 to-amber-300/15 blur-3xl" />
+      </div>
     </div>
   );
 };

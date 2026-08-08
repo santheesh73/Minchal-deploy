@@ -18,16 +18,16 @@ export const AIBoundarySection: React.FC = () => {
           </p>
         </div>
 
-        {/* 3 Pipeline Stages using MagicBento Dark */}
+        {/* 3 Pipeline Stages using MagicBento Dark with Interactive Icons */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative max-w-5xl mx-auto items-stretch">
           {/* Stage 1 */}
-          <MagicBento variant="dark" glowColor="purple" className="p-6 space-y-4 bg-slate-800/90 border-slate-700/80">
-            <div className="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
-              <Eye className="w-5 h-5" />
+          <MagicBento variant="dark" glowColor="purple" className="p-6 space-y-4 bg-slate-800/90 border-slate-700/80 group cursor-pointer">
+            <div className="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-purple-500 group-hover:text-white shadow-xs">
+              <Eye className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
             </div>
             <div className="space-y-1">
               <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider block">Stage 1 • Perception</span>
-              <h3 className="text-lg font-bold text-white">Gemini Vision</h3>
+              <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">Gemini Vision</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Perceives bill document pixels and extracts structured data (units, billing period, charges).
               </p>
@@ -38,13 +38,13 @@ export const AIBoundarySection: React.FC = () => {
           </MagicBento>
 
           {/* Stage 2 */}
-          <MagicBento variant="dark" glowColor="brand" className="p-6 space-y-4 bg-gradient-to-b from-brand-900/80 to-slate-800/90 border-brand-500/50">
-            <div className="w-10 h-10 rounded-2xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">
-              <Calculator className="w-5 h-5" />
+          <MagicBento variant="dark" glowColor="brand" className="p-6 space-y-4 bg-gradient-to-b from-brand-900/80 to-slate-800/90 border-brand-500/50 group cursor-pointer">
+            <div className="w-10 h-10 rounded-2xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 group-hover:bg-brand-500 group-hover:text-white shadow-xs">
+              <Calculator className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
             </div>
             <div className="space-y-1">
               <span className="text-[10px] font-bold text-brand-400 uppercase tracking-wider block">Stage 2 • Deterministic Math</span>
-              <h3 className="text-lg font-bold text-white">Energy Calculation Engine</h3>
+              <h3 className="text-lg font-bold text-white group-hover:text-brand-300 transition-colors">Energy Calculation Engine</h3>
               <p className="text-xs text-slate-300 leading-relaxed">
                 Computes appliance load attribution, efficiency gaps, and cost normalization using tariff equations.
               </p>
@@ -55,13 +55,13 @@ export const AIBoundarySection: React.FC = () => {
           </MagicBento>
 
           {/* Stage 3 */}
-          <MagicBento variant="dark" glowColor="emerald" className="p-6 space-y-4 bg-slate-800/90 border-slate-700/80">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-              <MessageSquare className="w-5 h-5" />
+          <MagicBento variant="dark" glowColor="emerald" className="p-6 space-y-4 bg-slate-800/90 border-slate-700/80 group cursor-pointer">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-emerald-500 group-hover:text-white shadow-xs">
+              <MessageSquare className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
             </div>
             <div className="space-y-1">
               <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Stage 3 • Explanation</span>
-              <h3 className="text-lg font-bold text-white">Gemini Flash</h3>
+              <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">Gemini Flash</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Translates engine calculations into accessible bilingual explanations (Tamil & English).
               </p>

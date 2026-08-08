@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChromaGrid } from './ChromaGrid';
 
 export const AuditPreviewSection: React.FC = () => {
   return (
@@ -16,10 +17,13 @@ export const AuditPreviewSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Mock Audit Dashboard Container */}
-        <div className="max-w-5xl mx-auto p-4 sm:p-8 rounded-3xl bg-slate-50 border border-slate-200/90 shadow-soft-lg space-y-6">
+        {/* Mock Audit Dashboard Container with Vivid Colored ChromaGrid from ReactBits */}
+        <div className="relative max-w-5xl mx-auto p-4 sm:p-8 rounded-3xl bg-slate-50/90 backdrop-blur-md border border-slate-200/90 shadow-soft-lg space-y-6 overflow-hidden group">
+          {/* Vivid Colored Chroma Grid Background Component */}
+          <ChromaGrid gridSize={32} chromaColors={['#ffbf00', '#38663d', '#ec4899', '#3b82f6', '#8b5cf6']} />
+
           {/* Header Strip */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-4 gap-3">
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-4 gap-3">
             <div>
               <span className="text-xs font-bold text-brand-600 uppercase">Household Energy Audit Dashboard</span>
               <h3 className="text-xl font-bold text-slate-900">June - July 2026 Audit Result</h3>
@@ -30,27 +34,27 @@ export const AuditPreviewSection: React.FC = () => {
           </div>
 
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-            <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-1">
+          <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+            <div className="p-4 bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200 space-y-1 shadow-xs hover:border-slate-300 transition-colors">
               <span className="text-slate-400 font-semibold uppercase text-[10px]">Extracted Bill</span>
               <p className="text-xl font-extrabold text-slate-900 font-mono">₹2,843</p>
             </div>
-            <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-1">
+            <div className="p-4 bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200 space-y-1 shadow-xs hover:border-emerald-300 transition-colors">
               <span className="text-slate-400 font-semibold uppercase text-[10px]">Potential Savings</span>
               <p className="text-xl font-extrabold text-emerald-600 font-mono">~₹1,246 / mo</p>
             </div>
-            <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-1">
+            <div className="p-4 bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200 space-y-1 shadow-xs hover:border-amber-300 transition-colors">
               <span className="text-slate-400 font-semibold uppercase text-[10px]">Efficiency Gap</span>
               <p className="text-xl font-extrabold text-amber-600 font-mono">43% Opportunity</p>
             </div>
-            <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-1">
+            <div className="p-4 bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200 space-y-1 shadow-xs hover:border-purple-300 transition-colors">
               <span className="text-slate-400 font-semibold uppercase text-[10px]">Carbon Footprint</span>
               <p className="text-xl font-extrabold text-purple-600 font-mono">368 kg CO₂</p>
             </div>
           </div>
 
           {/* Appliance Breakdown Rows */}
-          <div className="space-y-3 bg-white p-5 rounded-2xl border border-slate-200">
+          <div className="relative z-10 space-y-3 bg-white/90 backdrop-blur-sm p-5 rounded-2xl border border-slate-200 shadow-xs">
             <h4 className="font-bold text-slate-900 text-sm border-b border-slate-100 pb-2">
               Appliance Monthly Load Attribution
             </h4>

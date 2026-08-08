@@ -11,8 +11,8 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
-import { WebThreads } from './WebThreads';
 import { SpecularButton } from './SpecularButton';
+import { ChromaGrid } from './ChromaGrid';
 
 export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
@@ -32,11 +32,8 @@ export const HeroSection: React.FC = () => {
     <div className="relative">
       {/* 1. HERO HEADER SECTION (Full viewport breathing space) */}
       <section className="relative min-h-[82vh] flex flex-col justify-center items-center pt-8 pb-16 sm:py-20 overflow-hidden">
-        {/* Web Threads Interactive Background Component from ReactBits */}
-        <WebThreads amplitude={1.2} distance={2} color={['#0f595e', '#f59e0b', '#2563eb']} />
-
         {/* Ambient background glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full bg-gradient-to-b from-brand-50/70 via-blue-50/30 to-transparent pointer-events-none -z-10 rounded-b-full blur-3xl" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full bg-gradient-to-b from-brand-50/70 via-amber-50/30 to-transparent pointer-events-none -z-10 rounded-b-full blur-3xl" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-center my-auto">
           {/* Badge */}
@@ -48,7 +45,7 @@ export const HeroSection: React.FC = () => {
           {/* Main Title */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight sm:leading-none max-w-4xl mx-auto">
             Understand Where Your{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 via-brand-500 to-blue-600">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 via-brand-500 to-amber-500">
               Electricity Bill
             </span>{' '}
             Goes
@@ -90,7 +87,7 @@ export const HeroSection: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. DEMO PIPELINE SHOWCASE SECTION (Moved Downward into standalone section) */}
+      {/* 2. DEMO PIPELINE SHOWCASE SECTION (With ChromaGrid Background Component from ReactBits) */}
       <section className="relative pt-12 pb-20 sm:pt-16 sm:pb-28 bg-gradient-to-b from-slate-50 via-white to-slate-50 border-t border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -105,10 +102,13 @@ export const HeroSection: React.FC = () => {
             </p>
           </div>
 
-          {/* Hero Interactive Visualization Showcase */}
-          <div className="relative max-w-4xl mx-auto rounded-3xl bg-slate-900/95 backdrop-blur-xl text-white p-4 sm:p-8 shadow-2xl border border-slate-800 space-y-6 overflow-hidden">
+          {/* Hero Interactive Visualization Showcase Container */}
+          <div className="relative max-w-4xl mx-auto rounded-3xl bg-slate-900/95 backdrop-blur-xl text-white p-4 sm:p-8 shadow-2xl border border-slate-800 space-y-6 overflow-hidden group">
+            {/* Chroma Grid Background Component from ReactBits */}
+            <ChromaGrid gridSize={28} chromaColors={['#ffbf00', '#38663d', '#3b82f6', '#10b981']} />
+
             {/* Subtle grid pattern background */}
-            <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-30 pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
 
             {/* Top Mock Window Bar */}
             <div className="relative z-10 flex items-center justify-between border-b border-slate-800 pb-4">
@@ -126,7 +126,7 @@ export const HeroSection: React.FC = () => {
             {/* Pipeline Visual Flow */}
             <div className="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
               {/* Step 1 Card */}
-              <div className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/70 space-y-2">
+              <div className="p-4 rounded-2xl bg-slate-800/80 backdrop-blur-md border border-slate-700/70 space-y-2 hover:border-blue-500/50 transition-colors">
                 <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
                   <FileText className="w-4 h-4" />
                 </div>
@@ -139,7 +139,7 @@ export const HeroSection: React.FC = () => {
               </div>
 
               {/* Step 2 Card */}
-              <div className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/70 space-y-2">
+              <div className="p-4 rounded-2xl bg-slate-800/80 backdrop-blur-md border border-slate-700/70 space-y-2 hover:border-purple-500/50 transition-colors">
                 <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
                   <Sparkles className="w-4 h-4" />
                 </div>
@@ -151,7 +151,7 @@ export const HeroSection: React.FC = () => {
               </div>
 
               {/* Step 3 Card */}
-              <div className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/70 space-y-2">
+              <div className="p-4 rounded-2xl bg-slate-800/80 backdrop-blur-md border border-slate-700/70 space-y-2 hover:border-brand-500/50 transition-colors">
                 <div className="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center">
                   <Cpu className="w-4 h-4" />
                 </div>
@@ -163,7 +163,7 @@ export const HeroSection: React.FC = () => {
               </div>
 
               {/* Step 4 Card */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-brand-900/90 to-emerald-950/90 border border-brand-500/40 space-y-2">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-brand-900/90 to-emerald-950/90 backdrop-blur-md border border-brand-500/40 space-y-2 hover:border-emerald-400/70 transition-colors">
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                   <Calculator className="w-4 h-4" />
                 </div>
@@ -184,7 +184,7 @@ export const HeroSection: React.FC = () => {
             </div>
 
             {/* Bottom Highlight Strip */}
-            <div className="relative z-10 p-3.5 rounded-2xl bg-slate-800/50 border border-slate-700/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="relative z-10 p-3.5 rounded-2xl bg-slate-800/50 backdrop-blur-md border border-slate-700/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2 text-slate-300">
                 <TrendingDown className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>Potential Savings Opportunity Identified: <strong className="text-white">up to ~₹1,246 / month</strong></span>

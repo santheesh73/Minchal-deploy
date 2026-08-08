@@ -14,3 +14,4 @@ export * from './LandingFooter';
 export * from './WebThreads';
 export * from './SpecularButton';
 export * from './MagicBento';
+export * from './ChromaGrid';
