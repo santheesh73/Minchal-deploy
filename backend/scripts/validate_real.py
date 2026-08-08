@@ -1,119 +1,303 @@
+"""Live extraction validation against ground truth.
+
+Scores /api/extract-bill and /api/extract-nameplate on every image in
+test-assets/, comparing bill fields against test-assets/bills/GROUND_TRUTH.md.
+
+Exits non-zero when fewer than 70% of bills yield units_consumed AND
+total_amount, so it fails loudly instead of quietly passing. It also refuses to
+report success against MOCK_MODE — a mocked run is not validation.
+
+    python scripts/validate_real.py [--base-url URL]
+"""
+import argparse
+import json
 import os
+import re
+import sys
 import time
+
 import httpx
 
-BASE_URL = "http://127.0.0.1:8080"
-ASSETS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "test-assets")
-if not os.path.exists(ASSETS_DIR):
-    # Try repository level test-assets
-    ASSETS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "test-assets")
+DEFAULT_BASE_URL = "http://127.0.0.1:8080"
+IMAGE_EXTS = (".png", ".jpg", ".jpeg", ".webp")
+PASS_THRESHOLD = 0.70
 
-def test_endpoints():
+MIME_BY_EXT = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
+
+# Placeholder identity printed on the synthetic fixtures. Extraction must never
+# return any of these — the privacy rule is enforced in prompt and schema, this
+# is the check that it actually holds end to end.
+PRIVACY_MARKERS = ["test consumer", "00000000000", "test street", "chennai 600001"]
+
+
+def find_assets_dir() -> str:
+    here = os.path.dirname(os.path.abspath(__file__))
+    for candidate in (
+        os.path.join(os.path.dirname(here), "test-assets"),
+        os.path.join(os.path.dirname(os.path.dirname(here)), "test-assets"),
+    ):
+        if os.path.isdir(candidate):
+            return candidate
+    return os.path.join(os.path.dirname(os.path.dirname(here)), "test-assets")
+
+
+def load_ground_truth(bills_dir: str) -> dict:
+    """Reads the JSON block out of GROUND_TRUTH.md — one source of truth, kept
+    human-readable so it can be checked against the paper bill."""
+    path = os.path.join(bills_dir, "GROUND_TRUTH.md")
+    if not os.path.isfile(path):
+        print(f"  ! No GROUND_TRUTH.md in {bills_dir} - extraction cannot be scored, only smoke-tested.")
+        return {}
+    with open(path, encoding="utf-8") as f:
+        content = f.read()
+    match = re.search(r"```json\s*(\{.*?\})\s*```", content, re.DOTALL)
+    if not match:
+        print(f"  ! GROUND_TRUTH.md has no ```json block - extraction cannot be scored.")
+        return {}
+    try:
+        return json.loads(match.group(1))
+    except json.JSONDecodeError as e:
+        print(f"  ! GROUND_TRUTH.md JSON block is malformed ({e}) - extraction cannot be scored.")
+        return {}
+
+
+def list_images(directory: str):
+    if not os.path.isdir(directory):
+        return []
+    return sorted(
+        f for f in os.listdir(directory)
+        if os.path.isfile(os.path.join(directory, f)) and f.lower().endswith(IMAGE_EXTS)
+    )
+
+
+def field_matches(got, want) -> bool:
+    if want is None:
+        return got is None  # absent on the bill: a number here is a hallucination
+    if got is None:
+        return False
+    if isinstance(want, str):
+        return str(want).lower() in str(got).lower()
+    try:
+        return abs(float(got) - float(want)) < 0.01
+    except (TypeError, ValueError):
+        return False
+
+
+# MOCK_MODE canned values. No fixture may reuse these (see GROUND_TRUTH.md).
+MOCK_SIGNATURE = (620.0, 4800.0)
+
+
+def detect_mock_mode(readings) -> bool:
+    """True when the backend is serving canned data rather than reading images.
+
+    Inferred rather than asked: /health has a locked response shape, and adding
+    a flag there would be a contract change. MOCK_MODE returns one fixed payload
+    for every image, so identical readings across different bills — or anything
+    matching the canned signature — means nothing was actually extracted.
+    """
+    if any(r == MOCK_SIGNATURE for r in readings):
+        return True
+    return len(readings) > 1 and len(set(readings)) == 1
+
+
+def validate_bills(client, base_url, bills_dir, truth):
+    files = list_images(bills_dir)
+    print(f"\nBILLS  ({bills_dir})")
+    print(f"Found {len(files)} image(s): {', '.join(files) if files else 'NONE'}\n")
+
+    hdr = f"{'File':<26} | {'Status':<7} | {'Units':>8} | {'Total':>9} | {'Days':>5} | {'Slab':<8} | {'ms':>6} | {'Score':<7} | Notes"
+    print(hdr)
+    print("-" * len(hdr))
+
+    extracted_ok = 0
+    expected_extractable = 0
+    field_hits = field_total = 0
+    privacy_leaks = []
+    hallucinations = []
+    rows_scored = 0
+    readings = []
+
+    for name in files:
+        path = os.path.join(bills_dir, name)
+        ext = os.path.splitext(name)[1].lower()
+        mime = MIME_BY_EXT.get(ext, "image/jpeg")
+        expected = truth.get(name)
+        # An image whose ground truth says the units are absent is not supposed
+        # to extract — rejecting it is the correct outcome, so it must not count
+        # against the extraction rate.
+        known_absent = expected is not None and expected.get("units_consumed") is None
+        if not known_absent:
+            expected_extractable += 1
+
+        t0 = time.perf_counter()
+        try:
+            with open(path, "rb") as fh:
+                res = client.post(f"{base_url}/api/extract-bill", files={"image": (name, fh, mime)}, timeout=120)
+            ms = (time.perf_counter() - t0) * 1000
+        except Exception as e:
+            print(f"{name:<26} | {'ERROR':<7} | {'-':>8} | {'-':>9} | {'-':>5} | {'-':<8} | {'-':>6} | {'-':<7} | {e}")
+            continue
+
+        if res.status_code != 200:
+            body = res.json() if res.headers.get("content-type", "").startswith("application/json") else {}
+            reason = body.get("reason", f"HTTP {res.status_code}")
+            note = f"{reason}: {body.get('message', '')}"
+            # A rejection is CORRECT when ground truth says units are absent.
+            score = ""
+            if expected is not None and expected.get("units_consumed") is None:
+                score = "n/a"
+                note += "  <- correct: no units printed on this image"
+            print(f"{name:<26} | {'REJECT':<7} | {'-':>8} | {'-':>9} | {'-':>5} | {'-':<8} | {ms:6.0f} | {score:<7} | {note}")
+            continue
+
+        data = res.json()
+        units, total = data.get("units_consumed"), data.get("total_amount")
+        days, slab = data.get("billing_days"), data.get("tariff_slab")
+        if units is not None and total is not None:
+            readings.append((float(units), float(total)))
+            if known_absent:
+                # Ground truth says these numbers are not on the image. Getting
+                # them back is a hallucination, not a success.
+                hallucinations.append((name, units, total))
+            else:
+                extracted_ok += 1
+
+        blob = json.dumps(data).lower()
+        leaked = [m for m in PRIVACY_MARKERS if m in blob]
+        if leaked:
+            privacy_leaks.append((name, leaked))
+
+        score, notes = "-", ""
+        if expected:
+            rows_scored += 1
+            hits, misses = 0, []
+            for field, want in expected.items():
+                field_total += 1
+                if field_matches(data.get(field), want):
+                    hits += 1
+                    field_hits += 1
+                else:
+                    misses.append(f"{field}={data.get(field)!r}!={want!r}")
+            score = f"{hits}/{len(expected)}"
+            notes = "; ".join(misses)
+        else:
+            notes = "no ground truth"
+        if leaked:
+            notes = f"PRIVACY LEAK {leaked}  {notes}"
+
+        print(f"{name:<26} | {'OK':<7} | {str(units):>8} | {str(total):>9} | {str(days):>5} | {str(slab):<8} | {ms:6.0f} | {score:<7} | {notes}")
+
+    return dict(files=len(files), extracted_ok=extracted_ok,
+                expected_extractable=expected_extractable, field_hits=field_hits,
+                field_total=field_total, privacy_leaks=privacy_leaks,
+                hallucinations=hallucinations, rows_scored=rows_scored,
+                readings=readings)
+
+
+def validate_nameplates(client, base_url, dir_):
+    files = list_images(dir_)
+    print(f"\nNAMEPLATES  ({dir_})")
+    print(f"Found {len(files)} image(s): {', '.join(files) if files else 'NONE'}\n")
+    if not files:
+        return dict(files=0, ok=0)
+
+    hdr = f"{'File':<26} | {'Status':<7} | {'Type':<14} | {'Watts':>7} | {'Star':>5} | {'ms':>6} | Notes"
+    print(hdr)
+    print("-" * len(hdr))
+
+    ok = 0
+    for name in files:
+        ext = os.path.splitext(name)[1].lower()
+        mime = MIME_BY_EXT.get(ext, "image/jpeg")
+        t0 = time.perf_counter()
+        try:
+            with open(os.path.join(dir_, name), "rb") as fh:
+                res = client.post(f"{base_url}/api/extract-nameplate", files={"image": (name, fh, mime)}, timeout=120)
+            ms = (time.perf_counter() - t0) * 1000
+        except Exception as e:
+            print(f"{name:<26} | {'ERROR':<7} | {'-':<14} | {'-':>7} | {'-':>5} | {'-':>6} | {e}")
+            continue
+        if res.status_code == 200:
+            d = res.json()
+            ok += 1
+            print(f"{name:<26} | {'OK':<7} | {str(d.get('appliance_type')):<14} | {str(d.get('rated_power_w')):>7} | {str(d.get('star_rating')):>5} | {ms:6.0f} | ")
+        else:
+            b = res.json()
+            print(f"{name:<26} | {'FAIL':<7} | {'-':<14} | {'-':>7} | {'-':>5} | {ms:6.0f} | {b.get('reason')}: {b.get('message', '')}")
+    return dict(files=len(files), ok=ok)
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--base-url", default=os.getenv("MINCHAL_BASE_URL", DEFAULT_BASE_URL))
+    args = ap.parse_args()
+    base_url = args.base_url.rstrip("/")
+
+    assets = find_assets_dir()
+    bills_dir = os.path.join(assets, "bills")
+    truth = load_ground_truth(bills_dir)
+
+    print("=" * 118)
+    print(f"  LIVE EXTRACTION VALIDATION  ->  {base_url}")
+    print("=" * 118)
+
     client = httpx.Client()
-    
-    bills_dir = os.path.join(ASSETS_DIR, "bills")
-    nameplates_dir = os.path.join(ASSETS_DIR, "nameplates")
-    
-    print("\n" + "=" * 80)
-    print("                      LIVE EXTRACTION VALIDATION REPORT")
-    print("=" * 80)
-    
-    # 1. Test Bills
-    bill_files = []
-    if os.path.exists(bills_dir):
-        bill_files = [f for f in os.listdir(bills_dir) if f != ".gitkeep" and os.path.isfile(os.path.join(bills_dir, f))]
-        
-    print(f"\nScanning Bills Directory: {bills_dir}")
-    print(f"Found {len(bill_files)} bill image(s) to process.\n")
-    
-    print(f"{'Filename':<30} | {'Status':<6} | {'Units':<8} | {'Total':<8} | {'Days':<6} | {'Latency':<8} | {'Error'}")
-    print("-" * 100)
-    
-    bill_ok_count = 0
-    for idx, f in enumerate(bill_files):
-        fpath = os.path.join(bills_dir, f)
-        mime = "image/jpeg"
-        if f.lower().endswith(".png"):
-            mime = "image/png"
-        elif f.lower().endswith(".webp"):
-            mime = "image/webp"
-            
-        t_start = time.perf_counter()
-        try:
-            with open(fpath, "rb") as img:
-                res = client.post(
-                    f"{BASE_URL}/api/extract-bill",
-                    files={"image": (f, img, mime)}
-                )
-            latency = (time.perf_counter() - t_start) * 1000.0
-            
-            if res.status_code == 200:
-                data = res.json()
-                units = data.get("units_consumed", "None")
-                total = data.get("total_amount", "None")
-                days = data.get("billing_days", "None")
-                print(f"{f:<30} | OK     | {str(units):<8} | {str(total):<8} | {str(days):<6} | {latency:6.1f}ms | -")
-                bill_ok_count += 1
-            else:
-                data = res.json()
-                reason = data.get("reason", "Unknown")
-                msg = data.get("message", "")
-                print(f"{f:<30} | FAIL   | {'-':<8} | {'-':<8} | {'-':<6} | {latency:6.1f}ms | {reason}: {msg}")
-        except Exception as e:
-            latency = (time.perf_counter() - t_start) * 1000.0
-            print(f"{f:<30} | ERROR  | {'-':<8} | {'-':<8} | {'-':<6} | {latency:6.1f}ms | {str(e)}")
-            
-    # 2. Test Nameplates
-    nameplate_files = []
-    if os.path.exists(nameplates_dir):
-        nameplate_files = [f for f in os.listdir(nameplates_dir) if f != ".gitkeep" and os.path.isfile(os.path.join(nameplates_dir, f))]
-        
-    print(f"\nScanning Nameplates Directory: {nameplates_dir}")
-    print(f"Found {len(nameplate_files)} nameplate image(s) to process.\n")
-    
-    print(f"{'Filename':<30} | {'Status':<6} | {'Type':<12} | {'Watts':<6} | {'Star':<5} | {'Latency':<8} | {'Error'}")
-    print("-" * 100)
-    
-    nameplate_ok_count = 0
-    for idx, f in enumerate(nameplate_files):
-        fpath = os.path.join(nameplates_dir, f)
-        mime = "image/jpeg"
-        if f.lower().endswith(".png"):
-            mime = "image/png"
-        elif f.lower().endswith(".webp"):
-            mime = "image/webp"
-            
-        t_start = time.perf_counter()
-        try:
-            with open(fpath, "rb") as img:
-                res = client.post(
-                    f"{BASE_URL}/api/extract-nameplate",
-                    files={"image": (f, img, mime)}
-                )
-            latency = (time.perf_counter() - t_start) * 1000.0
-            
-            if res.status_code == 200:
-                data = res.json()
-                app_type = data.get("appliance_type", "None")
-                watts = data.get("rated_power_w", "None")
-                star = data.get("star_rating", "None")
-                print(f"{f:<30} | OK     | {str(app_type):<12} | {str(watts):<6} | {str(star):<5} | {latency:6.1f}ms | -")
-                nameplate_ok_count += 1
-            else:
-                data = res.json()
-                reason = data.get("reason", "Unknown")
-                msg = data.get("message", "")
-                print(f"{f:<30} | FAIL   | {'-':<12} | {'-':<6} | {'-':<5} | {latency:6.1f}ms | {reason}: {msg}")
-        except Exception as e:
-            latency = (time.perf_counter() - t_start) * 1000.0
-            print(f"{f:<30} | ERROR  | {'-':<12} | {'-':<6} | {'-':<5} | {latency:6.1f}ms | {str(e)}")
-            
-    print("\n" + "=" * 80)
-    bill_total_count = len(bill_files)
-    nameplate_total_count = len(nameplate_files)
-    print(f"Summary: Bills Fully Extracted: {bill_ok_count}/{bill_total_count}")
-    print(f"         Nameplates Fully Extracted: {nameplate_ok_count}/{nameplate_total_count}")
-    print("=" * 80 + "\n")
+    try:
+        client.get(f"{base_url}/health", timeout=10).raise_for_status()
+    except Exception as e:
+        print(f"\nFAIL: backend not reachable at {base_url}/health ({e})")
+        return 2
+
+    bills = validate_bills(client, base_url, bills_dir, truth)
+    mock = detect_mock_mode(bills["readings"])
+    plates = validate_nameplates(client, base_url, os.path.join(assets, "nameplates"))
+
+    n = bills["expected_extractable"]
+    skipped = bills["files"] - n
+    rate = bills["extracted_ok"] / n if n else 0.0
+    accuracy = bills["field_hits"] / bills["field_total"] if bills["field_total"] else None
+
+    print("\n" + "=" * 118)
+    print("SUMMARY")
+    print("-" * 118)
+    note = f"   ({skipped} image(s) excluded: ground truth says no units printed)" if skipped else ""
+    print(f"  Bills with units_consumed AND total_amount : {bills['extracted_ok']}/{n}  ({rate*100:.0f}%)   threshold {PASS_THRESHOLD*100:.0f}%{note}")
+    if accuracy is not None:
+        print(f"  Field accuracy vs ground truth            : {bills['field_hits']}/{bills['field_total']}  ({accuracy*100:.0f}%)   over {bills['rows_scored']} scored image(s)")
+    else:
+        print("  Field accuracy vs ground truth            : NOT SCORED (no ground truth matched)")
+    print(f"  Nameplates extracted                      : {plates['ok']}/{plates['files']}")
+    print(f"  Privacy leaks                             : {len(bills['privacy_leaks'])}")
+    print(f"  Hallucinated fields (absent on image)     : {len(bills['hallucinations'])}")
+
+    failures = []
+    if n == 0:
+        failures.append("no extractable bill images found - nothing was validated")
+    if mock:
+        failures.append("backend is in MOCK_MODE - mocked responses cannot validate extraction")
+    if n and rate < PASS_THRESHOLD:
+        failures.append(f"extraction rate {rate*100:.0f}% is below the {PASS_THRESHOLD*100:.0f}% threshold")
+    for name, leaked in bills["privacy_leaks"]:
+        failures.append(f"privacy leak in {name}: {leaked}")
+    for name, u, t in bills["hallucinations"]:
+        failures.append(f"hallucination in {name}: returned units={u} total={t} but the image prints neither")
+
+    real = [f for f in list_images(bills_dir) if not f.startswith("synthetic_")]
+    print("-" * 118)
+    if failures:
+        for f in failures:
+            print(f"  FAIL: {f}")
+        print("=" * 118)
+        return 1
+
+    print("  PASS")
+    if not real:
+        print("\n  ! Only synthetic fixtures were scored. Generated noise is not real noise -")
+        print("    photograph one actual TNEB bill into test-assets/bills/ before trusting this")
+        print("    for the demo, and add its values to GROUND_TRUTH.md.")
+    print("=" * 118)
+    return 0
+
 
 if __name__ == "__main__":
-    test_endpoints()
+    sys.exit(main())
