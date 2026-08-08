@@ -12,7 +12,8 @@ export type BillExtractionStatus =
   | 'compressing'
   | 'extracting'
   | 'success'
-  | 'error';
+  | 'error'
+  | 'manual';
 
 export function useBillExtraction() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export function useBillExtraction() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [extractedBill, setExtractedBill] = useState<ExtractBillResponse | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
+  const [billSource, setBillSource] = useState<'ocr' | 'manual'>('ocr');
   const [validationError, setValidationError] = useState<string | null>(null);
 
   // Identity ref to prevent stale response race conditions
@@ -48,6 +50,7 @@ export function useBillExtraction() {
     setValidationError(null);
     setError(null);
     setExtractedBill(null);
+    setBillSource('ocr');
 
     // Create object URL for instant user-facing preview
     const objectUrl = URL.createObjectURL(file);
@@ -105,6 +108,24 @@ export function useBillExtraction() {
     }
   }, [selectedFile]);
 
+  /** Break-glass path: OCR could not read the bill, so the user types it. */
+  const enterManual = useCallback(() => {
+    setError(null);
+    setValidationError(null);
+    setStatus('manual');
+  }, []);
+
+  /** Manually entered bill already passed the backend's validation gate. */
+  const acceptManualBill = useCallback((bill: ExtractBillResponse) => {
+    // Invalidate any in-flight extraction so a late response cannot clobber
+    // the values the user typed.
+    requestIdentityRef.current += 1;
+    setError(null);
+    setExtractedBill(bill);
+    setBillSource('manual');
+    setStatus('success');
+  }, []);
+
   const confirmBill = useCallback(() => {
     if (!extractedBill) return;
 
@@ -122,11 +143,14 @@ export function useBillExtraction() {
     selectedFile,
     previewUrl,
     extractedBill,
+    billSource,
     error,
     validationError,
     selectFile,
     retake,
     extract: runExtraction,
+    enterManual,
+    acceptManualBill,
     confirmBill,
   };
 }

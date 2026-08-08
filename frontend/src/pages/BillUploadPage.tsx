@@ -7,6 +7,7 @@ import { ImagePreview } from '../components/bill/ImagePreview';
 import { ExtractionLoading } from '../components/bill/ExtractionLoading';
 import { ExtractedBillDetails } from '../components/bill/ExtractedBillDetails';
 import { BillExtractionError } from '../components/bill/BillExtractionError';
+import { ManualBillEntry } from '../components/bill/ManualBillEntry';
 
 export const BillUploadPage: React.FC = () => {
   const {
@@ -14,11 +15,14 @@ export const BillUploadPage: React.FC = () => {
     selectedFile,
     previewUrl,
     extractedBill,
+    billSource,
     error,
     validationError,
     selectFile,
     retake,
     extract,
+    enterManual,
+    acceptManualBill,
     confirmBill,
   } = useBillExtraction();
 
@@ -58,11 +62,20 @@ export const BillUploadPage: React.FC = () => {
           bill={extractedBill}
           onConfirm={confirmBill}
           onScanAgain={retake}
+          source={billSource}
         />
       )}
 
       {status === 'error' && error && (
-        <BillExtractionError error={error} onRetry={retake} />
+        <BillExtractionError
+          error={error}
+          onRetry={retake}
+          onManualEntry={enterManual}
+        />
+      )}
+
+      {status === 'manual' && (
+        <ManualBillEntry onSuccess={acceptManualBill} onCancel={retake} />
       )}
     </PageContainer>
   );

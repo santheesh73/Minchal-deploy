@@ -6,3 +6,4 @@ export * from './ExtractionLoading';
 export * from './BillChargeBreakdown';
 export * from './ExtractedBillDetails';
 export * from './BillExtractionError';
+export * from './ManualBillEntry';

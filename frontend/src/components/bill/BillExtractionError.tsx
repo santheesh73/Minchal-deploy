@@ -7,9 +7,34 @@ import { Button } from '../ui/Button';
 export interface BillExtractionErrorProps {
   error: ApiError;
   onRetry: () => void;
+  /** Break-glass path when the photo will never read: type the numbers in. */
+  onManualEntry?: () => void;
 }
 
-export const BillExtractionError: React.FC<BillExtractionErrorProps> = ({ error, onRetry }) => {
+/**
+ * Every failure branch offers manual entry. Whatever went wrong with the
+ * photo, the user still has the bill in their hand — so there must always be a
+ * way forward that does not depend on the camera.
+ */
+const ManualEntryEscape: React.FC<{ onManualEntry?: () => void }> = ({ onManualEntry }) =>
+  onManualEntry ? (
+    <p className="text-xs text-slate-500 pt-1">
+      Photo not working?{' '}
+      <button
+        type="button"
+        onClick={onManualEntry}
+        className="font-semibold text-brand-600 underline underline-offset-2 hover:text-brand-700"
+      >
+        Enter the numbers manually
+      </button>
+    </p>
+  ) : null;
+
+export const BillExtractionError: React.FC<BillExtractionErrorProps> = ({
+  error,
+  onRetry,
+  onManualEntry,
+}) => {
   const { reason, message } = error;
 
   switch (reason) {
@@ -54,6 +79,7 @@ export const BillExtractionError: React.FC<BillExtractionErrorProps> = ({ error,
             >
               Retake Photo
             </Button>
+            <ManualEntryEscape onManualEntry={onManualEntry} />
           </div>
         </Card>
       );
@@ -84,6 +110,7 @@ export const BillExtractionError: React.FC<BillExtractionErrorProps> = ({ error,
             >
               Scan Again
             </Button>
+            <ManualEntryEscape onManualEntry={onManualEntry} />
           </div>
         </Card>
       );
@@ -114,6 +141,7 @@ export const BillExtractionError: React.FC<BillExtractionErrorProps> = ({ error,
             >
               Try Again
             </Button>
+            <ManualEntryEscape onManualEntry={onManualEntry} />
           </div>
         </Card>
       );
@@ -145,6 +173,7 @@ export const BillExtractionError: React.FC<BillExtractionErrorProps> = ({ error,
             >
               Try Again
             </Button>
+            <ManualEntryEscape onManualEntry={onManualEntry} />
           </div>
         </Card>
       );

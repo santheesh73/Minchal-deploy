@@ -11,12 +11,18 @@ export interface ExtractedBillDetailsProps {
   bill: ExtractBillResponse;
   onConfirm: () => void;
   onScanAgain: () => void;
+  /**
+   * Where these numbers came from. Manually entered values must NOT be
+   * labelled as OCR output — claiming Gemini read a bill the user typed is a
+   * false provenance claim, and provenance is the whole point of this product.
+   */
+  source?: 'ocr' | 'manual';
 }
 
 export const ExtractedBillDetails: React.FC<ExtractedBillDetailsProps> = ({
   bill,
   onConfirm,
-  onScanAgain,
+  onScanAgain, source = 'ocr',
 }) => {
   return (
     <div className="space-y-6">
@@ -28,11 +34,19 @@ export const ExtractedBillDetails: React.FC<ExtractedBillDetailsProps> = ({
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-base">Bill Read Successfully</h3>
-              <p className="text-xs text-slate-500">Gemini Vision OCR extraction complete</p>
+              <h3 className="font-bold text-slate-900 text-base">
+                {source === 'manual' ? 'Bill Details Entered' : 'Bill Read Successfully'}
+              </h3>
+              <p className="text-xs text-slate-500">
+                {source === 'manual'
+                  ? 'Entered manually — checked against the same validation rules'
+                  : 'Gemini Vision OCR extraction complete'}
+              </p>
             </div>
           </div>
-          <Badge variant="success" size="sm">Verified</Badge>
+          <Badge variant="success" size="sm">
+            {source === 'manual' ? 'Manual entry' : 'Verified'}
+          </Badge>
         </div>
 
         {/* Primary Metric Grid */}
