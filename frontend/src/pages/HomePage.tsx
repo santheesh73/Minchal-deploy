@@ -1,12 +1,13 @@
 import React from 'react';
 import {
+  LandingHeader,
   HeroSection,
   ProblemSection,
   WorkflowSection,
-  AIBoundarySection,
+  OutcomesSection,
   AuditPreviewSection,
   ExplainabilitySection,
-  SavingsSection,
+  AIBoundarySection,
   WhyMinchalSection,
   TrustSection,
   AboutImpactSection,
@@ -16,41 +17,44 @@ import {
 
 export const HomePage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-brand-500 selection:text-white">
-      {/* 1. Hero Section */}
+    <div className="font-landing min-h-screen bg-slate-50 text-slate-900 selection:bg-brand-500 selection:text-white">
+      {/* 1. Independent Landing Header */}
+      <LandingHeader />
+
+      {/* 2. Asymmetric Product Hero */}
       <HeroSection />
 
-      {/* 2. Problem Section */}
+      {/* 3. The Real Problem Statement */}
       <ProblemSection />
 
-      {/* 3. Workflow Section */}
+      {/* 4. Workflow Journey */}
       <WorkflowSection />
 
-      {/* 4. AI Boundary System Section */}
-      <AIBoundarySection />
+      {/* 5. Practical Outcomes */}
+      <OutcomesSection />
 
-      {/* 5. Dashboard Preview */}
+      {/* 6. Product Showcase / Audit Dashboard Preview */}
       <AuditPreviewSection />
 
-      {/* 6. Derivations & Explainability */}
+      {/* 7. Math Derivations & Explainability */}
       <ExplainabilitySection />
 
-      {/* 7. Action Recommendations */}
-      <SavingsSection />
+      {/* 8. AI Boundary & System Integrity */}
+      <AIBoundarySection />
 
-      {/* 8. Why MINCHAL */}
+      {/* 9. Why MINCHAL (Zero Barriers) */}
       <WhyMinchalSection />
 
-      {/* 9. Privacy & Trust */}
+      {/* 10. Privacy & Trust */}
       <TrustSection />
 
-      {/* 10. Impact */}
+      {/* 11. About MINCHAL */}
       <AboutImpactSection />
 
-      {/* 11. Final CTA Banner */}
+      {/* 12. Final CTA */}
       <FinalCTASection />
 
-      {/* 12. Landing Footer */}
+      {/* 13. Clean Landing Footer */}
       <LandingFooter />
     </div>
   );

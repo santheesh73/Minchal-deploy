@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Zap, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ShieldCheck } from 'lucide-react';
 import { SpecularButton } from './SpecularButton';
 
 export const FinalCTASection: React.FC = () => {
@@ -11,44 +11,34 @@ export const FinalCTASection: React.FC = () => {
   };
 
   return (
-    <section className="py-12 sm:py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 text-white p-8 sm:p-12 shadow-2xl overflow-hidden text-center space-y-6 max-w-4xl mx-auto">
-          {/* Subtle Background Glow Elements */}
-          <div className="absolute -top-12 -right-12 w-60 h-60 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-16 -left-16 w-60 h-60 rounded-full bg-brand-400/20 blur-3xl pointer-events-none" />
+    <section className="py-20 sm:py-28 bg-gradient-to-b from-slate-900 to-slate-950 text-white relative overflow-hidden">
+      {/* Background ambient glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-600/20 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 max-w-2xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-brand-100">
-              <Zap className="w-3.5 h-3.5 text-amber-300" />
-              <span>Ready for Actionable Energy Savings?</span>
-            </div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          Ready to see where your electricity goes?
+        </h2>
 
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-              Your next electricity bill can tell you more.
-            </h2>
+        <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
+          Upload your latest bill and let MINCHAL build your household energy audit.
+        </p>
 
-            <p className="text-sm sm:text-base text-brand-100 leading-relaxed font-normal">
-              Turn it into a clear household energy audit with MINCHAL today.
-            </p>
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <SpecularButton
+            variant="primary"
+            size="lg"
+            onClick={handleStart}
+            rightIcon={<ArrowRight className="w-5 h-5" />}
+            className="w-full sm:w-auto"
+          >
+            Start Your Energy Audit
+          </SpecularButton>
+        </div>
 
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <SpecularButton
-                variant="success"
-                size="lg"
-                onClick={handleStart}
-                rightIcon={<ArrowRight className="w-5 h-5" />}
-                className="w-full sm:w-auto px-8 py-4 text-base font-bold shadow-lg"
-              >
-                Start Your Energy Audit
-              </SpecularButton>
-            </div>
-
-            <div className="pt-2 flex items-center justify-center gap-2 text-xs text-brand-200">
-              <ShieldCheck className="w-4 h-4 text-emerald-300" />
-              <span>No smart meter or hardware required</span>
-            </div>
-          </div>
+        <div className="flex items-center justify-center gap-2 text-xs text-slate-400 pt-2 font-mono">
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          <span>Your existing bill is enough to get started.</span>
         </div>
       </div>
     </section>

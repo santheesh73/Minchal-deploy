@@ -14,7 +14,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { isOnline } = useNetworkStatus();
 
-  // Landing page ('/') MUST remain a standalone page with NO desktop sidebar or app topbar
+  // Landing page ('/') is a standalone page with its own LandingHeader
   const isLandingPage = location.pathname === '/';
 
   return (
@@ -28,16 +28,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       )}
 
       {isLandingPage ? (
-        /* Standalone Landing Page View - No Sidebar */
-        <div className="min-h-screen flex flex-col pb-16 sm:pb-8">
-          <Header />
+        /* Standalone Landing Page View - Uses LandingHeader & LandingFooter */
+        <div className="min-h-screen flex flex-col">
           <div className="flex-1 w-full">{children}</div>
-          <BottomNavigation />
         </div>
       ) : (
-        /* Application Routes View */
+        /* Application Routes View (/audit/*) - Unchanged Application Shell */
         <>
-          {/* Mobile View (< 1024px): 100% Read-Only Unchanged Mobile Shell */}
+          {/* Mobile View (< 1024px): Application Mobile Shell */}
           <div className="lg:hidden min-h-screen flex flex-col pb-16 sm:pb-8">
             <Header />
             <div className="flex-1 w-full">{children}</div>

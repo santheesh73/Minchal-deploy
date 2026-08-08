@@ -1,114 +1,125 @@
 import React from 'react';
-import { HelpCircle, CheckCircle2 } from 'lucide-react';
-import { MagicBento } from './MagicBento';
+import { HelpCircle, ArrowRight } from 'lucide-react';
 
 export const ProblemSection: React.FC = () => {
   return (
-    <section className="py-12 sm:py-16 bg-white border-y border-slate-200/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="text-xs font-bold text-brand-600 uppercase tracking-widest font-mono">
-            The Household Energy Dilemma
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Your electricity bill tells you <span className="text-rose-600">WHAT</span> you used.
-            <br className="hidden sm:inline" /> It doesn't tell you <span className="text-emerald-600">WHERE</span> the money went.
-          </h2>
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            Most Indian households receive a single total monthly electricity bill, leaving them blind to which appliances drive consumption, which are inefficient, or where savings opportunities exist.
-          </p>
-        </div>
-
-        {/* Before vs After Comparison Grid using MagicBento */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
-          {/* BEFORE MINCHAL MagicBento Card */}
-          <MagicBento glowColor="amber" className="p-6 sm:p-8 space-y-5 border-rose-200 bg-rose-50/20">
-            <div className="flex items-center justify-between border-b border-rose-100 pb-4">
-              <div className="flex items-center gap-2 text-rose-700 font-bold text-base">
-                <HelpCircle className="w-5 h-5" />
-                <span>BEFORE MINCHAL</span>
-              </div>
-              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-800">
-                Opaque Total Bill
-              </span>
+    <section className="py-16 sm:py-24 bg-white border-t border-slate-200/80">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          
+          {/* LEFT: Human Problem Copy */}
+          <div className="lg:col-span-6 space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold font-mono uppercase tracking-wider">
+              <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
+              <span>The Household Dilemma</span>
             </div>
 
-            <div className="space-y-4">
-              <div className="p-4 bg-white rounded-2xl border border-rose-200/80 space-y-1 shadow-xs">
-                <span className="text-xs text-slate-400 font-semibold uppercase">Total Monthly Amount</span>
-                <p className="text-3xl font-extrabold text-slate-900 font-mono">₹ 2,843</p>
-                <span className="text-xs text-rose-600 font-medium block">"Why is my bill so high this month?"</span>
-              </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Your bill tells you how much. <br className="hidden sm:block" />
+              <span className="text-brand-700">It doesn’t tell you why.</span>
+            </h2>
 
-              <div className="space-y-2 text-xs text-slate-600">
-                <div className="flex items-start gap-2 text-rose-800">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-1.5" />
-                  <span>No breakdown of individual appliance monthly cost</span>
-                </div>
-                <div className="flex items-start gap-2 text-rose-800">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-1.5" />
-                  <span>No visibility into star-rating efficiency gaps</span>
-                </div>
-                <div className="flex items-start gap-2 text-rose-800">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-1.5" />
-                  <span>No prioritized actionable habit or upgrade steps</span>
-                </div>
-              </div>
+            <div className="space-y-4 text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+              <p>
+                <strong className="text-slate-900 font-bold font-mono text-xl">₹2,843.</strong> That’s the number you see on your electricity bill every month.
+              </p>
+
+              <ul className="space-y-2.5 text-slate-700 pl-1">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-amber-500 font-bold">•</span>
+                  <span>Which appliance is actually responsible for that cost?</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-amber-500 font-bold">•</span>
+                  <span>Is your air conditioner consuming more than expected?</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-amber-500 font-bold">•</span>
+                  <span>Is an old refrigerator quietly adding to the monthly bill?</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-amber-500 font-bold">•</span>
+                  <span>Could a small habit change make a meaningful financial difference?</span>
+                </li>
+              </ul>
+
+              <p className="pt-2 font-medium text-slate-900 text-lg border-l-4 border-brand-600 pl-4 py-1 bg-brand-50/50 rounded-r-lg">
+                That’s what MINCHAL is built to answer.
+              </p>
             </div>
-          </MagicBento>
+          </div>
 
-          {/* AFTER MINCHAL MagicBento Card */}
-          <MagicBento glowColor="emerald" className="p-6 sm:p-8 space-y-5 border-emerald-300 bg-emerald-50/20">
-            <div className="flex items-center justify-between border-b border-emerald-100 pb-4">
-              <div className="flex items-center gap-2 text-emerald-800 font-bold text-base">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                <span>AFTER MINCHAL</span>
+          {/* RIGHT: Visual Transformation of 1 Number into Appliance Attribution */}
+          <div className="lg:col-span-6">
+            <div className="p-6 sm:p-8 rounded-3xl bg-slate-50 border border-slate-200/90 shadow-soft-lg space-y-6">
+              <div className="text-xs font-mono uppercase tracking-wider text-slate-400 font-semibold border-b border-slate-200 pb-3">
+                Visual Transformation • Bill to Breakdown
               </div>
-              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
-                Explainable Audit
-              </span>
-            </div>
 
-            <div className="space-y-4">
-              <div className="p-4 bg-white rounded-2xl border border-emerald-200/80 space-y-2 shadow-xs">
-                <div className="flex justify-between items-center text-xs font-bold text-slate-900">
-                  <span>Appliance Cost Attribution</span>
-                  <span className="text-emerald-700 font-mono">100% Normalized</span>
+              {/* Single Bill Amount Card */}
+              <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
+                <span className="text-xs text-slate-400 font-mono block">Month Total Bill Amount</span>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-mono">₹2,843</span>
+                  <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
+                    362 kWh
+                  </span>
                 </div>
+              </div>
 
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Bedroom AC (1.5T 3★)</span>
-                    <span className="font-mono font-bold text-slate-900">₹1,137 (40%)</span>
+              {/* Transformation Arrow */}
+              <div className="flex items-center justify-center gap-3 text-xs font-mono text-brand-700 font-bold py-1">
+                <span>ONE NUMBER</span>
+                <ArrowRight className="w-4 h-4 text-brand-600" />
+                <span>APPLIANCE ATTRIBUTION</span>
+              </div>
+
+              {/* Breakdown Bars */}
+              <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3.5 text-xs">
+                <div>
+                  <div className="flex justify-between font-bold text-slate-900 mb-1">
+                    <span>1. Air Conditioner</span>
+                    <span className="font-mono text-amber-600">₹1,137 (40%)</span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2">
                     <div className="bg-amber-500 h-2 rounded-full w-[40%]" />
                   </div>
+                </div>
 
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="font-semibold text-slate-700">Kitchen Refrigerator</span>
-                    <span className="font-mono font-bold text-slate-900">₹568 (20%)</span>
+                <div>
+                  <div className="flex justify-between font-bold text-slate-900 mb-1">
+                    <span>2. Kitchen Refrigerator</span>
+                    <span className="font-mono text-brand-700">₹568 (20%)</span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2">
-                    <div className="bg-brand-500 h-2 rounded-full w-[20%]" />
+                    <div className="bg-brand-600 h-2 rounded-full w-[20%]" />
                   </div>
+                </div>
 
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="font-semibold text-slate-700">Geyser & Washing Machine</span>
-                    <span className="font-mono font-bold text-slate-900">₹710 (25%)</span>
+                <div>
+                  <div className="flex justify-between font-bold text-slate-900 mb-1">
+                    <span>3. Geyser & Water Heating</span>
+                    <span className="font-mono text-blue-600">₹426 (15%)</span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2">
-                    <div className="bg-blue-400 h-2 rounded-full w-[25%]" />
+                    <div className="bg-blue-500 h-2 rounded-full w-[15%]" />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between font-bold text-slate-900 mb-1">
+                    <span>4. Fans, Lights & Other Load</span>
+                    <span className="font-mono text-slate-600">₹712 (25%)</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-2">
+                    <div className="bg-slate-400 h-2 rounded-full w-[25%]" />
                   </div>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-emerald-100/70 text-emerald-900 text-xs font-semibold flex items-center justify-between">
-                <span>Identified Savings Potential:</span>
-                <span className="font-mono font-extrabold text-emerald-700 text-sm">~₹1,246 / mo</span>
-              </div>
             </div>
-          </MagicBento>
+          </div>
+
         </div>
       </div>
     </section>

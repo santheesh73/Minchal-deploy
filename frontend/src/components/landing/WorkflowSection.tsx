@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-  FileText,
-  Sparkles,
-  Cpu,
-  Sliders,
+  Upload,
+  FileCheck2,
+  Tv,
+  SlidersHorizontal,
   Calculator,
-  BarChart2,
+  PieChart,
 } from 'lucide-react';
 import { MagicBento } from './MagicBento';
 
@@ -13,64 +13,60 @@ export const WorkflowSection: React.FC = () => {
   const steps = [
     {
       number: '01',
-      icon: FileText,
-      title: 'Upload Electricity Bill',
-      description: 'Take a photo or upload your DISCOM electricity bill (JPEG, PNG, PDF up to 10MB).',
-      badge: 'Capture',
+      icon: Upload,
+      title: 'Upload your bill',
+      description: 'Take a photo or upload a PDF of your DISCOM electricity bill.',
     },
     {
       number: '02',
-      icon: Sparkles,
-      title: 'AI Reads the Bill',
-      description: 'Gemini Vision extracts units consumed, total amount, billing cycle, and tariff slab without consumer account PII.',
-      badge: 'AI Perception',
+      icon: FileCheck2,
+      title: 'Check the details',
+      description: 'Verify extracted units, billing period, and total amount.',
     },
     {
       number: '03',
-      icon: Cpu,
-      title: 'Select Household Appliances',
-      description: 'Choose major home appliances (AC, Refrigerator, Geyser, Washing Machine, Fans, TV, Pumps).',
-      badge: 'Catalog',
+      icon: Tv,
+      title: 'Tell us about your appliances',
+      description: 'Select major household equipment (AC, Fridge, Geyser, Fans, TV).',
     },
     {
       number: '04',
-      icon: Sliders,
-      title: 'Configure Usage & Symptoms',
-      description: 'Log daily usage hours bands, star ratings, manufacturing year, and observable fault symptoms.',
-      badge: 'Configuration',
+      icon: SlidersHorizontal,
+      title: 'Add how you use them',
+      description: 'Specify daily usage hours, star rating, and observable symptoms.',
     },
     {
       number: '05',
       icon: Calculator,
-      title: 'Deterministic Engine',
-      description: 'Backend math attributes consumption, calculates baseline load, and normalizes estimates against actual bill units.',
-      badge: 'Engine Calculation',
+      title: 'Run the audit',
+      description: 'Our backend calculation engine attributes kWh and calculates baseline load.',
     },
     {
       number: '06',
-      icon: BarChart2,
-      title: 'Household Energy Audit',
-      description: 'Receive ranked cost attribution, efficiency gap %, carbon footprint, and prioritized savings actions.',
-      badge: 'Audit Dashboard',
+      icon: PieChart,
+      title: 'See where the energy goes',
+      description: 'Review cost attribution, efficiency gaps, and practical action steps.',
     },
   ];
 
   return (
-    <section id="how-it-works" className="py-12 sm:py-20 scroll-mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="how-it-works" className="py-16 sm:py-24 bg-slate-50/70 border-t border-slate-200/80 scroll-mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
+        
+        {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="text-xs font-bold text-brand-600 uppercase tracking-widest font-mono">
-            How MINCHAL Works
+          <span className="text-xs font-bold text-brand-700 uppercase tracking-widest font-mono">
+            Step-by-step Workflow
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            From Electricity Bill to Household Energy Audit
+            From your bill to a clearer picture of your home.
           </h2>
-          <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
-            Six simple, transparent steps connecting your physical bill to actionable energy intelligence.
+          <p className="text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
+            Six simple steps connecting your physical paper or PDF bill to clear household energy understanding.
           </p>
         </div>
 
-        {/* 6 Steps MagicBento Grid with Interactive Icons */}
+        {/* Horizontal Process Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {steps.map((step) => {
             const Icon = step.icon;
@@ -78,27 +74,22 @@ export const WorkflowSection: React.FC = () => {
               <MagicBento
                 key={step.number}
                 glowColor="brand"
-                className="p-6 space-y-4 relative group cursor-pointer"
+                className="p-6 space-y-4 bg-white border border-slate-200/80 rounded-2xl group hover:border-brand-300 transition-all cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-black font-mono text-brand-600/30 group-hover:text-brand-600 transition-colors">
                     {step.number}
                   </span>
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200/60 uppercase tracking-wider group-hover:border-brand-400 group-hover:bg-brand-100 transition-colors">
-                    {step.badge}
-                  </span>
+                  <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white">
+                    <Icon className="w-5 h-5" />
+                  </div>
                 </div>
 
-                {/* Interactive Icon Box with Spring Hover Animation & Glow */}
-                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 group-hover:bg-brand-600 group-hover:text-white group-hover:shadow-glow">
-                  <Icon className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
-                </div>
-
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 pt-1">
                   <h3 className="font-bold text-slate-900 text-base group-hover:text-brand-700 transition-colors">
                     {step.title}
                   </h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
                     {step.description}
                   </p>
                 </div>
@@ -106,6 +97,7 @@ export const WorkflowSection: React.FC = () => {
             );
           })}
         </div>
+
       </div>
     </section>
   );

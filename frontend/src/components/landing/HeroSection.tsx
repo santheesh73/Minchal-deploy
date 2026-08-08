@@ -1,21 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ArrowRight,
-  Sparkles,
-  ShieldCheck,
-  FileText,
-  Cpu,
-  Calculator,
-  TrendingDown,
-  ChevronDown,
-} from 'lucide-react';
-import { Badge } from '../ui/Badge';
+import { ArrowRight, ChevronRight, ShieldCheck, Zap, FileText, BarChart3 } from 'lucide-react';
 import { SpecularButton } from './SpecularButton';
-import { ChromaGrid } from './ChromaGrid';
 
 export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
+  const [animationStep, setAnimationStep] = useState(0);
+
+  // Auto-playing realistic product transformation sequence
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setAnimationStep((prev) => (prev + 1) % 3);
+    }, 3800);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleStart = () => {
     navigate('/audit/bill');
@@ -29,177 +27,190 @@ export const HeroSection: React.FC = () => {
   };
 
   return (
-    <div className="relative">
-      {/* 1. HERO HEADER SECTION (Full viewport breathing space) */}
-      <section className="relative min-h-[82vh] flex flex-col justify-center items-center pt-8 pb-16 sm:py-20 overflow-hidden">
-        {/* Ambient background glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full bg-gradient-to-b from-brand-50/70 via-amber-50/30 to-transparent pointer-events-none -z-10 rounded-b-full blur-3xl" />
+    <section className="relative pt-10 pb-16 lg:pt-16 lg:pb-24 overflow-hidden bg-gradient-to-b from-slate-50/80 via-white to-slate-50/50">
+      {/* Soft background ambient glow */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-brand-100/50 via-amber-100/40 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-center my-auto">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-brand-200/80 text-brand-700 text-xs font-semibold shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-brand-600 animate-pulse" />
-            <span>AI Perception + Deterministic Energy Engine</span>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          {/* LEFT COLUMN: Human Product Introduction */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            {/* Small Eyebrow */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-brand-50 border border-brand-200/80 text-brand-800 text-xs font-bold uppercase tracking-wider font-mono">
+              <Zap className="w-3.5 h-3.5 text-brand-600" />
+              <span>Household Energy Audit</span>
+            </div>
 
-          {/* Main Title */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight sm:leading-none max-w-4xl mx-auto">
-            Understand Where Your{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 via-brand-500 to-amber-500">
-              Electricity Bill
-            </span>{' '}
-            Goes
-          </h1>
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[58px] font-extrabold text-slate-900 tracking-tight leading-[1.1]">
+              Where does your electricity bill actually go?
+            </h1>
 
-          {/* Subtitle */}
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal max-w-2xl mx-auto">
-            Turn one electricity bill into a clear household energy audit — with appliance-level cost attribution, efficiency gaps, potential savings, and explainable math calculations.
-          </p>
-
-          {/* Action Specular Buttons from ReactBits */}
-          <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-            <SpecularButton
-              variant="primary"
-              size="lg"
-              onClick={handleStart}
-              rightIcon={<ArrowRight className="w-5 h-5" />}
-              className="w-full sm:w-auto"
-            >
-              Start Your Energy Audit
-            </SpecularButton>
-
-            <SpecularButton
-              variant="outline"
-              size="lg"
-              onClick={handleScrollToWorkflow}
-              rightIcon={<ChevronDown className="w-4 h-4 text-slate-500" />}
-              className="w-full sm:w-auto"
-            >
-              See How It Works
-            </SpecularButton>
-          </div>
-
-          {/* Privacy Badge */}
-          <div className="flex items-center justify-center gap-2 text-xs text-slate-500 pt-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Privacy First — No personal consumer account data stored</span>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. DEMO PIPELINE SHOWCASE SECTION (With ChromaGrid Background Component from ReactBits) */}
-      <section className="relative pt-12 pb-20 sm:pt-16 sm:pb-28 bg-gradient-to-b from-slate-50 via-white to-slate-50 border-t border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-xs font-bold text-brand-600 uppercase tracking-widest font-mono">
-              Interactive Audit Pipeline
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              How MINCHAL Processes Your Electricity Bill
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              An end-to-end preview of the audit perception and calculation stages.
+            {/* Supporting Copy */}
+            <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-normal max-w-2xl">
+              MINCHAL turns your electricity bill and appliance details into a simple household energy audit — so you can see what’s using the most, where efficiency is being lost, and what you can do about it.
             </p>
-          </div>
 
-          {/* Hero Interactive Visualization Showcase Container */}
-          <div className="relative max-w-4xl mx-auto rounded-3xl bg-slate-900/95 backdrop-blur-xl text-white p-4 sm:p-8 shadow-2xl border border-slate-800 space-y-6 overflow-hidden group">
-            {/* Chroma Grid Background Component from ReactBits */}
-            <ChromaGrid gridSize={28} chromaColors={['#ffbf00', '#38663d', '#3b82f6', '#10b981']} />
+            {/* CTAs */}
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+              <SpecularButton
+                variant="primary"
+                size="lg"
+                onClick={handleStart}
+                rightIcon={<ArrowRight className="w-5 h-5" />}
+                className="w-full sm:w-auto"
+              >
+                Start an Energy Audit
+              </SpecularButton>
 
-            {/* Subtle grid pattern background */}
-            <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
-
-            {/* Top Mock Window Bar */}
-            <div className="relative z-10 flex items-center justify-between border-b border-slate-800 pb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-rose-500/80" />
-                <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-                <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
-                <span className="text-xs font-mono text-slate-400 ml-2">MINCHAL Audit Preview</span>
-              </div>
-              <Badge variant="success" size="sm" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
-                Live Demo Pipeline
-              </Badge>
-            </div>
-
-            {/* Pipeline Visual Flow */}
-            <div className="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-              {/* Step 1 Card */}
-              <div className="p-4 rounded-2xl bg-slate-800/80 backdrop-blur-md border border-slate-700/70 space-y-2 hover:border-blue-500/50 transition-colors">
-                <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
-                  <FileText className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Step 01 • Input</span>
-                <p className="font-bold text-white text-sm">EB Electricity Bill</p>
-                <div className="pt-1 text-[11px] text-slate-300 font-mono space-y-0.5">
-                  <div>Units: <span className="text-blue-400 font-bold">362 kWh</span></div>
-                  <div>Amount: <span className="text-emerald-400 font-bold">₹2,843</span></div>
-                </div>
-              </div>
-
-              {/* Step 2 Card */}
-              <div className="p-4 rounded-2xl bg-slate-800/80 backdrop-blur-md border border-slate-700/70 space-y-2 hover:border-purple-500/50 transition-colors">
-                <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Step 02 • AI Vision</span>
-                <p className="font-bold text-white text-sm">Gemini Perception</p>
-                <p className="text-[11px] text-slate-400 leading-snug">
-                  Extracts tariff, billing period, and total consumption without PII.
-                </p>
-              </div>
-
-              {/* Step 3 Card */}
-              <div className="p-4 rounded-2xl bg-slate-800/80 backdrop-blur-md border border-slate-700/70 space-y-2 hover:border-brand-500/50 transition-colors">
-                <div className="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center">
-                  <Cpu className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Step 03 • Appliances</span>
-                <p className="font-bold text-white text-sm">Appliance Logs</p>
-                <p className="text-[11px] text-slate-400 leading-snug">
-                  AC (1.5T 3★), Refrigerator (250L), Geyser, Fans & Lights.
-                </p>
-              </div>
-
-              {/* Step 4 Card */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-brand-900/90 to-emerald-950/90 backdrop-blur-md border border-brand-500/40 space-y-2 hover:border-emerald-400/70 transition-colors">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                  <Calculator className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Step 04 • Audit</span>
-                <p className="font-bold text-white text-sm">Energy Audit</p>
-
-                {/* Mini Breakdown Preview */}
-                <div className="space-y-1.5 pt-1">
-                  <div className="flex justify-between text-[11px]">
-                    <span className="text-slate-300">AC (40%)</span>
-                    <span className="font-mono font-bold text-amber-400">₹1,137</span>
-                  </div>
-                  <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-amber-400 h-1.5 rounded-full w-[40%]" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Highlight Strip */}
-            <div className="relative z-10 p-3.5 rounded-2xl bg-slate-800/50 backdrop-blur-md border border-slate-700/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2 text-slate-300">
-                <TrendingDown className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Potential Savings Opportunity Identified: <strong className="text-white">up to ~₹1,246 / month</strong></span>
-              </div>
               <button
                 type="button"
-                onClick={handleStart}
-                className="text-xs font-bold text-brand-400 hover:text-brand-300 underline shrink-0"
+                onClick={handleScrollToWorkflow}
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:text-brand-700 hover:bg-slate-100/80 transition-all group"
               >
-                Analyze Your Bill →
+                <span>See how it works</span>
+                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
               </button>
             </div>
+
+            {/* Privacy Badge */}
+            <div className="flex items-center gap-2 text-xs text-slate-500 pt-1">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>Privacy first — No personal consumer account data stored</span>
+            </div>
           </div>
+
+          {/* RIGHT COLUMN: Realistic Product Story Transformation Visual */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative mx-auto max-w-md lg:max-w-none rounded-3xl bg-slate-900 text-white p-6 sm:p-8 shadow-2xl border border-slate-800 space-y-6">
+              
+              {/* Product Visual Bar */}
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                  <span className="text-xs font-mono text-slate-400 ml-2">MINCHAL Product Preview</span>
+                </div>
+                <div className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-brand-400 border border-slate-700">
+                  {animationStep === 0 ? 'Step 1 • Input' : animationStep === 1 ? 'Step 2 • Analyzing' : 'Step 3 • Breakdown'}
+                </div>
+              </div>
+
+              {/* CARD 1: ELECTRICITY BILL INPUT */}
+              <div className={`p-4 rounded-2xl bg-slate-800/90 border transition-all duration-500 ${
+                animationStep === 0 ? 'border-brand-500 shadow-glow ring-1 ring-brand-500/50' : 'border-slate-700/80 opacity-80'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2 text-slate-300 text-xs font-semibold">
+                    <FileText className="w-4 h-4 text-brand-400" />
+                    <span>ELECTRICITY BILL</span>
+                  </div>
+                  <span className="text-[11px] text-slate-400 font-mono">Apr 2026</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-xs font-mono pt-1">
+                  <div>
+                    <span className="text-slate-400 text-[10px] block">Units Consumed</span>
+                    <span className="text-base font-bold text-white">362 kWh</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 text-[10px] block">Total Amount</span>
+                    <span className="text-base font-bold text-emerald-400">₹2,843</span>
+                  </div>
+                </div>
+
+                {/* Animated Scan Line */}
+                {animationStep === 1 && (
+                  <div className="mt-3 pt-2 border-t border-slate-700/60 flex items-center gap-2 text-[11px] text-amber-300 font-mono animate-pulse">
+                    <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                    <span>MINCHAL calculating appliance loads...</span>
+                  </div>
+                )}
+              </div>
+
+              {/* ARROW DOWN */}
+              <div className="flex justify-center -my-2 relative z-10">
+                <div className="w-7 h-7 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs shadow-md">
+                  ↓
+                </div>
+              </div>
+
+              {/* CARD 2: MINCHAL ENERGY BREAKDOWN */}
+              <div className={`p-4 sm:p-5 rounded-2xl bg-slate-800/90 border transition-all duration-500 space-y-3.5 ${
+                animationStep === 2 ? 'border-emerald-500/80 shadow-glow ring-1 ring-emerald-500/40' : 'border-slate-700/80'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-white text-xs font-bold">
+                    <BarChart3 className="w-4 h-4 text-emerald-400" />
+                    <span>YOUR ENERGY BREAKDOWN</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                    Audit Complete
+                  </span>
+                </div>
+
+                {/* Breakdown Rows */}
+                <div className="space-y-2.5 text-xs">
+                  <div>
+                    <div className="flex justify-between text-slate-300 mb-1 text-[11px]">
+                      <span>Air Conditioner (1.5T 3★)</span>
+                      <span className="font-mono font-bold text-amber-400">40% • ₹1,137</span>
+                    </div>
+                    <div className="w-full bg-slate-700/80 rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-amber-400 h-1.5 rounded-full transition-all duration-700" style={{ width: animationStep === 2 ? '40%' : '0%' }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-slate-300 mb-1 text-[11px]">
+                      <span>Kitchen Refrigerator (250L)</span>
+                      <span className="font-mono font-bold text-emerald-400">20% • ₹568</span>
+                    </div>
+                    <div className="w-full bg-slate-700/80 rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-emerald-400 h-1.5 rounded-full transition-all duration-700" style={{ width: animationStep === 2 ? '20%' : '0%' }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-slate-300 mb-1 text-[11px]">
+                      <span>Bathroom Geyser (25L)</span>
+                      <span className="font-mono font-bold text-blue-400">15% • ₹426</span>
+                    </div>
+                    <div className="w-full bg-slate-700/80 rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-blue-400 h-1.5 rounded-full transition-all duration-700" style={{ width: animationStep === 2 ? '15%' : '0%' }} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Savings Callout */}
+                <div className="pt-2 border-t border-slate-700/80 flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Potential Savings:</span>
+                  <span className="font-mono font-extrabold text-emerald-400 text-sm">
+                    ~₹1,246 / month
+                  </span>
+                </div>
+              </div>
+
+              {/* Progress Steps Indicator */}
+              <div className="flex items-center justify-center gap-1.5 pt-1">
+                {[0, 1, 2].map((idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setAnimationStep(idx)}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      animationStep === idx ? 'w-6 bg-brand-500' : 'w-1.5 bg-slate-700 hover:bg-slate-600'
+                    }`}
+                  />
+                ))}
+              </div>
+
+            </div>
+          </div>
+
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 };

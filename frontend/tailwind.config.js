@@ -47,6 +47,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        landing: ['"DM Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
       }
     },
   },

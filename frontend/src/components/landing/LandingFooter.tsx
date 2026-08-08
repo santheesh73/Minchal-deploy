@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
 import { Logo } from '../ui/Logo';
 
 export const LandingFooter: React.FC = () => {
@@ -10,7 +9,7 @@ export const LandingFooter: React.FC = () => {
     navigate('/audit/bill');
   };
 
-  const handleScroll = (id: string) => {
+  const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -18,46 +17,61 @@ export const LandingFooter: React.FC = () => {
   };
 
   return (
-    <footer className="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 py-10">
+    <footer className="bg-slate-950 border-t border-slate-800 text-slate-400 py-12 text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          {/* Brand Logo & Tagline */}
-          <div className="space-y-2 max-w-sm">
-            <div className="bg-white/90 p-2 rounded-2xl w-fit inline-block">
-              <Logo size="sm" />
-            </div>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              AI-assisted household energy audit platform. Turn electricity bills into explainable energy insights.
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          {/* Logo & Tagline */}
+          <div className="space-y-1">
+            <Logo size="md" />
+            <p className="text-xs text-slate-500 font-medium">
+              AI-assisted Household Energy Audit
             </p>
           </div>
 
-          {/* Quick Section Nav Links */}
-          <div className="flex flex-wrap items-center gap-6 font-semibold text-slate-300">
+          {/* Clean Navigation Links */}
+          <nav className="flex flex-wrap items-center gap-6 text-xs text-slate-400">
             <button
               type="button"
-              onClick={() => handleScroll('how-it-works')}
+              onClick={() => scrollTo('how-it-works')}
               className="hover:text-white transition-colors"
             >
-              How It Works
+              How it works
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollTo('outcomes')}
+              className="hover:text-white transition-colors"
+            >
+              What you get
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollTo('why-minchal')}
+              className="hover:text-white transition-colors"
+            >
+              Why MINCHAL
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollTo('about')}
+              className="hover:text-white transition-colors"
+            >
+              About
             </button>
             <button
               type="button"
               onClick={handleStart}
-              className="hover:text-white transition-colors text-brand-400"
+              className="text-brand-400 font-bold hover:underline"
             >
-              Start Audit
+              Start an Audit →
             </button>
-          </div>
+          </nav>
         </div>
 
-        {/* Bottom Legal / Deterministic Engine Strip */}
-        <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Deterministic Calculation Engine • FastAPI + Gemini Perception</span>
-          </div>
-
-          <span>© {new Date().getFullYear()} MINCHAL Platform. All rights reserved.</span>
+        {/* Bottom Bar */}
+        <div className="pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+          <p>© {new Date().getFullYear()} MINCHAL. All rights reserved.</p>
+          <p className="font-mono">Privacy-First Household Energy Audit</p>
         </div>
       </div>
     </footer>
