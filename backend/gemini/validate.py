@@ -21,6 +21,22 @@ def validate_bill(data: Dict[str, Any]) -> Dict[str, Any]:
     total = data.get("total_amount")
     days = data.get("billing_days")
 
+    # 0a. Is this even a bill? Checked before anything numeric.
+    #
+    # A numeric gate can only judge plausibility, and a hallucination that lands
+    # on plausible figures passes it: a blank grey rectangle returned 496 units
+    # for Rs 1440 over 61 days, which is a perfectly reasonable bill. The model
+    # has to say up front whether it is looking at a bill at all.
+    #
+    # Only an explicit False rejects. None means the field was not reported —
+    # manual entry, older cached extractions — and must not block a real bill.
+    if data.get("is_electricity_bill") is False:
+        raise GeminiValidationError(
+            reason="INVALID_BILL",
+            message=("This doesn't look like an electricity bill. Try again with a "
+                     "clear photo of the bill, or use manual entry.")
+        )
+
     # 0. structural check, before any per-field check.
     #
     # A single unreadable field means "couldn't read it" — retake the photo.
@@ -144,8 +160,10 @@ def validate_bill(data: Dict[str, Any]) -> Dict[str, Any]:
                      "Ensure the bill details are clearly captured.")
         )
 
-    # Convert values to correct types in validated output
-    validated = dict(data)
+    # Convert values to correct types in validated output.
+    # is_electricity_bill is a control field for this gate, not part of the
+    # locked response contract — it must not reach the frontend.
+    validated = {k: v for k, v in data.items() if k != "is_electricity_bill"}
     validated["units_consumed"] = units_val
     validated["total_amount"] = total_val
     validated["billing_days"] = days_val

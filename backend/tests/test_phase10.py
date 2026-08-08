@@ -262,3 +262,67 @@ def test_live_rotated_fixture_still_extracts():
     out = gextract.extract_bill(rotated, "image/jpeg")
     assert out["units_consumed"] == 735.0
     assert out["total_amount"] == 5420.0
+
+
+# ---------------------------------------------------------------------------
+# Hallucination gate — a blank image passed as a valid bill
+# ---------------------------------------------------------------------------
+
+def test_blank_image_hallucination_is_rejected():
+    """REGRESSION: a 400x300 flat grey canvas with no text on it produced
+    "Bill Read Successfully - 496 kWh, Rs 1,440, 61 days, Verified" in the real
+    UI. Fabricated values differed every run (150/348 on another), so no numeric
+    gate can catch them: 1440/496 = Rs 2.90/kWh over 61 days is a perfectly
+    plausible bill. Only the model saying up front that this is not a bill
+    catches it."""
+    from gemini.validate import validate_bill, GeminiValidationError
+
+    hallucinated = {
+        "is_electricity_bill": False,
+        "units_consumed": 496.0,
+        "total_amount": 1440.0,
+        "billing_days": 61,
+    }
+    with pytest.raises(GeminiValidationError) as exc:
+        validate_bill(hallucinated)
+    assert exc.value.reason == "INVALID_BILL"
+    assert "manual entry" in exc.value.message.lower()
+
+
+def test_hallucinated_values_would_otherwise_pass_every_numeric_check():
+    """Proves the gate above is load-bearing: without the flag, those exact
+    fabricated numbers sail through."""
+    from gemini.validate import validate_bill
+
+    out = validate_bill({"units_consumed": 496.0, "total_amount": 1440.0, "billing_days": 61})
+    assert out["units_consumed"] == 496.0, "numeric checks alone cannot catch this"
+
+
+def test_only_explicit_false_rejects():
+    """None means 'not reported' — manual entry and older cached extractions
+    have no such field and must not be blocked."""
+    from gemini.validate import validate_bill
+
+    for value in (True, None):
+        out = validate_bill({
+            "units_consumed": 620.0, "total_amount": 4800.0, "billing_days": 61,
+            "is_electricity_bill": value,
+        })
+        assert out["units_consumed"] == 620.0
+
+    # and a bill with the field absent entirely still works
+    assert validate_bill({"units_consumed": 620.0, "total_amount": 4800.0, "billing_days": 61})
+
+
+def test_not_a_bill_skips_rotation_retries():
+    """No orientation turns a wall into a bill — don't spend 3 API calls."""
+    calls = []
+
+    def run_once(data, mime):
+        calls.append(mime)
+        return {}
+
+    first = {"is_electricity_bill": False, "units_consumed": None, "total_amount": None}
+    best, deg = gextract._extract_best_orientation(tiny_image_bytes(), "image/png", run_once, first)
+    assert deg == 0
+    assert calls == [], "rotation retries were spent on a non-bill"

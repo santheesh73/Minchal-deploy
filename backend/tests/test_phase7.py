@@ -183,12 +183,30 @@ def test_extraction_schema_is_all_optional():
     assert BillExtraction().units_consumed is None
 
 
+# Extraction-only control fields: present in the Gemini-facing schema, never in
+# the locked response contract. Anything added here must be stripped by
+# validate_bill before the payload reaches the frontend.
+EXTRACTION_CONTROL_FIELDS = {"is_electricity_bill"}
+
+
 def test_extraction_schema_matches_contract_field_names():
     # optional-ness may differ, field names may not — the contract is locked
     from gemini.schemas import BillExtraction
     from schemas import BillData
 
-    assert set(BillExtraction.model_fields) == set(BillData.model_fields)
+    assert set(BillExtraction.model_fields) - EXTRACTION_CONTROL_FIELDS == set(BillData.model_fields)
+
+
+def test_control_fields_never_reach_the_response():
+    """A control field leaking into the response would change the locked shape."""
+    from gemini.validate import validate_bill
+
+    out = validate_bill({
+        "units_consumed": 620.0, "total_amount": 4800.0, "billing_days": 61,
+        "is_electricity_bill": True,
+    })
+    for f in EXTRACTION_CONTROL_FIELDS:
+        assert f not in out, f"{f} leaked into the response payload"
 
 
 def test_absent_units_classified_as_missing_not_invalid():

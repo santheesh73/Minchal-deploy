@@ -75,6 +75,22 @@ Two production bugs were found this way, both invisible to synthetic fixtures:
 the ₹2.00/kWh rate floor rejecting a legitimately subsidised bill, and the
 required-field schema leaving Gemini no way to say "not printed".
 
+## Known risk class: anything Gemini produces varies run to run
+
+Three separate bugs today had the same shape — identical input, different output
+between runs:
+
+- `units_consumed` came back `null` on one run and `0` on the next, flipping the
+  user-facing error between "couldn't read the units" and "this isn't a bill"
+- a blank grey image was hallucinated as 150 units / Rs 348 on one run and
+  496 units / Rs 1,440 on the next
+- `subsidy_applied` on the same receipt read 7289 once and 72.89 the next time
+
+**Assume every Gemini-generated value varies between runs unless a test has
+proven otherwise across MULTIPLE trials.** A single green run proves nothing.
+The hallucination gate was verified over 3 trials per case, on the exact image
+that fooled it, plus an unrelated object, plus a real bill as control — 9/9.
+
 ## If something breaks mid-demo
 
 | symptom | do this |
@@ -83,3 +99,4 @@ required-field schema leaving Gemini no way to say "not printed".
 | OCR misreads or rejects the bill | use `POST /api/manual-bill` — type the four numbers off the paper, same response shape, no Gemini call |
 | rate limit / quota wall | `DEMO_MODE=true` serves the known bill from cache in ~0.2ms; verified working with a deliberately broken API key |
 | bill photo is sideways | already handled automatically; costs ~4s instead of ~1.6s |
+| judge photographs a wall / hand / blank page | rejected as "This doesn't look like an electricity bill" — verified 9/9 across blank and unrelated-object images |

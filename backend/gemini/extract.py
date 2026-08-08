@@ -69,6 +69,11 @@ def _extract_best_orientation(image_bytes, mime_type, run_once, parsed):
     """
     if _count_required(parsed) == len(REQUIRED_FIELDS):
         return parsed, 0
+    # Not a bill at all — no orientation will make it one, so fail fast rather
+    # than spending three more API calls confirming it.
+    if parsed.get("is_electricity_bill") is False:
+        logger.info("Auto-rotation skipped: image is not an electricity bill.")
+        return parsed, 0
 
     best, best_deg = parsed, 0
     for degrees in ROTATIONS:
@@ -117,8 +122,18 @@ def extract_bill(image_bytes: bytes, mime_type: str = "image/jpeg") -> Dict[str,
         raise GeminiValidationError("SERVER_ERROR", "Gemini client not initialized.")
 
     prompt = (
-        "You are extracting data from an Indian electricity bill (TNEB / Tamil Nadu).\n"
-        "Return ONLY the fields defined in the schema.\n"
+        "You are extracting data from an Indian electricity bill (TNEB / Tamil Nadu).\n\n"
+        "FIRST, set is_electricity_bill:\n"
+        "  true  - the image is an electricity bill, a payment receipt for one,\n"
+        "          or a bill-like document with printed charge details.\n"
+        "  false - the image is blank or featureless, a photo of an unrelated\n"
+        "          object, a person, a screen, a wall, or anything with no\n"
+        "          bill-like structure at all.\n"
+        "If is_electricity_bill is false, set EVERY other field to null. Do not\n"
+        "supply numbers for an image that is not a bill. Returning a plausible\n"
+        "number for a blank or unrelated image is the single worst thing you can\n"
+        "do here - null is always the correct answer when there is nothing to read.\n\n"
+        "THEN extract the fields defined in the schema.\n"
         "If a field is not clearly visible, return null for that field.\n"
         "Do NOT estimate, infer, or calculate any value that is not printed on the bill.\n"
         "If the image is too blurry to read the units consumed, set units_consumed to null.\n\n"

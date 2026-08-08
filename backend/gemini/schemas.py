@@ -15,6 +15,21 @@ from typing import Optional
 
 
 class BillExtraction(BaseModel):
+    # Not a bill field — a control field, which is why this schema can no longer
+    # be field-for-field identical to BillData.
+    #
+    # A flat grey rectangle with no text on it returned units_consumed 496 and
+    # total_amount 1440 (and 150 / 348 on another run — fabricated values differ
+    # every time). Those numbers are plausible, so a numeric validation gate can
+    # never catch them: it can only judge whether figures look reasonable, and
+    # invented ones often do. The only place to catch it is here, by making the
+    # model state up front whether it is even looking at a bill.
+    #
+    # This strengthens the pixels-to-numbers boundary rather than patching over
+    # it — Gemini still reports only what it sees, and the engine still does
+    # every calculation.
+    is_electricity_bill: Optional[bool] = None
+
     units_consumed: Optional[float] = None
     total_amount: Optional[float] = None
     billing_days: Optional[int] = None
