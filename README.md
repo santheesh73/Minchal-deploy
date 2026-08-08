@@ -23,6 +23,28 @@ progress. Organizers follow along through this repo, so keep it active.
 All frontend components are built against the mock JSON and types in `frontend/src/types/api.ts`.
 **Do not change the API contract without agreement from all four team members.**
 
+## Backend status
+
+Live URL (quick Cloudflare tunnel — **expires without warning, re-check before
+every rehearsal**): `https://collins-response-elections-customs.trycloudflare.com`
+
+Before any demo or rehearsal:
+```bash
+cd backend && python scripts/preflight.py
+```
+
+> **Known limitation:** the `DEMO_MODE` fallback cache is built on a **synthetic**
+> bill, not a real one (`PLACEHOLDER_DATA = True` in `backend/demo_cache.py`).
+> The numbers in it are real engine output, but the source bill is generated.
+> Both real bills obtained so far are payment receipts, which print no billing
+> period and so cannot reach the engine. See
+> [`backend/DEMO_NOTES.md`](./backend/DEMO_NOTES.md) for what this means and the
+> ~10-minute procedure to close it once a standard LT-1A consumption bill exists.
+
+Fallbacks if something breaks live: `POST /api/manual-bill` (type the numbers,
+no Gemini call) and `DEMO_MODE=true` (serves a known-good cached response).
+Details in [`backend/DEMO_NOTES.md`](./backend/DEMO_NOTES.md).
+
 ## Quickstart
 
 **Frontend**

@@ -30,9 +30,26 @@ pipeline is not broken; it does not mean OCR works on a real bill.
 Photographed bills are gitignored (they carry consumer name, number and address).
 Drop them in this directory and add a row below with values read off the paper.
 
+Only billing figures are recorded here. Consumer name, consumer number, RR
+number and address are deliberately never written down, in this file or
+anywhere else — the same rule the extraction prompt and schema enforce.
+
 | file | units_consumed | total_amount | billing_days | tariff_slab | period_end | notes |
 |---|---|---|---|---|---|---|
 | `bill1.png` | — | 1768.00 | — | — | 05/04/2026 | **payment receipt, not a consumption bill** — no units, days or slab printed. Correct extraction returns null for those; a number is a hallucination. |
+| `real_bill_01.jpg` | 239 | 418.00 | — | — | — | **payment receipt**, photographed handheld at 90°. Units ARE printed, as `Units: 239` overprinted on the pre-printed SAC-code line — verified at 3× zoom. Total confirmed in words: "Four Hundred And Eighteen Only". No billing period, no slab, no meter readings, so `billing_days` is correctly null and the bill is correctly rejected. Implied rate ₹1.75/kWh — this is the bill that exposed the ₹2.00 rate floor. |
+
+### What these two real bills prove, and what they don't
+
+Both are **payment receipts**, not consumption bills. Between them they have
+proven a lot: extraction reads overprinted dot-matrix text, recovers a sideways
+photo via auto-rotation, returns null rather than inventing absent fields, and
+the validation gate correctly refuses input the engine cannot use.
+
+They have **not** proven the full pipeline. Neither prints `billing_days` or a
+tariff slab, so neither can reach the engine, and no ranked breakdown has ever
+been computed from real extracted numbers. That still needs a standard LT-1A
+computer-printed consumption bill or a TNPDCL portal PDF.
 
 ## Machine-readable
 
@@ -61,6 +78,13 @@ return null — returning a number is a hallucination and scores as a miss.
     "billing_days": 62,
     "tariff_slab": "LT-1C",
     "period_end": "12/07/2026"
+  },
+  "real_bill_01.jpg": {
+    "units_consumed": 239.0,
+    "total_amount": 418.0,
+    "billing_days": null,
+    "tariff_slab": null,
+    "period_end": null
   },
   "bill1.png": {
     "units_consumed": null,

@@ -122,10 +122,15 @@ def validate_bills(client, base_url, bills_dir, truth):
         ext = os.path.splitext(name)[1].lower()
         mime = MIME_BY_EXT.get(ext, "image/jpeg")
         expected = truth.get(name)
-        # An image whose ground truth says the units are absent is not supposed
-        # to extract — rejecting it is the correct outcome, so it must not count
-        # against the extraction rate.
-        known_absent = expected is not None and expected.get("units_consumed") is None
+        # An image whose ground truth says a gate-required field is absent can
+        # never pass validation — rejecting it is the correct outcome, so it must
+        # not count against the extraction rate. billing_days matters as much as
+        # units here: a payment receipt prints units but no billing period, and
+        # the gate rejects the whole bill for the missing period even though
+        # extraction did its job.
+        known_absent = expected is not None and any(
+            expected.get(f) is None for f in ("units_consumed", "billing_days")
+        )
         if not known_absent:
             expected_extractable += 1
 
@@ -144,9 +149,10 @@ def validate_bills(client, base_url, bills_dir, truth):
             note = f"{reason}: {body.get('message', '')}"
             # A rejection is CORRECT when ground truth says units are absent.
             score = ""
-            if expected is not None and expected.get("units_consumed") is None:
+            if known_absent:
                 score = "n/a"
-                note += "  <- correct: no units printed on this image"
+                missing_gt = [f for f in ("units_consumed", "billing_days") if expected.get(f) is None]
+                note += f"  <- correct: {', '.join(missing_gt)} not printed on this image"
             print(f"{name:<26} | {'REJECT':<7} | {'-':>8} | {'-':>9} | {'-':>5} | {'-':<8} | {ms:6.0f} | {score:<7} | {note}")
             continue
 
@@ -155,11 +161,13 @@ def validate_bills(client, base_url, bills_dir, truth):
         days, slab = data.get("billing_days"), data.get("tariff_slab")
         if units is not None and total is not None:
             readings.append((float(units), float(total)))
-            if known_absent:
-                # Ground truth says these numbers are not on the image. Getting
-                # them back is a hallucination, not a success.
+            # Hallucination is per-field: only if ground truth says THESE
+            # numbers are not on the image. real_bill_01 is excluded from the
+            # rate (no billing period) yet genuinely prints units 239 - reading
+            # it is correct, not invention.
+            if expected is not None and expected.get("units_consumed") is None:
                 hallucinations.append((name, units, total))
-            else:
+            elif not known_absent:
                 extracted_ok += 1
 
         blob = json.dumps(data).lower()
@@ -260,7 +268,8 @@ def main() -> int:
     print("\n" + "=" * 118)
     print("SUMMARY")
     print("-" * 118)
-    note = f"   ({skipped} image(s) excluded: ground truth says no units printed)" if skipped else ""
+    note = (f"   ({skipped} image(s) excluded: a gate-required field is not printed on them, "
+            f"so rejection is correct)") if skipped else ""
     print(f"  Bills with units_consumed AND total_amount : {bills['extracted_ok']}/{n}  ({rate*100:.0f}%)   threshold {PASS_THRESHOLD*100:.0f}%{note}")
     if accuracy is not None:
         print(f"  Field accuracy vs ground truth            : {bills['field_hits']}/{bills['field_total']}  ({accuracy*100:.0f}%)   over {bills['rows_scored']} scored image(s)")
