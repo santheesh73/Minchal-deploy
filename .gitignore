@@ -4,6 +4,16 @@ dist/
 __pycache__/
 .env
 .DS_Store
+
+# Photographed bills and nameplates are never committed: they carry consumer
+# name, number and service address.
 test-assets/**/*.jpg
 test-assets/**/*.jpeg
 test-assets/**/*.png
+
+# Synthetic fixtures are the exception — generated, no real PII, and the
+# accuracy gate needs them present to have anything to measure.
+!test-assets/bills/synthetic_*.png
+
+# 54MB tunnel binary, downloaded not built
+backend/cloudflared.exe

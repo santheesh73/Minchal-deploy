@@ -1,23 +1,23 @@
 {
   "ok": true,
-  "bill_total_rupees": 2400.0,
+  "bill_total_rupees": 4800.0,
   "breakdown": [
     {
       "type": "ac",
       "label": "Air Conditioner",
-      "units": 160.0,
-      "rupees": 960.0,
+      "units": 248.0,
+      "rupees": 1920.0,
       "percent": 40.0,
       "rank": 1,
       "working": [
         {"label": "Rated Power", "value": "1500 W"},
-        {"label": "Daily Hours (Banded)", "value": "6 hours (4-6 band)"},
+        {"label": "Daily Hours (Banded)", "value": "7 hours (6-8 band)"},
+        {"label": "Duty Cycle", "value": "0.65"},
         {"label": "Star Rating Multiplier", "value": "1.00 (3-star)"},
-        {"label": "Age Factor", "value": "1.045 (3 years old)"},
-        {"label": "Symptoms Multiplier", "value": "1.22 (dirty filters)"},
-        {"label": "Raw Estimate", "value": "344.5 kWh/month"},
+        {"label": "Age Factor", "value": "1.135 (9 years old)"},
+        {"label": "Raw Estimate", "value": "472.5 kWh"},
         {"label": "Normalisation Scale Factor", "value": "0.464"},
-        {"label": "Final Calibrated Consumption", "value": "160.0 kWh"}
+        {"label": "Final Calibrated Consumption", "value": "248.0 kWh"}
       ],
       "assumptions": [
         {"ok": true, "text": "AC is operated primarily during night hours."},
@@ -28,8 +28,8 @@
     {
       "type": "fridge",
       "label": "Refrigerator",
-      "units": 120.0,
-      "rupees": 720.0,
+      "units": 186.0,
+      "rupees": 1440.0,
       "percent": 30.0,
       "rank": 2,
       "working": [
@@ -38,7 +38,7 @@
         {"label": "Symptoms Multiplier", "value": "1.17 (door seal loose)"},
         {"label": "Monthly Raw Estimate", "value": "45.2 kWh/month"},
         {"label": "Normalisation Scale Factor", "value": "2.654"},
-        {"label": "Final Calibrated Consumption", "value": "120.0 kWh"}
+        {"label": "Final Calibrated Consumption", "value": "186.0 kWh"}
       ],
       "assumptions": [
         {"ok": true, "text": "Fridge runs 24/7 continuously."},
@@ -47,9 +47,9 @@
     },
     {
       "type": "geyser",
-      "label": "Water Geyser",
-      "units": 48.0,
-      "rupees": 288.0,
+      "label": "Water Heater",
+      "units": 74.4,
+      "rupees": 576.0,
       "percent": 12.0,
       "rank": 3,
       "working": [
@@ -59,7 +59,7 @@
         {"label": "Symptoms Multiplier", "value": "1.25 (scaled element)"},
         {"label": "Raw Estimate", "value": "115.87 kWh/month"},
         {"label": "Normalisation Scale Factor", "value": "0.414"},
-        {"label": "Final Calibrated Consumption", "value": "48.0 kWh"}
+        {"label": "Final Calibrated Consumption", "value": "74.4 kWh"}
       ],
       "assumptions": [
         {"ok": true, "text": "Geyser is used daily for morning hot water."},
@@ -68,9 +68,9 @@
     },
     {
       "type": "other",
-      "label": "Other Appliances",
-      "units": 72.0,
-      "rupees": 432.0,
+      "label": "Lights, fans & others",
+      "units": 111.6,
+      "rupees": 864.0,
       "percent": 18.0,
       "rank": 4
     }
@@ -118,8 +118,8 @@
     "annual_savings_rupees": 6480.0,
     "biggest_surprise": {
       "type": "fridge",
-      "label": "குளிர்சாதனப் பெட்டி",
-      "rupees": 720.0,
+      "label": "Refrigerator",
+      "rupees": 1440.0,
       "line": "உங்கள் குளிர்சாதனப் பெட்டி வழக்கமான அளவை விட 30% கூடுதல் மின்சாரத்தை பயன்படுத்துகிறது."
     },
     "solar": {

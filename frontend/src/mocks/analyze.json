@@ -1,84 +1,133 @@
 {
   "ok": true,
-  "bill_total_rupees": 1500,
+  "bill_total_rupees": 4800.0,
   "breakdown": [
     {
       "type": "ac",
-      "label": "Bedroom AC",
-      "units": 120,
-      "rupees": 800,
-      "percent": 40,
+      "label": "Air Conditioner",
+      "units": 248.0,
+      "rupees": 1920.0,
+      "percent": 40.0,
       "rank": 1,
-      "working": [{"label": "Hours", "value": "8/day"}],
-      "assumptions": [{"ok": true, "text": "Used every night"}]
+      "working": [
+        {"label": "Rated Power", "value": "1500 W"},
+        {"label": "Daily Hours (Banded)", "value": "7 hours (6-8 band)"},
+        {"label": "Duty Cycle", "value": "0.65"},
+        {"label": "Star Rating Multiplier", "value": "1.00 (3-star)"},
+        {"label": "Age Factor", "value": "1.135 (9 years old)"},
+        {"label": "Raw Estimate", "value": "472.5 kWh"},
+        {"label": "Normalisation Scale Factor", "value": "0.464"},
+        {"label": "Final Calibrated Consumption", "value": "248.0 kWh"}
+      ],
+      "assumptions": [
+        {"ok": true, "text": "AC is operated primarily during night hours."},
+        {"ok": false, "text": "Thermostat is set to the recommended 24°C (actual: 18°C)."},
+        {"ok": true, "text": "Filter maintenance has not been done in the last 6 months."}
+      ]
     },
     {
       "type": "fridge",
-      "label": "Kitchen Fridge",
-      "units": 60,
-      "rupees": 400,
-      "percent": 20,
+      "label": "Refrigerator",
+      "units": 186.0,
+      "rupees": 1440.0,
+      "percent": 30.0,
       "rank": 2,
-      "working": [{"label": "Mode", "value": "24/7"}],
-      "assumptions": [{"ok": true, "text": "Standard efficiency"}]
+      "working": [
+        {"label": "Star Rating Base", "value": "1.2 kWh/day (3-star)"},
+        {"label": "Age Degradation", "value": "1.075 (5 years old)"},
+        {"label": "Symptoms Multiplier", "value": "1.17 (door seal loose)"},
+        {"label": "Monthly Raw Estimate", "value": "45.2 kWh/month"},
+        {"label": "Normalisation Scale Factor", "value": "2.654"},
+        {"label": "Final Calibrated Consumption", "value": "186.0 kWh"}
+      ],
+      "assumptions": [
+        {"ok": true, "text": "Fridge runs 24/7 continuously."},
+        {"ok": false, "text": "Gasket seal is fully intact and sealing tightly."}
+      ]
     },
     {
       "type": "geyser",
-      "label": "Bathroom Geyser",
-      "units": 30,
-      "rupees": 200,
-      "percent": 10,
+      "label": "Water Heater",
+      "units": 74.4,
+      "rupees": 576.0,
+      "percent": 12.0,
       "rank": 3,
-      "working": [{"label": "Usage", "value": "1 hr/day"}],
-      "assumptions": [{"ok": true, "text": "Morning use"}]
+      "working": [
+        {"label": "Rated Power", "value": "2000 W"},
+        {"label": "Daily Hours (Banded)", "value": "1.5 hours (1-2 band)"},
+        {"label": "Age Factor", "value": "1.03 (2 years old)"},
+        {"label": "Symptoms Multiplier", "value": "1.25 (scaled element)"},
+        {"label": "Raw Estimate", "value": "115.87 kWh/month"},
+        {"label": "Normalisation Scale Factor", "value": "0.414"},
+        {"label": "Final Calibrated Consumption", "value": "74.4 kWh"}
+      ],
+      "assumptions": [
+        {"ok": true, "text": "Geyser is used daily for morning hot water."},
+        {"ok": false, "text": "Water hardness is within normal range (heating element scaled)."}
+      ]
     },
     {
       "type": "other",
-      "label": "Other Appliances",
-      "units": 90,
-      "rupees": 600,
-      "percent": 30,
-      "rank": 4,
-      "working": [{"label": "Base Load", "value": "Lights, Fans"}],
-      "assumptions": [{"ok": true, "text": "Estimated 30%"}]
+      "label": "Lights, fans & others",
+      "units": 111.6,
+      "rupees": 864.0,
+      "percent": 18.0,
+      "rank": 4
     }
   ],
-  "scale_factor": 1.0,
-  "confidence_percent": 85,
-  "confidence_reasons": [{"ok": true, "text": "OCR was clear"}],
+  "scale_factor": 0.85,
+  "confidence_percent": 87.0,
+  "confidence_reasons": [
+    {"ok": true, "text": "மின் கட்டண விவரங்கள் துல்லியமாக ஸ்கேன் செய்யப்பட்டுள்ளன."},
+    {"ok": true, "text": "சாதனங்களின் விவரங்கள் மற்றும் பயன்பாட்டு நேரங்கள் தெளிவாக உள்ளன."},
+    {"ok": false, "text": "சாதனத்தின் உற்பத்தி ஆண்டு சிலவற்றில் யூகிக்கப்பட்டுள்ளது."}
+  ],
   "meta": {
-    "engine_version": "1.0",
-    "model": "gemini-1.5-pro",
-    "generated_at": "2023-10-01T12:00:00Z",
-    "duration_ms": 1200
+    "engine_version": "engine-1",
+    "model": "gemini-1.5-flash",
+    "generated_at": "2026-08-08T11:00:00Z",
+    "duration_ms": 125.0
   },
-  "explanation": "Your AC is the biggest driver of your bill.",
+  "explanation": "உங்கள் மின்சாரக் கட்டணத்தில் பெரும்பகுதி குளிர்சாதனப் பெட்டி மற்றும் ஏசியால் ஏற்படுகிறது. ஏசி வடிகட்டிகளை சுத்தம் செய்வதன் மூலம் கட்டணத்தை குறைக்கலாம். சூரிய ஒளி மின்சார அமைப்பை நிறுவுவது நீண்ட காலத்திற்கு நல்ல சேமிப்பை தரும்.",
   "actions": [
-    {"tier": "free", "text": "Set AC to 24C", "saves_rupees": 100},
-    {"tier": "cheap", "text": "Service AC", "saves_rupees": 200, "payback_months": 3},
-    {"tier": "investment", "text": "Buy 5-star AC", "saves_rupees": 500, "payback_months": 24}
+    {
+      "tier": "free",
+      "text": "ஏசியின் வெப்பநிலையை 24°C ஆக அமைத்து பயன்பாட்டு நேரத்தைக் குறைக்கவும்.",
+      "saves_rupees": 150.0
+    },
+    {
+      "tier": "cheap",
+      "text": "குளிர்சாதனப் பெட்டியின் கதவு கேஸ்கெட்டை சரிசெய்யவும் மற்றும் ஏசி வடிகட்டிகளை சுத்தம் செய்யவும்.",
+      "saves_rupees": 300.0
+    },
+    {
+      "tier": "investment",
+      "text": "தற்போதைய பழைய ஏசிக்கு பதிலாக 5-நட்சத்திர மதிப்பீடு கொண்ட புதிய இன்வெர்ட்டர் ஏசியை வாங்கவும்.",
+      "saves_rupees": 650.0,
+      "payback_months": 18.0
+    }
   ],
   "insights": {
-    "efficiency_gap_percent": 15,
-    "efficiency_gap_rupees": 300,
-    "efficiency_driver": "Old AC",
-    "energy_score": 75,
-    "co2_kg_year": 1500,
-    "co2_kg_year_after": 1200,
-    "monthly_savings_rupees": 300,
-    "annual_savings_rupees": 3600,
+    "efficiency_gap_percent": 22.5,
+    "efficiency_gap_rupees": 540.0,
+    "efficiency_driver": "பழைய குளிர்சாதனப் பெட்டி மற்றும் அழுக்கடைந்த ஏசி வடிகட்டிகள்.",
+    "energy_score": 68.0,
+    "co2_kg_year": 1200.0,
+    "co2_kg_year_after": 930.0,
+    "monthly_savings_rupees": 540.0,
+    "annual_savings_rupees": 6480.0,
     "biggest_surprise": {
-      "type": "ac",
-      "label": "Old AC",
-      "rupees": 400,
-      "line": "Your AC is consuming twice as much as a new one."
+      "type": "fridge",
+      "label": "Refrigerator",
+      "rupees": 1440.0,
+      "line": "உங்கள் குளிர்சாதனப் பெட்டி வழக்கமான அளவை விட 30% கூடுதல் மின்சாரத்தை பயன்படுத்துகிறது."
     },
     "solar": {
-      "size_kw": 3,
-      "coverage_percent": 80,
-      "net_cost_rupees": 120000,
-      "annual_saving_rupees": 18000,
-      "payback_years": 6.5
+      "size_kw": 3.0,
+      "coverage_percent": 85.0,
+      "net_cost_rupees": 110000.0,
+      "annual_saving_rupees": 22000.0,
+      "payback_years": 5.0
     }
   }
 }
