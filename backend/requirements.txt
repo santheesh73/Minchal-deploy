@@ -5,3 +5,5 @@ pydantic==2.*
 python-dotenv==1.*
 pytest==8.*
 httpx==0.27.*
+google-genai
+

@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from schemas import AnalyzeRequest, AnalyzeResponse, ApiError, BillData, NameplateData
+from gemini.extract import extract_bill as gemini_extract_bill, extract_nameplate as gemini_extract_nameplate
+from gemini.validate import GeminiValidationError
 
 app = FastAPI()
 
@@ -43,9 +45,20 @@ async def extract_bill(image: UploadFile = File(...)):
             content=ApiError(ok=False, reason="INVALID_BILL", message="Not an image file").model_dump()
         )
     
-    with open(get_mock_path("extract_bill.json"), "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return data
+    try:
+        content = await image.read()
+        data = gemini_extract_bill(content, mime_type=image.content_type)
+        return data
+    except GeminiValidationError as gve:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=ApiError(ok=False, reason=gve.reason, message=gve.message).model_dump()
+        )
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content=ApiError(ok=False, reason="SERVER_ERROR", message=str(e)).model_dump()
+        )
 
 @app.post("/api/extract-nameplate")
 async def extract_nameplate(image: UploadFile = File(...)):
@@ -55,9 +68,21 @@ async def extract_nameplate(image: UploadFile = File(...)):
             content=ApiError(ok=False, reason="INVALID_BILL", message="Not an image file").model_dump()
         )
     
-    with open(get_mock_path("extract_nameplate.json"), "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return data
+    try:
+        content = await image.read()
+        data = gemini_extract_nameplate(content, mime_type=image.content_type)
+        return data
+    except GeminiValidationError as gve:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=ApiError(ok=False, reason=gve.reason, message=gve.message).model_dump()
+        )
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content=ApiError(ok=False, reason="SERVER_ERROR", message=str(e)).model_dump()
+        )
+
 
 @app.post("/api/analyze", response_model=AnalyzeResponse)
 def analyze(payload: AnalyzeRequest):
