@@ -58,9 +58,19 @@ export const apiClient = {
       if (err instanceof ApiClientError) {
         throw err;
       }
+      // A dead tunnel surfaces as the browser's raw "Failed to fetch" (the
+      // error page carries no CORS headers, so fetch rejects rather than
+      // returning a response). That string reads like a crash on a projector
+      // and tells the user nothing they can act on. Never swallow it — just
+      // say what happened and what to do instead.
+      const isNetworkFailure =
+        err instanceof TypeError || /failed to fetch|networkerror|load failed/i.test(err?.message || '');
+
       throw new ApiClientError(
         'SERVER_ERROR',
-        err?.message || 'Failed to connect to the MINCHAL backend server.'
+        isNetworkFailure
+          ? "Can't reach the MINCHAL server right now — it may be offline. Check your connection, or enter the bill details manually."
+          : err?.message || 'Failed to connect to the MINCHAL backend server.'
       );
     }
   },
