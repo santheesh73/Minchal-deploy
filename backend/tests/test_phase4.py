@@ -92,8 +92,8 @@ def test_validation_nameplate_year():
     assert res["manufacture_year"] is None
 
 @patch("gemini.extract.get_client")
-@patch("gemini.extract.call_with_retry")
-def test_malformed_json_failure(mock_retry, mock_get_client):
+@patch("gemini.extract.call_with_fallback")
+def test_malformed_json_failure(mock_fallback, mock_get_client):
     # Gemini returns malformed JSON -> OCR_BLUR, does not raise standard parse error
     mock_client = MagicMock()
     mock_get_client.return_value = mock_client
@@ -101,7 +101,7 @@ def test_malformed_json_failure(mock_retry, mock_get_client):
     # Mock response with malformed JSON
     mock_response = MagicMock()
     mock_response.text = "this is not JSON"
-    mock_retry.return_value = mock_response
+    mock_fallback.return_value = mock_response
     
     # Temporarily force MOCK_MODE = False in extract module
     with patch("gemini.extract.MOCK_MODE", False):
@@ -110,8 +110,8 @@ def test_malformed_json_failure(mock_retry, mock_get_client):
         assert exc.value.reason == "OCR_BLUR"
 
 @patch("gemini.extract.get_client")
-@patch("gemini.extract.call_with_retry")
-def test_cache_hits(mock_retry, mock_get_client):
+@patch("gemini.extract.call_with_fallback")
+def test_cache_hits(mock_fallback, mock_get_client):
     # Cache: same bytes twice -> one API call (mock client, assert call count)
     clear_caches()
     mock_client = MagicMock()
@@ -119,7 +119,7 @@ def test_cache_hits(mock_retry, mock_get_client):
     
     mock_response = MagicMock()
     mock_response.text = '{"units_consumed": 200, "total_amount": 1000, "billing_days": 30, "period_end": "2026-08-01", "tariff_slab": "LT-1A"}'
-    mock_retry.return_value = mock_response
+    mock_fallback.return_value = mock_response
     
     with patch("gemini.extract.MOCK_MODE", False):
         img_bytes = b"identical_image_bytes_here"
@@ -127,12 +127,12 @@ def test_cache_hits(mock_retry, mock_get_client):
         # First call: cache miss, calls client
         res1 = extract_bill(img_bytes)
         assert res1["units_consumed"] == 200.0
-        assert mock_retry.call_count == 1
+        assert mock_fallback.call_count == 1
         
         # Second call: cache hit, doesn't call client
         res2 = extract_bill(img_bytes)
         assert res2["units_consumed"] == 200.0
-        assert mock_retry.call_count == 1
+        assert mock_fallback.call_count == 1
 
 def test_mock_mode_active():
     # MOCK_MODE returns valid mock without touching network

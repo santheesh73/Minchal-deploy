@@ -1,6 +1,12 @@
 import logging
 from typing import List, Dict, Any
-from gemini.client import get_client, call_with_retry, MODEL_NAME, MOCK_MODE
+from gemini.client import (
+    get_client,
+    call_with_fallback,
+    generate,
+    MODEL_NAME,
+    MOCK_MODE,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -67,13 +73,10 @@ def generate_explanation(bill: Any, breakdown: List[Dict[str, Any]], actions: Li
             "- If the language is Tamil, do not use English technical words."
         )
 
-        def api_call():
-            return client.models.generate_content(
-                model=MODEL_NAME,
-                contents=prompt
-            )
-        
-        response = call_with_retry(api_call)
+        def api_call(model: str):
+            return generate(client, model, prompt)
+
+        response = call_with_fallback(api_call)
         if response.text and response.text.strip():
             return response.text.strip()
     except Exception as e:

@@ -12,6 +12,7 @@ load_dotenv()
 from schemas import AnalyzeRequest, AnalyzeResponse, ApiError, BillData, NameplateData
 from gemini.extract import extract_bill as gemini_extract_bill, extract_nameplate as gemini_extract_nameplate
 from gemini.validate import GeminiValidationError
+from gemini.client import get_last_model_used
 
 app = FastAPI()
 
@@ -139,7 +140,7 @@ def analyze(payload: AnalyzeRequest):
                 "insights": insights,
                 "meta": {
                     "engine_version": "engine-1",
-                    "model": "gemini-2.0-flash",
+                    "model": get_last_model_used(),
                     "generated_at": "",
                     "duration_ms": 0.0
                 }

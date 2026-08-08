@@ -3,10 +3,16 @@ import json
 import logging
 from typing import Dict, Any
 from google.genai import types
-from gemini.client import get_client, call_with_retry, MODEL_NAME, MOCK_MODE
+from gemini.client import (
+    get_client,
+    call_with_fallback,
+    generate,
+    MODEL_NAME,
+    MOCK_MODE,
+)
 from gemini.cache import get_cached_bill, set_cached_bill, get_cached_nameplate, set_cached_nameplate
 from gemini.validate import validate_bill, validate_nameplate, GeminiValidationError
-from schemas import BillData, NameplateData
+from gemini.schemas import BillExtraction, NameplateExtraction
 
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,21 +49,14 @@ def extract_bill(image_bytes: bytes, mime_type: str = "image/jpeg") -> Dict[str,
     )
 
     try:
-        def api_call():
+        def api_call(model: str):
             contents = [
                 types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
                 prompt
             ]
-            return client.models.generate_content(
-                model=MODEL_NAME,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=BillData,
-                )
-            )
+            return generate(client, model, contents, response_schema=BillExtraction)
 
-        response = call_with_retry(api_call)
+        response = call_with_fallback(api_call)
         parsed_data = json.loads(response.text)
     except Exception as e:
         logger.error(f"Gemini bill extraction or JSON parsing failed: {e}")
@@ -103,21 +102,14 @@ def extract_nameplate(image_bytes: bytes, mime_type: str = "image/jpeg") -> Dict
     )
 
     try:
-        def api_call():
+        def api_call(model: str):
             contents = [
                 types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
                 prompt
             ]
-            return client.models.generate_content(
-                model=MODEL_NAME,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=NameplateData,
-                )
-            )
+            return generate(client, model, contents, response_schema=NameplateExtraction)
 
-        response = call_with_retry(api_call)
+        response = call_with_fallback(api_call)
         parsed_data = json.loads(response.text)
     except Exception as e:
         logger.error(f"Gemini nameplate extraction or JSON parsing failed: {e}")
