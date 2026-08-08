@@ -23,6 +23,12 @@ progress. Organizers follow along through this repo, so keep it active.
 All frontend components are built against the mock JSON and types in `frontend/src/types/api.ts`.
 **Do not change the API contract without agreement from all four team members.**
 
+## What we deliberately did not build
+
+See [`FUTURE_WORK.md`](./FUTURE_WORK.md) — budget-constrained action planning,
+IoT ingestion, trend tracking, and the real-bill validation gap, each with the
+reason it was left out rather than a note that it is missing.
+
 ## Backend status
 
 Live URL (quick Cloudflare tunnel — **expires without warning, re-check before
