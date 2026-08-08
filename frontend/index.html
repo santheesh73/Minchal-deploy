@@ -6,17 +6,63 @@
     <meta name="theme-color" content="#0d6e6e" />
     <meta name="description" content="MINCHAL — Household Electricity Energy Audit PWA. Extract bill details, analyze appliance cost attributions, and discover actionable energy savings." />
     
-    <!-- PWA & Desktop Launcher App Icons -->
+    <!-- Crisp High-Contrast Favicon & App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon.png" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <title>MINCHAL — Household Electricity Energy Audit</title>
+
+    <style>
+      #app-init-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      #app-init-loader img {
+        height: 140px;
+        width: auto;
+        margin-bottom: 24px;
+      }
+      #app-init-loader .bar {
+        width: 180px;
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 9999px;
+        overflow: hidden;
+        position: relative;
+      }
+      #app-init-loader .bar-inner {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, #0d6e6e, #f59e0b, #2563eb);
+        border-radius: 9999px;
+        animation: pulse-bar 1.5s infinite ease-in-out;
+      }
+      @keyframes pulse-bar {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 1; }
+      }
+    </style>
   </head>
-  <body className="bg-slate-50 text-slate-900 font-sans antialiased">
-    <div id="root"></div>
+  <body class="bg-slate-50 text-slate-900 font-sans antialiased">
+    <div id="root">
+      <!-- Instant App Opening Splash Loader -->
+      <div id="app-init-loader">
+        <img src="/logo/logo-full.png" alt="MINCHAL AI-Powered Home Energy Audit" />
+        <div class="bar">
+          <div class="bar-inner"></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
