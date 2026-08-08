@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upload, ShieldCheck, Info } from 'lucide-react';
+import { Upload, ShieldCheck, Info, Keyboard } from 'lucide-react';
 import { FileDropZone } from './FileDropZone';
 import { CameraCapture } from './CameraCapture';
 import { Button } from '../ui/Button';
@@ -8,12 +8,17 @@ export interface BillUploaderProps {
   onFileSelect: (file: File) => void;
   validationError?: string | null;
   disabled?: boolean;
+  /** Type the numbers instead of photographing. Offered up front, not only
+   *  after a failure: plenty of people have the bill in hand but no usable
+   *  camera, or simply prefer typing four numbers to lining up a photo. */
+  onManualEntry?: () => void;
 }
 
 export const BillUploader: React.FC<BillUploaderProps> = ({
   onFileSelect,
   validationError,
   disabled = false,
+  onManualEntry,
 }) => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -66,6 +71,28 @@ export const BillUploader: React.FC<BillUploaderProps> = ({
           Upload from Device
         </Button>
       </div>
+
+      {/* Manual entry, offered up front rather than only after a failure */}
+      {onManualEntry && (
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-slate-200" />
+          <span className="text-xs text-slate-400 font-medium">or</span>
+          <div className="flex-1 h-px bg-slate-200" />
+        </div>
+      )}
+      {onManualEntry && (
+        <Button
+          variant="ghost"
+          size="lg"
+          onClick={onManualEntry}
+          disabled={disabled}
+          leftIcon={<Keyboard className="w-5 h-5 text-slate-600" />}
+          fullWidth
+          className="text-sm font-semibold text-slate-700"
+        >
+          Type the numbers from my bill instead
+        </Button>
+      )}
 
       {/* Strict Privacy Guarantee Note */}
       <div className="p-4 rounded-2xl bg-slate-100/70 border border-slate-200/80 text-xs text-slate-600 flex items-start gap-3">

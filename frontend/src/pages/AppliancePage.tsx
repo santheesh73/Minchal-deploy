@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, AlertCircle, Info } from 'lucide-react';
+import { ArrowRight, AlertCircle, Info, Zap } from 'lucide-react';
 import { useAudit } from '../store/AuditContext';
 import { ApplianceInput, ApplianceType } from '../types/api';
 import { getApplianceCatalogItem } from '../config/appliances';
@@ -53,6 +53,21 @@ export const AppliancePage: React.FC = () => {
     navigate('/audit/usage');
   };
 
+  /**
+   * Skip straight to the result using the defaults already applied when each
+   * appliance was added (star 3, year 2020, catalog runtime band, no symptoms).
+   *
+   * Reviewer feedback was that a normal user faces too many inputs before
+   * seeing anything. Nothing here is invented: the engine normalises every
+   * estimate against the real bill total, and confidence_reasons reports
+   * honestly that runtime was assumed rather than entered.
+   */
+  const handleUseTypicalValues = () => {
+    if (selectedAppliances.length === 0) return;
+    dispatch({ type: 'SET_STEP', payload: 'usage' });
+    navigate('/audit/analyzing');
+  };
+
   return (
     <PageContainer maxWidth="lg" className="space-y-6 sm:space-y-8">
       {/* Confirmed Bill Summary Bar */}
@@ -94,22 +109,47 @@ export const AppliancePage: React.FC = () => {
         </div>
       ) : null}
 
+      {/* Reassurance: the details are optional, and we say so before they ask */}
+      {selectedAppliances.length > 0 && (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm flex items-start gap-2.5">
+          <Zap className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+          <span>
+            <span className="font-semibold">You can stop here.</span> We already use typical
+            values for star rating, age and runtime, and every estimate is scaled to match
+            your actual bill total. Adding details only sharpens the split — and we always
+            show you how confident we are.
+          </span>
+        </div>
+      )}
+
       {/* Bottom Sticky Action Bar */}
-      <div className="pt-4 flex items-center justify-between border-t border-slate-200">
+      <div className="pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-slate-200">
         <div className="text-xs text-slate-500 font-medium hidden sm:block">
           {selectedAppliances.length} appliances selected • {allConfigured ? 'All configured' : 'Incomplete configuration'}
         </div>
 
-        <Button
-          variant="primary"
-          size="lg"
-          disabled={!allConfigured}
-          onClick={handleContinue}
-          rightIcon={<ArrowRight className="w-5 h-5" />}
-          className="w-full sm:w-auto font-bold text-base shadow-md hover:shadow-lg"
-        >
-          Continue to Usage & Symptoms
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Button
+            variant="success"
+            size="lg"
+            disabled={selectedAppliances.length === 0}
+            onClick={handleUseTypicalValues}
+            rightIcon={<ArrowRight className="w-5 h-5" />}
+            className="w-full sm:w-auto font-bold text-base shadow-md hover:shadow-lg"
+          >
+            Show my result now
+          </Button>
+
+          <Button
+            variant="outline"
+            size="lg"
+            disabled={!allConfigured}
+            onClick={handleContinue}
+            className="w-full sm:w-auto font-semibold text-base"
+          >
+            Add usage details first
+          </Button>
+        </div>
       </div>
 
       {/* Configuration Modal */}

@@ -26,7 +26,7 @@ All frontend components are built against the mock JSON and types in `frontend/s
 ## Backend status
 
 Live URL (quick Cloudflare tunnel — **expires without warning, re-check before
-every rehearsal**): `https://yearly-handy-till-aspects.trycloudflare.com`
+every rehearsal**): `https://crown-greg-all-governor.trycloudflare.com`
 
 Before any demo or rehearsal:
 ```bash

@@ -41,6 +41,7 @@ export const BillUploadPage: React.FC = () => {
         <BillUploader
           onFileSelect={selectFile}
           validationError={validationError}
+          onManualEntry={enterManual}
         />
       )}
 
