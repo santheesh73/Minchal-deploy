@@ -1,0 +1,42 @@
+{
+  "bill": {
+    "units_consumed": 400.0,
+    "total_amount": 2400.0,
+    "billing_days": 30,
+    "period_end": "2026-08-01",
+    "tariff_slab": "slab_3",
+    "energy_charges": 1800.0,
+    "fixed_charges": 200.0,
+    "taxes_and_duties": 400.0,
+    "subsidy_applied": 0.0
+  },
+  "appliances": [
+    {
+      "id": "ac-1",
+      "type": "ac",
+      "capacity": 1.5,
+      "star": 3,
+      "year": 2023,
+      "hours_band": "6-8",
+      "symptoms": []
+    },
+    {
+      "id": "ref-1",
+      "type": "fridge",
+      "capacity": 250.0,
+      "star": 3,
+      "year": 2021,
+      "hours_band": "8+",
+      "symptoms": []
+    },
+    {
+      "id": "gey-1",
+      "type": "geyser",
+      "capacity": 15.0,
+      "star": 2,
+      "year": 2024,
+      "hours_band": null,
+      "symptoms": []
+    }
+  ]
+}

@@ -53,8 +53,8 @@ class Check:
         return self
 
 
-def load_request(base_dir):
-    path = os.path.join(base_dir, "mocks", "analyze_request.json")
+def load_request(base_dir, name="analyze_request.json"):
+    path = os.path.join(base_dir, "mocks", name)
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
@@ -190,6 +190,32 @@ def run_checks(base_url, base_dir):
         tamil = sum(1 for ch in expl if "஀" <= ch <= "௿")
         script = f"{100 * tamil // len(expl)}% Tamil" if tamil else "NO Tamil chars"
         checks.append(c.passed(f"{len(expl)} chars, {script}"))
+
+    # --- the shape the real UI actually sends --------------------------------
+    # The stock request has a symptom on every appliance. The real frontend
+    # sends symptoms: [] when the user ticks nothing, which is the common case,
+    # and that difference 500ed the whole analysis while every other check here
+    # stayed green. Never let this hole reopen: a preflight that only exercises
+    # the convenient payload is measuring the wrong thing.
+    c = Check("/api/analyze accepts a request with NO symptoms")
+    try:
+        no_sym = load_request(base_dir, "analyze_request_no_symptoms.json")
+        r3 = client.post(f"{base_url}/api/analyze", json=no_sym, timeout=180)
+        if r3.status_code != 200:
+            checks.append(c.failed(f"HTTP {r3.status_code}: {r3.text[:160]}"))
+        else:
+            d3 = r3.json()
+            rup = sum(float(i.get("rupees", 0)) for i in (d3.get("breakdown") or []))
+            want = no_sym["bill"]["total_amount"]
+            if abs(rup - want) > RUPEES_TOLERANCE:
+                checks.append(c.failed(f"rupees {rup:.2f} vs {want}"))
+            else:
+                empty = sum(1 for a in no_sym["appliances"] if not a.get("symptoms"))
+                checks.append(c.passed(f"{empty} appliance(s) with no symptoms, rupees still sum to {rup:.2f}"))
+    except FileNotFoundError:
+        checks.append(c.failed("mocks/analyze_request_no_symptoms.json is missing"))
+    except Exception as e:
+        checks.append(c.failed(str(e)[:160]))
 
     # --- kill switch ---------------------------------------------------------
     c = Check("/api/manual-bill kill switch responds")

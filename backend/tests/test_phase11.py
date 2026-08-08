@@ -86,3 +86,51 @@ def test_engine_accepts_dicts_and_models_identically():
     as_models = generate_actions([ApplianceInput(**a) for a in appliances()],
                                  breakdown, rate=7.37, days=61)
     assert as_dicts == as_models
+
+
+def test_no_symptoms_fixture_exists_and_is_symptom_free():
+    """The fixture preflight uses must actually exercise the empty case."""
+    path = os.path.join(BASE, "mocks", "analyze_request_no_symptoms.json")
+    assert os.path.isfile(path), "preflight's no-symptoms fixture is missing"
+    payload = json.load(open(path, encoding="utf-8"))
+    assert payload["appliances"], "fixture has no appliances"
+    for a in payload["appliances"]:
+        assert a["symptoms"] == [], f"{a['id']} still carries symptoms — fixture proves nothing"
+    assert any(a.get("hours_band") is None for a in payload["appliances"]), \
+        "fixture should also cover the null hours_band trap"
+
+
+def test_no_symptoms_fixture_drives_analyze():
+    """The endpoint accepts it, and the ENGINE computes correctly on it.
+
+    The endpoint is checked through the API (in MOCK_MODE it returns canned
+    data, so only the status is meaningful there), and the arithmetic is
+    checked against the real engine directly — that is the part that broke.
+    """
+    payload = json.load(open(os.path.join(BASE, "mocks", "analyze_request_no_symptoms.json"), encoding="utf-8"))
+
+    res = client.post("/api/analyze", json=payload)
+    assert res.status_code == 200, res.text
+
+    from engine.calculator import analyze as engine_analyze
+    bill = BillData(**payload["bill"])
+    apps = [ApplianceInput(**a) for a in payload["appliances"]]
+    result = engine_analyze(bill, apps)
+
+    rupees = sum(i["rupees"] for i in result["breakdown"])
+    units = sum(i["units"] for i in result["breakdown"])
+    assert abs(rupees - bill.total_amount) <= 1.0
+    assert abs(units - bill.units_consumed) <= 0.1
+
+    # and the actions layer — the exact code that raised AttributeError
+    acts = generate_actions(apps, result["breakdown"],
+                            bill.total_amount / bill.units_consumed, bill.billing_days)
+    assert isinstance(acts, list)
+
+
+def test_stock_fixture_still_has_symptoms():
+    """Guards the pair: if someone strips symptoms from the stock request, the
+    symptom-driven code paths stop being covered by anything."""
+    payload = json.load(open(os.path.join(BASE, "mocks", "analyze_request.json"), encoding="utf-8"))
+    assert any(a["symptoms"] for a in payload["appliances"]), \
+        "stock fixture lost its symptoms — the cheap-action path is now untested"
