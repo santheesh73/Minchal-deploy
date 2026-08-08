@@ -1,9 +1,9 @@
 # The Ragnarok · Tech for Good 2026
 
 Team repository for **Build with AI: Code for Communities** — GDG Coimbatore
-(hackathon **Aug 8–9, 2026**, GRD College).
+(hackathon **Aug 8–9, 2026**, GRD College).  
 
-Everything your team does lives here from day one: the proposal, code, docs, and
+Everything ur team does lives here from day one: the proposal, code, docs, and
 progress. Organizers follow along through this repo, so keep it active.
 
 ## Start 
