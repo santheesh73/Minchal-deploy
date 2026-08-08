@@ -31,7 +31,7 @@ for _stream in (sys.stdout, sys.stderr):
 # What the frontend is pointed at. Overridable, but the default is deliberately
 # the tunnel: checking localhost proves nothing about what FE hits.
 DEFAULT_BASE_URL = os.getenv(
-    "MINCHAL_BASE_URL", "https://url-packs-johns-theme.trycloudflare.com"
+    "MINCHAL_BASE_URL", "https://collins-response-elections-customs.trycloudflare.com"
 )
 
 UNITS_TOLERANCE = 0.1

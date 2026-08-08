@@ -2,6 +2,12 @@ from typing import Any, Dict, Optional, Tuple
 
 CURRENT_YEAR = 2026
 
+# Implied-rate band (total_amount / units_consumed), in rupees per kWh.
+# See the banded check in validate_bill for why the floor is not a single value.
+GENERAL_RATE_FLOOR = 1.00
+SUBSIDISED_RATE_FLOOR = 0.30
+RATE_CEILING = 20.0
+
 class GeminiValidationError(Exception):
     def __init__(self, reason: str, message: str):
         self.reason = reason
@@ -108,12 +114,34 @@ def validate_bill(data: Dict[str, Any]) -> Dict[str, Any]:
             message=f"Billing cycle days ({days_val}) is outside the supported range (15 to 95 days)."
         )
 
-    # 4. implied rate check
+    # 4. implied rate check, banded.
+    #
+    # The floor was Rs 2.00/kWh, calibrated on unsubsidised assumptions. A real
+    # photographed TANGEDCO bill (239 units, Rs 418 paid -> Rs 1.75/kWh) was
+    # rejected as INVALID_BILL despite being extracted perfectly: Tamil Nadu
+    # domestic tariffs with the 100-free-units scheme and subsidy legitimately
+    # land below Rs 2. Telling a real customer "this isn't an electricity bill"
+    # because their subsidy is working is the worst kind of wrong.
+    #
+    # The floor still has to catch garbage — a misread total that lands at
+    # Rs 0.02/kWh is not a bill — so it is banded rather than removed:
+    #   general                : Rs 1.00/kWh
+    #   subsidy_applied > 0    : Rs 0.30/kWh
+    # The Rs 20 ceiling is unchanged; that end was never the problem.
+    subsidy = data.get("subsidy_applied")
+    try:
+        subsidised = subsidy is not None and float(subsidy) > 0
+    except (ValueError, TypeError):
+        subsidised = False
+    rate_floor = SUBSIDISED_RATE_FLOOR if subsidised else GENERAL_RATE_FLOOR
+
     implied_rate = total_val / units_val
-    if implied_rate < 2.0 or implied_rate > 20.0:
+    if implied_rate < rate_floor or implied_rate > RATE_CEILING:
         raise GeminiValidationError(
             reason="INVALID_BILL",
-            message=f"Implied rate (₹{implied_rate:.2f}/kWh) is unrealistic. Ensure the bill details are clearly captured."
+            message=(f"Implied rate (Rs {implied_rate:.2f}/kWh) is outside the supported "
+                     f"range (Rs {rate_floor:.2f} to Rs {RATE_CEILING:.2f}). "
+                     "Ensure the bill details are clearly captured.")
         )
 
     # Convert values to correct types in validated output
