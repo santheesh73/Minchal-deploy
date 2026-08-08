@@ -1,5 +1,6 @@
 import os
 import time
+import logging
 from datetime import datetime, timezone
 import json
 from fastapi import FastAPI, UploadFile, File, HTTPException, status
@@ -13,6 +14,9 @@ from schemas import AnalyzeRequest, AnalyzeResponse, ApiError, BillData, Namepla
 from gemini.extract import extract_bill as gemini_extract_bill, extract_nameplate as gemini_extract_nameplate
 from gemini.validate import GeminiValidationError, validate_bill
 from gemini.client import get_last_model_used
+from demo_cache import demo_response, demo_mode_enabled, PLACEHOLDER_DATA, DEMO_BILL_HASH
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -26,6 +30,15 @@ app.add_middleware(
 
 MOCK_MODE = not os.getenv("GEMINI_API_KEY")
 print(f"INFO: MOCK_MODE = {MOCK_MODE} (GEMINI_API_KEY {'is' if not MOCK_MODE else 'is not'} set)")
+
+if demo_mode_enabled():
+    print("#" * 62)
+    print(f"  DEMO_MODE IS ON - the demo bill ({DEMO_BILL_HASH[:12]}) is served")
+    print("  from cache. Every other bill still runs the real engine.")
+    if PLACEHOLDER_DATA:
+        print("  WARNING: cached data is PLACEHOLDER (synthetic bill).")
+        print("  See the SWAP PROCEDURE in demo_cache.py before demoing.")
+    print("#" * 62)
 
 # Helper to load mocks
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -119,10 +132,23 @@ def manual_bill(payload: ManualBillRequest):
 @app.post("/api/analyze", response_model=AnalyzeResponse)
 def analyze(payload: AnalyzeRequest):
     t_start = time.perf_counter()
-    
+
+    # Demo safety net. Checked before any engine or Gemini work so a rate limit
+    # or network blip cannot break a demo re-run of the known bill. Returns None
+    # for any other bill, which falls through to the real engine below.
+    cached = demo_response(payload.bill)
+    if cached is not None:
+        cached["meta"]["duration_ms"] = (time.perf_counter() - t_start) * 1000.0
+        cached["meta"]["generated_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        logger.info("DEMO_MODE: served cached response for the demo bill.")
+        # Returned as a Response so meta.data_source survives: response_model
+        # would filter it out, and adding it to the locked Meta schema would be
+        # a contract change for the sake of a temporary marker.
+        return JSONResponse(content=cached)
+
     with open(get_mock_path("analyze.json"), "r", encoding="utf-8") as f:
         data = json.load(f)
-        
+
     if not MOCK_MODE:
         from engine.calculator import analyze as real_analyze, CalculatorError
         from engine.insights import efficiency_gap, co2, savings, biggest_surprise, solar_payback
