@@ -93,13 +93,57 @@ def analyze(payload: AnalyzeRequest):
         
     if not MOCK_MODE:
         from engine.calculator import analyze as real_analyze, CalculatorError
+        from engine.insights import efficiency_gap, co2, savings, biggest_surprise, solar_payback
+        from engine.actions import generate_actions
+        from gemini.explain import generate_explanation
         try:
             real_res = real_analyze(payload.bill, payload.appliances)
-            data["bill_total_rupees"] = real_res["bill_total_rupees"]
-            data["breakdown"] = real_res["breakdown"]
-            data["scale_factor"] = real_res["scale_factor"]
-            data["confidence_percent"] = real_res["confidence_percent"]
-            data["confidence_reasons"] = real_res["confidence_reasons"]
+            rate = payload.bill.total_amount / payload.bill.units_consumed
+            
+            actions = generate_actions(payload.appliances, real_res["breakdown"], rate, payload.bill.billing_days)
+            eff_gap = efficiency_gap(payload.appliances, payload.bill, payload.bill.billing_days, rate)
+            
+            co2_val = co2(payload.bill.units_consumed, payload.bill.billing_days)
+            savings_dict = savings(actions, payload.bill.total_amount)
+            annual_saved_units = savings_dict["annual_savings_rupees"] / rate
+            annual_units_after = (payload.bill.units_consumed * 365.0 / payload.bill.billing_days) - annual_saved_units
+            co2_val_after = round(max(0.0, annual_units_after) * 0.71)
+            
+            surprise = biggest_surprise(real_res["breakdown"])
+            solar = solar_payback(payload.bill, payload.bill.billing_days, rate)
+            
+            insights = {
+                "efficiency_gap_percent": eff_gap["efficiency_gap_percent"],
+                "efficiency_gap_rupees": eff_gap["efficiency_gap_rupees"],
+                "efficiency_driver": eff_gap["efficiency_driver"],
+                "energy_score": eff_gap["energy_score"],
+                "co2_kg_year": float(co2_val),
+                "co2_kg_year_after": float(co2_val_after),
+                "monthly_savings_rupees": savings_dict["monthly_savings_rupees"],
+                "annual_savings_rupees": savings_dict["annual_savings_rupees"],
+                "biggest_surprise": surprise,
+                "solar": solar
+            }
+            
+            explanation = generate_explanation(payload.bill, real_res["breakdown"], actions, language="ta")
+            
+            data = {
+                "ok": True,
+                "bill_total_rupees": real_res["bill_total_rupees"],
+                "breakdown": real_res["breakdown"],
+                "scale_factor": real_res["scale_factor"],
+                "confidence_percent": real_res["confidence_percent"],
+                "confidence_reasons": real_res["confidence_reasons"],
+                "explanation": explanation,
+                "actions": actions,
+                "insights": insights,
+                "meta": {
+                    "engine_version": "engine-1",
+                    "model": "gemini-2.0-flash",
+                    "generated_at": "",
+                    "duration_ms": 0.0
+                }
+            }
         except CalculatorError as ce:
             return JSONResponse(
                 status_code=ce.status_code,

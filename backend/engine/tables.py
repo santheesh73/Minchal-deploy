@@ -89,6 +89,12 @@ IRRADIANCE_KWH_PER_KW_YEAR = 1450   # typical TN generation per kW installed
 COST_PER_KW = 60000                 # Rs, rooftop residential, installed
 SUBSIDY_TABLE = {1: 30000, 2: 60000, 3: 78000}   # PM Surya Ghar
 SOLAR_MIN_KW, SOLAR_MAX_KW = 1, 3   # residential band
+REPLACEMENT_COST = {
+    "ac": 38000,
+    "fridge": 28000,
+    "geyser": 9000
+}
+
 
 
 def watts_key(appliance_type: str, capacity: float | None) -> str:
