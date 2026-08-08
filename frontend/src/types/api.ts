@@ -1,4 +1,11 @@
-export type ApplianceType = "ac"|"fridge"|"geyser"|"washing_machine"|"fan"|"tv"|"lights"|"motor_pump";
+export type ApplianceType =
+  | "ac" | "fridge" | "geyser" | "washing_machine"
+  | "fan" | "tv" | "lights" | "motor_pump"
+  // Additive: a device outside the catalogue. No existing member changed.
+  // The USER supplies rated_power_w — there is no wattage table for an unknown
+  // appliance, and the backend rejects a custom appliance that arrives without
+  // one rather than guessing.
+  | "custom";
 export type HoursBand = "0-1"|"1-2"|"2-4"|"4-6"|"6-8"|"8+";
 export type ErrorCode = "OCR_BLUR"|"OCR_MISSING_FIELD"|"INVALID_BILL"|"APPLIANCE_UNKNOWN"|"SERVER_ERROR";
 
@@ -19,6 +26,10 @@ export interface NameplateData {
 export interface ApplianceInput {
   id: string; type: ApplianceType; capacity: number|null; star: number;
   year: number; hours_band: HoursBand|null; symptoms: string[];
+  // Required for type "custom" only. User-supplied, never defaulted.
+  rated_power_w?: number|null;
+  // What the user calls this device; shown instead of a catalogue label.
+  label?: string|null;
   // Additive & optional. hours_band is pre-filled with a sensible default the
   // moment an appliance is added, so its presence cannot answer "did the user
   // tell us, or did we assume?". Only set true when the user actually opens

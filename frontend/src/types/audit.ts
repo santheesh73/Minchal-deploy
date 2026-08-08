@@ -1,4 +1,4 @@
-import { BillData, ApplianceInput, ApplianceType, AnalyzeResponse, ApiError } from './api';
+import { BillData, ApplianceInput, ApplianceType, HoursBand, AnalyzeResponse, ApiError } from './api';
 
 export type Language = 'en' | 'ta';
 
@@ -34,6 +34,11 @@ export type AuditAction =
   | { type: 'ADD_APPLIANCE'; payload: ApplianceInput }
   | { type: 'REMOVE_APPLIANCE'; payload: string }
   | { type: 'TOGGLE_APPLIANCE_TYPE'; payload: ApplianceType }
+  | { type: 'ADD_ANOTHER_APPLIANCE'; payload: ApplianceType }
+  | {
+      type: 'ADD_CUSTOM_APPLIANCE';
+      payload: { label: string; rated_power_w: number; hours_band?: HoursBand };
+    }
   | { type: 'UPDATE_APPLIANCE'; payload: ApplianceInput }
   | { type: 'SET_ANALYZING'; payload: boolean }
   | { type: 'SET_ANALYSIS_RESULT'; payload: AnalyzeResponse | null }

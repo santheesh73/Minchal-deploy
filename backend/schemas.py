@@ -2,7 +2,13 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Literal, Union
 
 ApplianceType = Literal[
-    "ac", "fridge", "geyser", "washing_machine", "fan", "tv", "lights", "motor_pump"
+    "ac", "fridge", "geyser", "washing_machine", "fan", "tv", "lights", "motor_pump",
+    # Additive: a device outside the catalogue. No existing member changed.
+    # There is no wattage table for an unknown appliance, so the USER supplies
+    # rated_power_w (typed, or read off the nameplate by /api/extract-nameplate).
+    # The engine REJECTS a custom appliance without it rather than guessing —
+    # inventing a wattage is exactly the fabrication this design refuses.
+    "custom",
 ]
 HoursBand = Literal["0-1", "1-2", "2-4", "4-6", "6-8", "8+"]
 ErrorCode = Literal["OCR_BLUR", "OCR_MISSING_FIELD", "INVALID_BILL", "APPLIANCE_UNKNOWN", "SERVER_ERROR"]
@@ -63,6 +69,10 @@ class ApplianceInput(BaseModel):
     # None means not confirmed, the same convention as is_electricity_bill:
     # absent is never treated as an assertion. Only an explicit True counts.
     runtime_confirmed: Optional[bool] = None
+    # Required for type="custom" only. User-supplied; never defaulted.
+    rated_power_w: Optional[float] = None
+    # What the user calls this device, shown instead of a catalogue label.
+    label: Optional[str] = None
 
 class WorkingStep(BaseModel):
     label: str

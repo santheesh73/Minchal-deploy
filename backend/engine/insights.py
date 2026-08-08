@@ -110,10 +110,17 @@ def savings(actions: List[Dict[str, Any]], bill_total: float) -> Dict[str, float
 
 
 def biggest_surprise(breakdown: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-    """The appliance that most exceeds what a typical home spends on it."""
+    """The appliance that most exceeds what a typical home spends on it.
+
+    Compared per TYPE, not per instance: two ACs at 27% each are a household
+    spending 54% on cooling, which is the surprise. Judged separately, neither
+    looks unusual and the finding disappears.
+    """
+    from engine.tables import aggregate_breakdown_by_type
+
     deviations = []
-    
-    for item in breakdown:
+
+    for item in aggregate_breakdown_by_type(breakdown).values():
         item_type = item.get("type")
         if item_type == "other":
             continue

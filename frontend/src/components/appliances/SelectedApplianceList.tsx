@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Settings, Trash2, CheckCircle2, AlertCircle, Plus } from 'lucide-react';
 import { ApplianceInput } from '../../types/api';
 import { getApplianceCatalogItem } from '../../config/appliances';
 import { Card } from '../ui/Card';
@@ -9,12 +9,23 @@ export interface SelectedApplianceListProps {
   appliances: ApplianceInput[];
   onConfigure: (appliance: ApplianceInput) => void;
   onRemove: (id: string) => void;
+  /** Add a SECOND unit of the same type — plenty of homes have two ACs. */
+  onAddAnother?: (appliance: ApplianceInput) => void;
+}
+
+function countOfType(list: ApplianceInput[], type: ApplianceInput['type']) {
+  return list.filter((a) => a.type === type).length;
+}
+
+function indexOfType(list: ApplianceInput[], app: ApplianceInput) {
+  return list.filter((a) => a.type === app.type).findIndex((a) => a.id === app.id) + 1;
 }
 
 export const SelectedApplianceList: React.FC<SelectedApplianceListProps> = ({
   appliances,
   onConfigure,
   onRemove,
+  onAddAnother,
 }) => {
   if (appliances.length === 0) {
     return null;
@@ -31,15 +42,24 @@ export const SelectedApplianceList: React.FC<SelectedApplianceListProps> = ({
         {appliances.map((app) => {
           const catalog = getApplianceCatalogItem(app.type);
           const isConfigured =
-            (catalog?.supportsStar ? app.star > 0 : true) &&
-            (catalog?.supportsYear ? app.year > 0 : true) &&
-            (app.type === 'fridge' ? true : app.hours_band !== null);
+            app.type === 'custom'
+              ? !!app.rated_power_w && app.rated_power_w > 0 && app.hours_band !== null
+              : (catalog?.supportsStar ? app.star > 0 : true) &&
+                (catalog?.supportsYear ? app.year > 0 : true) &&
+                (app.type === 'fridge' ? true : app.hours_band !== null);
 
           return (
             <Card key={app.id} variant="default" className="p-4 flex items-center justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-slate-900 text-sm">{catalog?.label}</h4>
+                  <h4 className="font-bold text-slate-900 text-sm">
+                    {app.label || catalog?.label || 'Appliance'}
+                    {countOfType(appliances, app.type) > 1 && (
+                      <span className="ml-1.5 text-[10px] font-semibold text-slate-500">
+                        #{indexOfType(appliances, app)}
+                      </span>
+                    )}
+                  </h4>
                   <span
                     className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${
                       isConfigured
@@ -85,6 +105,16 @@ export const SelectedApplianceList: React.FC<SelectedApplianceListProps> = ({
                 >
                   Configure
                 </Button>
+                {onAddAnother && app.type !== 'custom' && (
+                  <button
+                    type="button"
+                    onClick={() => onAddAnother(app)}
+                    className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-xl transition-colors"
+                    title={`Add another ${catalog?.label || 'unit'}`}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => onRemove(app.id)}

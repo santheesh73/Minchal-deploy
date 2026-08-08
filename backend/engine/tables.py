@@ -71,6 +71,7 @@ SYMPTOMS = {
 # Typical share of an Indian household bill by appliance (CLASP-BEE 2024).
 # Used ONLY by F12 biggest_surprise deviation calculation.
 TYPICAL_SHARE = {
+    # No published typical share for an unknown device; falls back to DEFAULT.
     "ac": 0.40, "fridge": 0.18, "geyser": 0.10, "washing_machine": 0.05,
     "fan": 0.08, "tv": 0.04, "lights": 0.07, "motor_pump": 0.08,
 }
@@ -78,6 +79,7 @@ TYPICAL_SHARE_DEFAULT = 0.05
 
 # Display labels — single source of truth, used in breakdown[].label
 LABELS = {
+    "custom": "Other appliance",
     "ac": "Air Conditioner", "fridge": "Refrigerator",
     "geyser": "Water Heater", "washing_machine": "Washing Machine",
     "fan": "Fan", "tv": "Television", "lights": "Lights",
@@ -134,3 +136,30 @@ def symptom_multiplier(appliance_type: str, symptom_key: str) -> float:
         if key == symptom_key:
             return mult
     return 1.0
+
+
+def aggregate_breakdown_by_type(breakdown):
+    """Sums breakdown rows that share an appliance type.
+
+    A household can own two ACs, and the engine gives each its own row. Any
+    code that does {item["type"]: item for item in breakdown} silently keeps
+    only the last one, so a home spending Rs 3,000 across two ACs is treated as
+    spending Rs 1,500 — actions under-credit the saving, and a type that is
+    obviously over-represented never registers as a surprise because each
+    instance looks modest on its own.
+
+    Returns one merged row per type, with units, rupees and percent summed and
+    the best (lowest) rank kept.
+    """
+    merged = {}
+    for item in breakdown:
+        t = item.get("type")
+        if t not in merged:
+            merged[t] = dict(item)
+            continue
+        m = merged[t]
+        m["units"] = round(m.get("units", 0.0) + item.get("units", 0.0), 2)
+        m["rupees"] = round(m.get("rupees", 0.0) + item.get("rupees", 0.0), 2)
+        m["percent"] = round(m.get("percent", 0.0) + item.get("percent", 0.0), 2)
+        m["rank"] = min(m.get("rank", 99), item.get("rank", 99))
+    return merged

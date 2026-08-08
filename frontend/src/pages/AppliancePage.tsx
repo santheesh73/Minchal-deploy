@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, AlertCircle, Info, Zap } from 'lucide-react';
 import { useAudit } from '../store/AuditContext';
-import { ApplianceInput, ApplianceType } from '../types/api';
+import { ApplianceInput, ApplianceType, HoursBand } from '../types/api';
 import { getApplianceCatalogItem } from '../config/appliances';
 import { PageContainer } from '../components/layout/PageContainer';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -11,6 +11,7 @@ import { BillSummaryBar } from '../components/appliances/BillSummaryBar';
 import { AppliancePicker } from '../components/appliances/AppliancePicker';
 import { SelectedApplianceList } from '../components/appliances/SelectedApplianceList';
 import { ApplianceConfigModal } from '../components/appliances/ApplianceConfigModal';
+import { CustomApplianceForm } from '../components/appliances/CustomApplianceForm';
 
 export const AppliancePage: React.FC = () => {
   const navigate = useNavigate();
@@ -36,10 +37,24 @@ export const AppliancePage: React.FC = () => {
     dispatch({ type: 'REMOVE_APPLIANCE', payload: id });
   };
 
+  /** A second AC is a separate instance with its own id, not a duplicate. */
+  const handleAddAnother = (type: ApplianceType) => {
+    dispatch({ type: 'ADD_ANOTHER_APPLIANCE', payload: type });
+  };
+
+  const handleAddCustom = (label: string, rated_power_w: number, hours_band: HoursBand) => {
+    dispatch({ type: 'ADD_CUSTOM_APPLIANCE', payload: { label, rated_power_w, hours_band } });
+  };
+
   // Check if all selected appliances have completed configuration details
   const allConfigured =
     selectedAppliances.length > 0 &&
     selectedAppliances.every((app) => {
+      // A custom appliance has no catalogue entry; it is complete once the user
+      // has given it a wattage and a runtime.
+      if (app.type === 'custom') {
+        return !!app.rated_power_w && app.rated_power_w > 0 && app.hours_band !== null;
+      }
       const catalog = getApplianceCatalogItem(app.type);
       const starOk = catalog?.supportsStar ? app.star > 0 : true;
       const yearOk = catalog?.supportsYear ? app.year > 0 : true;
@@ -89,11 +104,15 @@ export const AppliancePage: React.FC = () => {
         onConfigureInstance={handleOpenConfig}
       />
 
+      {/* Add a device that is not in the catalogue */}
+      <CustomApplianceForm onAdd={handleAddCustom} />
+
       {/* Selected Appliance Summary List */}
       <SelectedApplianceList
         appliances={selectedAppliances}
         onConfigure={handleOpenConfig}
         onRemove={handleRemoveAppliance}
+        onAddAnother={(app) => handleAddAnother(app.type)}
       />
 
       {/* Configuration Guidance & Validation Banner */}

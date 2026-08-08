@@ -34,6 +34,62 @@ export function auditReducer(state: AuditState, action: AuditAction): AuditState
     case 'SET_APPLIANCES':
       return { ...state, appliances: action.payload };
 
+    // A household can own two ACs. Ids must be unique per INSTANCE, not per
+    // type, or the engine keys its estimates by a colliding id and the second
+    // one overwrites the first.
+    case 'ADD_ANOTHER_APPLIANCE': {
+      const targetType = action.payload;
+      const catalogItem = getApplianceCatalogItem(targetType);
+      const defaultCapacity =
+        catalogItem?.capacityPresets?.[1] ?? catalogItem?.capacityPresets?.[0] ?? null;
+      const nextIndex =
+        state.appliances.filter((a) => a.type === targetType).length + 1;
+
+      return {
+        ...state,
+        appliances: [
+          ...state.appliances,
+          {
+            id: `${targetType}-${nextIndex}`,
+            type: targetType,
+            capacity: catalogItem?.supportsCapacity ? defaultCapacity : null,
+            star: 3,
+            year: 2020,
+            hours_band: targetType === 'fridge' ? null : (catalogItem?.defaultHoursBand || '4-6'),
+            symptoms: [],
+            runtime_confirmed: false,
+          },
+        ],
+      };
+    }
+
+    // A device that is not in the catalogue. The user supplies its wattage —
+    // there is no honest default for something we have never heard of, and the
+    // backend rejects a custom appliance that arrives without one.
+    case 'ADD_CUSTOM_APPLIANCE': {
+      const { label, rated_power_w, hours_band } = action.payload;
+      const nextIndex = state.appliances.filter((a) => a.type === 'custom').length + 1;
+      return {
+        ...state,
+        appliances: [
+          ...state.appliances,
+          {
+            id: `custom-${nextIndex}`,
+            type: 'custom',
+            capacity: null,
+            star: 3,
+            year: 2020,
+            hours_band: hours_band || '2-4',
+            symptoms: [],
+            // The user typed both of these, so runtime is genuinely confirmed.
+            runtime_confirmed: true,
+            rated_power_w,
+            label,
+          },
+        ],
+      };
+    }
+
     case 'ADD_APPLIANCE':
       return { ...state, appliances: [...state.appliances, action.payload] };
 
@@ -48,6 +104,8 @@ export function auditReducer(state: AuditState, action: AuditAction): AuditState
       const existingIndex = state.appliances.findIndex((item) => item.type === targetType);
 
       if (existingIndex >= 0) {
+        // Untoggling a type removes every instance of it, not just the first —
+        // otherwise a second AC is left orphaned with no way to reach it.
         // Remove appliance
         return {
           ...state,

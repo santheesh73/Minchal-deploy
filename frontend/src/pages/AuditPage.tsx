@@ -49,6 +49,11 @@ export const AuditPage: React.FC = () => {
             hours_band: app.type === 'fridge' ? null : app.hours_band,
             symptoms: app.symptoms || [],
             runtime_confirmed: app.runtime_confirmed === true,
+        // Custom appliances carry a user-supplied wattage and name. The
+        // backend REJECTS a custom appliance without the wattage, so dropping
+        // these here would turn "add your own appliance" into a 400.
+        rated_power_w: app.rated_power_w ?? null,
+        label: app.label ?? null,
           })),
           language: state.language || 'en',
         }

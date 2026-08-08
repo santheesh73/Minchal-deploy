@@ -10,3 +10,4 @@ export * from './ApplianceCard';
 export * from './AppliancePicker';
 export * from './SelectedApplianceList';
 export * from './ApplianceConfigModal';
+export * from './CustomApplianceForm';

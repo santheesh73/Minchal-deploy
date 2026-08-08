@@ -1,7 +1,8 @@
 import logging
 from typing import List, Dict, Any, Optional
 from engine.tables import (STAR_MULT, AGE_PER_YEAR, CURRENT_YEAR, REPLACEMENT_COST,
-                           MAINTENANCE_COST, MAINTENANCE_COST_DEFAULT, symptom_multiplier)
+                           MAINTENANCE_COST, MAINTENANCE_COST_DEFAULT, symptom_multiplier,
+                           aggregate_breakdown_by_type)
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +48,9 @@ def generate_actions(appliances: List[Any], breakdown: List[Dict[str, Any]], rat
     """Generates at most one action per tier (free, cheap, investment)."""
     actions = []
 
-    # Map breakdown list to a dict for easy rupees lookup
-    breakdown_by_type = {item["type"]: item for item in breakdown}
+    # Merged per type, NOT last-wins: two ACs are one household AC spend, and
+    # a dict comprehension here would throw away all but the last row.
+    breakdown_by_type = aggregate_breakdown_by_type(breakdown)
 
     # 1. FREE ACTION (AC present and running hours >= "4-6")
     ac_app = None

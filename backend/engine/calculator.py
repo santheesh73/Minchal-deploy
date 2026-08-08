@@ -59,6 +59,7 @@ def estimate_kwh(appliance: Any, days: int) -> Tuple[float, List[Dict[str, str]]
         hours_band = appliance.get("hours_band")
         symptoms = appliance.get("symptoms") or []
         capacity = appliance.get("capacity")
+        rated_power_w = appliance.get("rated_power_w")
     else:
         app_type = getattr(appliance, "type", None)
         star = getattr(appliance, "star", None)
@@ -66,6 +67,7 @@ def estimate_kwh(appliance: Any, days: int) -> Tuple[float, List[Dict[str, str]]
         hours_band = getattr(appliance, "hours_band", None)
         symptoms = getattr(appliance, "symptoms", None) or []
         capacity = getattr(appliance, "capacity", None)
+        rated_power_w = getattr(appliance, "rated_power_w", None)
 
     if star is None:
         star = 3
@@ -97,9 +99,22 @@ def estimate_kwh(appliance: Any, days: int) -> Tuple[float, List[Dict[str, str]]
             {"label": "Raw Estimate", "value": f"{raw_kwh:.2f} kWh"}
         ])
     else:
-        # Determine default load
-        w_key = watts_key(app_type, capacity)
-        watts = DEFAULT_WATTS.get(w_key, 100)
+        # Determine load. A custom appliance has no catalogue entry, so the
+        # user's own rated_power_w is the only legitimate source — there is no
+        # honest default for a device we have never heard of. estimate_kwh is
+        # only reached after analyze() has already rejected a custom appliance
+        # without one, so this is belt and braces.
+        if app_type == "custom":
+            if rated_power_w is None:
+                raise CalculatorError(
+                    reason="APPLIANCE_UNKNOWN",
+                    message="A custom appliance needs its wattage. Enter it, or scan the nameplate.",
+                    status_code=400,
+                )
+            watts = float(rated_power_w)
+        else:
+            w_key = watts_key(app_type, capacity)
+            watts = DEFAULT_WATTS.get(w_key, 100)
         
         # Determine hours
         if hours_band is None:
@@ -346,6 +361,14 @@ def analyze(bill: Any, appliances: List[Any]) -> Dict[str, Any]:
                 message=f"Unknown appliance type: {app_type}",
                 status_code=400
             )
+        if app_type == "custom":
+            watts = app.get("rated_power_w") if isinstance(app, dict) else getattr(app, "rated_power_w", None)
+            if watts is None or float(watts) <= 0:
+                raise CalculatorError(
+                    reason="APPLIANCE_UNKNOWN",
+                    message="A custom appliance needs its wattage. Enter it, or scan the nameplate.",
+                    status_code=400,
+                )
 
     # 1. Raw estimates
     raw_estimates = {}
@@ -394,9 +417,18 @@ def analyze(bill: Any, appliances: List[Any]) -> Dict[str, Any]:
             {"label": "Final Calibrated Consumption", "value": f"{final_units:.2f} kWh"}
         ])
 
+        # A custom appliance shows the name the USER gave it. Falling back to
+        # the generic catalogue label would hide which device a row refers to
+        # as soon as someone adds two of them.
+        if isinstance(app, dict):
+            user_label = app.get("label")
+        else:
+            user_label = getattr(app, "label", None)
+        display_label = (user_label or "").strip() or LABELS[app_type]
+
         item = {
             "type": app_type,
-            "label": LABELS[app_type],
+            "label": display_label,
             "units": round(final_units, 2),
             "rupees": round(final_rupees, 2),
             "percent": float(round(final_units / units_consumed * 100)),
