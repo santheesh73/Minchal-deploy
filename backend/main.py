@@ -1,6 +1,15 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+import os
 import time
+from datetime import datetime, timezone
+import json
+from fastapi import FastAPI, UploadFile, File, HTTPException, status
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from schemas import AnalyzeRequest, AnalyzeResponse, ApiError, BillData, NameplateData
 
 app = FastAPI()
 
@@ -12,18 +21,59 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+MOCK_MODE = not os.getenv("GEMINI_API_KEY")
+print(f"INFO: MOCK_MODE = {MOCK_MODE} (GEMINI_API_KEY {'is' if not MOCK_MODE else 'is not'} set)")
+
+# Helper to load mocks
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def get_mock_path(filename: str) -> str:
+    return os.path.join(BASE_DIR, "mocks", filename)
+
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"ok": True, "version": "engine-1"}
+
 
 @app.post("/api/extract-bill")
-def extract_bill():
-    return {}
+async def extract_bill(image: UploadFile = File(...)):
+    if not image.content_type or not image.content_type.startswith("image/"):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=ApiError(ok=False, reason="INVALID_BILL", message="Not an image file").model_dump()
+        )
+    
+    with open(get_mock_path("extract_bill.json"), "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data
 
 @app.post("/api/extract-nameplate")
-def extract_nameplate():
-    return {}
+async def extract_nameplate(image: UploadFile = File(...)):
+    if not image.content_type or not image.content_type.startswith("image/"):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=ApiError(ok=False, reason="INVALID_BILL", message="Not an image file").model_dump()
+        )
+    
+    with open(get_mock_path("extract_nameplate.json"), "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data
 
-@app.post("/api/analyze")
-def analyze():
-    return {}
+@app.post("/api/analyze", response_model=AnalyzeResponse)
+def analyze(payload: AnalyzeRequest):
+    t_start = time.perf_counter()
+    
+    # Simulate slight processing duration
+    time.sleep(0.01)
+    
+    with open(get_mock_path("analyze.json"), "r", encoding="utf-8") as f:
+        data = json.load(f)
+        
+    duration_ms = (time.perf_counter() - t_start) * 1000.0
+    generated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    
+    data["meta"]["duration_ms"] = duration_ms
+    data["meta"]["generated_at"] = generated_at
+    
+    # Keep response compliant with AnalyzeResponse schema validation
+    return data
