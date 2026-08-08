@@ -20,6 +20,28 @@ REPLACEMENT_ACTION_TEXT = {
 }
 
 
+
+def _field(appliance: Any, name: str, default: Any = None) -> Any:
+    """Reads a field from an appliance whether it is a pydantic model or a dict.
+
+    The previous idiom, `getattr(a, name, None) or a.get(name)`, was a live
+    crash: `or` falls through on any FALSY value, not just a missing one. An
+    appliance with no symptoms has symptoms == [] — falsy — so it called .get()
+    on a pydantic ApplianceInput and raised
+    "'ApplianceInput' object has no attribute 'get'", 500ing the whole analysis.
+
+    Every mock request had symptoms on every appliance, so preflight and the
+    tests never saw it. The real frontend sends [] when the user ticks no
+    symptoms, which is the common case — most users have nothing to report.
+    Same trap for hours_band=None and star=0.
+    """
+    if isinstance(appliance, dict):
+        value = appliance.get(name)
+    else:
+        value = getattr(appliance, name, None)
+    return default if value is None else value
+
+
 def generate_actions(appliances: List[Any], breakdown: List[Dict[str, Any]], rate: float, days: int) -> List[Dict[str, Any]]:
     """Generates at most one action per tier (free, cheap, investment)."""
     actions = []
@@ -30,9 +52,9 @@ def generate_actions(appliances: List[Any], breakdown: List[Dict[str, Any]], rat
     # 1. FREE ACTION (AC present and running hours >= "4-6")
     ac_app = None
     for a in appliances:
-        a_type = getattr(a, "type", None) or a.get("type")
+        a_type = _field(a, "type")
         if a_type == "ac":
-            h_band = getattr(a, "hours_band", None) or a.get("hours_band")
+            h_band = _field(a, "hours_band")
             if h_band in ["4-6", "6-8", "8+"]:
                 ac_app = a
                 break
@@ -52,9 +74,9 @@ def generate_actions(appliances: List[Any], breakdown: List[Dict[str, Any]], rat
     max_cheap_saving = 0.0
 
     for a in appliances:
-        a_id = getattr(a, "id", None) or a.get("id")
-        a_type = getattr(a, "type", None) or a.get("type")
-        symptoms = getattr(a, "symptoms", None) or a.get("symptoms") or []
+        a_id = _field(a, "id")
+        a_type = _field(a, "type")
+        symptoms = _field(a, "symptoms", []) or []
         
         if a_type not in breakdown_by_type:
             continue
@@ -82,10 +104,10 @@ def generate_actions(appliances: List[Any], breakdown: List[Dict[str, Any]], rat
     max_inv_saving = 0.0
 
     for a in appliances:
-        a_id = getattr(a, "id", None) or a.get("id")
-        a_type = getattr(a, "type", None) or a.get("type")
-        star = getattr(a, "star", None) or a.get("star") or 3
-        year = getattr(a, "year", None) or a.get("year") or CURRENT_YEAR
+        a_id = _field(a, "id")
+        a_type = _field(a, "type")
+        star = _field(a, "star", 3)
+        year = _field(a, "year", CURRENT_YEAR)
         
         if a_type not in REPLACEMENT_COST:
             continue
