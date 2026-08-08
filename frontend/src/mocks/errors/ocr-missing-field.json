@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "reason": "OCR_MISSING_FIELD",
+  "message": "Key bill fields such as units consumed or total amount could not be detected. Please ensure the full bill statement is visible."
+}

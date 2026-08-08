@@ -9,6 +9,9 @@ export interface BillData {
   taxes_and_duties: number|null; subsidy_applied: number|null;
   // consumer name/number/address are DELIBERATELY NEVER EXTRACTED (privacy)
 }
+
+export type ExtractBillResponse = BillData;
+
 export interface NameplateData {
   appliance_type: ApplianceType; rated_power_w: number|null;
   star_rating: number|null; capacity: number|null; manufacture_year: number|null;
@@ -17,6 +20,13 @@ export interface ApplianceInput {
   id: string; type: ApplianceType; capacity: number|null; star: number;
   year: number; hours_band: HoursBand|null; symptoms: string[];
 }
+
+export interface AnalyzeRequest {
+  bill: BillData;
+  appliances: ApplianceInput[];
+  language: "en" | "ta";
+}
+
 export interface WorkingStep { label: string; value: string; }
 export interface Assumption { ok: boolean; text: string; }
 export interface BreakdownItem {

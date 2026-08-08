@@ -1,16 +1,17 @@
-import React from 'react';
-import { BillCapture } from './components/BillCapture';
-import { AppliancePicker } from './components/AppliancePicker';
-import { ResultScreen } from './components/ResultScreen';
+import { BrowserRouter } from 'react-router-dom';
+import { AuditProvider } from './store/AuditContext';
+import { AppLayout } from './components/layout/AppLayout';
+import { AppRoutes } from './routes/AppRoutes';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 3-step router stub: Capture → Appliances → Result */}
-      <BillCapture />
-      <AppliancePicker />
-      <ResultScreen />
-    </div>
+    <BrowserRouter>
+      <AuditProvider>
+        <AppLayout>
+          <AppRoutes />
+        </AppLayout>
+      </AuditProvider>
+    </BrowserRouter>
   );
 }
 

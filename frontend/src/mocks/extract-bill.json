@@ -1,0 +1,11 @@
+{
+  "units_consumed": 350,
+  "total_amount": 1500,
+  "billing_days": 60,
+  "period_end": "2026-07-31",
+  "tariff_slab": "LT-1A Domestic",
+  "energy_charges": 1200,
+  "fixed_charges": 150,
+  "taxes_and_duties": 150,
+  "subsidy_applied": 0
+}

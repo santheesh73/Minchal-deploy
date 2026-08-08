@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "reason": "APPLIANCE_UNKNOWN",
+  "message": "The nameplate image contains an unrecognized appliance type. Please select the appliance type manually."
+}

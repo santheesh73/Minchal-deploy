@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "reason": "OCR_BLUR",
+  "message": "The uploaded bill image is too blurry to read clearly. Please upload a sharper photo with clear lighting."
+}

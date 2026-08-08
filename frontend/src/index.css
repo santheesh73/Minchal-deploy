@@ -1,3 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans antialiased selection:bg-brand-500 selection:text-white;
+  }
+}
+
+/* Custom Typography Levels */
+.text-display {
+  @apply text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight;
+}
+
+.text-h1 {
+  @apply text-2xl sm:text-3xl font-bold tracking-tight;
+}
+
+.text-h2 {
+  @apply text-xl sm:text-2xl font-semibold tracking-tight;
+}
+
+.text-h3 {
+  @apply text-lg font-medium text-slate-800;
+}
+
+.text-numeric {
+  @apply font-bold tracking-tight font-mono text-slate-900;
+}
+
+/* Accessible focus visible ring */
+*:focus-visible {
+  @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-slate-50;
+}
+
+/* Smooth animations */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

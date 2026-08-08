@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "reason": "INVALID_BILL",
+  "message": "The uploaded document does not appear to be a valid electricity bill. Please upload an official TNEB / EB bill."
+}
