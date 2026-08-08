@@ -220,3 +220,52 @@ def test_env_override_still_falls_back_to_known_good():
         prio = model_priority()
     assert prio[0] == "some-experimental-model"
     assert "gemini-3.1-flash-lite" in prio
+
+
+def test_zero_units_is_unreadable_not_invalid():
+    """A bare zero must not tell the user they uploaded the wrong document."""
+    from gemini.validate import validate_bill, GeminiValidationError
+
+    # bill-like: a total was read, only the units failed -> retake the photo
+    with pytest.raises(GeminiValidationError) as exc:
+        validate_bill({"units_consumed": 0, "total_amount": 1768.0, "billing_days": 30})
+    assert exc.value.reason == "OCR_MISSING_FIELD"
+    assert "clearer photo" in exc.value.message
+
+    # null behaves identically to zero: same cause, same guidance
+    with pytest.raises(GeminiValidationError) as exc:
+        validate_bill({"units_consumed": None, "total_amount": 1768.0, "billing_days": 30})
+    assert exc.value.reason == "OCR_MISSING_FIELD"
+
+
+def test_invalid_bill_reserved_for_no_bill_structure():
+    """INVALID_BILL survives for images that are genuinely not bills."""
+    from gemini.validate import validate_bill, GeminiValidationError
+
+    for payload in (
+        {"units_consumed": None, "total_amount": None, "billing_days": None},
+        {"units_consumed": 0, "total_amount": 0, "billing_days": 0},
+        {},
+    ):
+        with pytest.raises(GeminiValidationError) as exc:
+            validate_bill(payload)
+        assert exc.value.reason == "INVALID_BILL", payload
+
+    # ...and for readings that are structurally impossible rather than unread
+    with pytest.raises(GeminiValidationError) as exc:
+        validate_bill({"units_consumed": 5001, "total_amount": 1000, "billing_days": 30})
+    assert exc.value.reason == "INVALID_BILL"
+
+
+def test_receipt_case_is_deterministic_across_both_model_outputs():
+    """The real receipt flip-flopped between null and 0 between runs. Both must
+    now produce the same user-facing error, or identical input gives different
+    guidance on a coin flip."""
+    from gemini.validate import validate_bill, GeminiValidationError
+
+    reasons = set()
+    for units in (None, 0, 0.0):
+        with pytest.raises(GeminiValidationError) as exc:
+            validate_bill({"units_consumed": units, "total_amount": 1768.0, "billing_days": None})
+        reasons.add(exc.value.reason)
+    assert reasons == {"OCR_MISSING_FIELD"}, f"non-deterministic guidance: {reasons}"

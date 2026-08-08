@@ -26,14 +26,18 @@ def test_validation_bill_missing_units():
     assert exc.value.reason == "OCR_MISSING_FIELD"
 
 def test_validation_bill_invalid_units():
-    # units_consumed <= 0 or > 5000 -> INVALID_BILL
-    with pytest.raises(GeminiValidationError) as exc:
-        validate_bill({"units_consumed": 0, "total_amount": 1000, "billing_days": 30})
-    assert exc.value.reason == "INVALID_BILL"
-    
+    # units_consumed > 5000 -> INVALID_BILL
     with pytest.raises(GeminiValidationError) as exc:
         validate_bill({"units_consumed": 5001, "total_amount": 1000, "billing_days": 30})
     assert exc.value.reason == "INVALID_BILL"
+
+    # units_consumed == 0 -> OCR_MISSING_FIELD, NOT INVALID_BILL. Gemini emits 0
+    # when the figure is unreadable, so zero is far more often "couldn't read it"
+    # than "genuinely not a bill", and the guidance differs materially: retake
+    # the photo vs go find a different document.
+    with pytest.raises(GeminiValidationError) as exc:
+        validate_bill({"units_consumed": 0, "total_amount": 1000, "billing_days": 30})
+    assert exc.value.reason == "OCR_MISSING_FIELD"
 
 def test_validation_bill_missing_total():
     # total_amount is null or <= 0 -> OCR_MISSING_FIELD

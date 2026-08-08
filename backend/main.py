@@ -9,9 +9,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from schemas import AnalyzeRequest, AnalyzeResponse, ApiError, BillData, NameplateData
+from schemas import AnalyzeRequest, AnalyzeResponse, ApiError, BillData, NameplateData, ManualBillRequest
 from gemini.extract import extract_bill as gemini_extract_bill, extract_nameplate as gemini_extract_nameplate
-from gemini.validate import GeminiValidationError
+from gemini.validate import GeminiValidationError, validate_bill
 from gemini.client import get_last_model_used
 
 app = FastAPI()
@@ -83,6 +83,37 @@ async def extract_nameplate(image: UploadFile = File(...)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content=ApiError(ok=False, reason="SERVER_ERROR", message=str(e)).model_dump()
         )
+
+
+@app.post("/api/manual-bill")
+def manual_bill(payload: ManualBillRequest):
+    """Manual-entry fallback — the PRD kill switch for when OCR is unusable.
+
+    Takes the numbers straight off the paper bill, runs them through the SAME
+    validation gate as extraction, and returns the SAME shape as
+    /api/extract-bill. The frontend can substitute one call for the other.
+
+    Deliberately no Gemini call: nothing here needs reading or explaining, and
+    this endpoint has to work when Gemini is exactly what is broken. It stays
+    functional in MOCK_MODE and with no API key at all.
+    """
+    try:
+        validated = validate_bill(payload.model_dump())
+    except GeminiValidationError as gve:
+        # Same reason codes as extraction — the frontend branches on those — but
+        # the copy has to suit typing, not photographing. "Try a clearer photo"
+        # is nonsense advice for a number the user entered by hand.
+        message = gve.message
+        if "photo" in message.lower() or "picture" in message.lower():
+            message = "Check the value you entered against the printed bill."
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=ApiError(ok=False, reason=gve.reason, message=message).model_dump()
+        )
+    # period_end is optional on input but always present on output, so the
+    # response shape is identical to extraction's.
+    validated["period_end"] = validated.get("period_end") or ""
+    return validated
 
 
 @app.post("/api/analyze", response_model=AnalyzeResponse)

@@ -15,6 +15,27 @@ def validate_bill(data: Dict[str, Any]) -> Dict[str, Any]:
     total = data.get("total_amount")
     days = data.get("billing_days")
 
+    # 0. structural check, before any per-field check.
+    #
+    # A single unreadable field means "couldn't read it" — retake the photo.
+    # Nothing readable at all means there is no plausible bill structure here,
+    # which is the one case where telling the user "this isn't a bill" is both
+    # true and actionable. Keeping this separate is what stops a bare zero from
+    # being mistaken for a wrong document.
+    def _absent(v) -> bool:
+        if v is None:
+            return True
+        try:
+            return float(v) == 0
+        except (ValueError, TypeError):
+            return True
+
+    if _absent(units) and _absent(total):
+        raise GeminiValidationError(
+            reason="INVALID_BILL",
+            message="This doesn't look like an electricity bill. Upload a photo of your TNEB bill."
+        )
+
     # 1. units_consumed check
     if units is None:
         raise GeminiValidationError(
@@ -28,7 +49,21 @@ def validate_bill(data: Dict[str, Any]) -> Dict[str, Any]:
             reason="INVALID_BILL",
             message="The extracted units consumed is invalid. Try taking another picture."
         )
-    if units_val <= 0 or units_val > 5000:
+    # Zero is "couldn't read it", not "not a bill". Gemini emits 0 when the
+    # figure is unreadable, and a blurry photo of a real bill is a far more
+    # likely failure than someone uploading the wrong document. The two errors
+    # send the user somewhere completely different: INVALID_BILL tells them to
+    # find another document, OCR_MISSING_FIELD tells them to retake the photo.
+    #
+    # INVALID_BILL stays reserved for images with no plausible bill structure
+    # at all — see the total_amount check below, which escalates when NOTHING
+    # bill-like was found rather than just this one field.
+    if units_val == 0:
+        raise GeminiValidationError(
+            reason="OCR_MISSING_FIELD",
+            message="Couldn't read the units consumed. Try a clearer photo focusing on the reading details."
+        )
+    if units_val < 0 or units_val > 5000:
         raise GeminiValidationError(
             reason="INVALID_BILL",
             message="Units consumed is out of realistic ranges (0 to 5000 kWh). Make sure you uploaded the correct bill."

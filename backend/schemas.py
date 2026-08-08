@@ -18,6 +18,26 @@ class BillData(BaseModel):
     taxes_and_duties: Optional[float] = None
     subsidy_applied: Optional[float] = None
 
+class ManualBillRequest(BaseModel):
+    """Manual-entry kill switch (POST /api/manual-bill).
+
+    Additive only — no existing model above is touched. Lets the user type the
+    four numbers off the paper bill when OCR is unusable, and returns the exact
+    same shape as /api/extract-bill so the frontend can swap one call for the
+    other with no other changes.
+    """
+    units_consumed: float
+    total_amount: float
+    billing_days: int
+    tariff_slab: str
+    # Optional so the user types four fields, not nine. Present in the response
+    # regardless, so the shape matches extraction.
+    period_end: Optional[str] = None
+    energy_charges: Optional[float] = None
+    fixed_charges: Optional[float] = None
+    taxes_and_duties: Optional[float] = None
+    subsidy_applied: Optional[float] = None
+
 class NameplateData(BaseModel):
     appliance_type: ApplianceType
     rated_power_w: Optional[float] = None
