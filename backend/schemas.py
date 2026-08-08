@@ -87,6 +87,10 @@ class Action(BaseModel):
     text: str
     saves_rupees: float
     payback_months: Optional[float] = None
+    # Additive. One-off rupee cost of doing this action: 0 for free habit
+    # changes, a service rate for maintenance, a replacement price for
+    # investments. Needed to plan within a budget; existing fields untouched.
+    cost_rupees: Optional[float] = None
 
 class BiggestSurprise(BaseModel):
     type: ApplianceType
@@ -119,6 +123,24 @@ class Meta(BaseModel):
     generated_at: str
     duration_ms: float
 
+class ExcludedAction(BaseModel):
+    """An action the budget could not cover, WITH the reason. Leaving something
+    out is only honest if the user can see why it was left out."""
+    tier: Literal["free", "cheap", "investment"]
+    text: str
+    cost_rupees: float
+    saves_rupees: float
+    annual_saving_rupees: float
+    reason: str
+
+class BudgetPlan(BaseModel):
+    budget_rupees: float
+    selected: List[Action]
+    excluded: List[ExcludedAction]
+    total_cost_rupees: float
+    total_annual_saving_rupees: float
+    budget_remaining_rupees: float
+
 class AnalyzeRequest(BaseModel):
     bill: BillData
     appliances: List[ApplianceInput]
@@ -134,6 +156,16 @@ class AnalyzeResponse(BaseModel):
     explanation: str
     actions: List[Action]
     insights: Insights
+
+class PlanBudgetRequest(AnalyzeRequest):
+    """Same as AnalyzeRequest plus a budget. Subclassed, so the analyze
+    contract is inherited rather than duplicated or altered."""
+    budget_rupees: float
+
+class PlanBudgetResponse(AnalyzeResponse):
+    """The standard analyze response plus the plan. Subclassed so
+    AnalyzeResponse itself is untouched and the frontend keeps working."""
+    budget_plan: BudgetPlan
 
 class ApiError(BaseModel):
     ok: Literal[False] = False

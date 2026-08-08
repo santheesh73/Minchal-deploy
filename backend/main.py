@@ -10,7 +10,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from schemas import AnalyzeRequest, AnalyzeResponse, ApiError, BillData, NameplateData, ManualBillRequest
+from schemas import (AnalyzeRequest, AnalyzeResponse, ApiError, BillData, NameplateData,
+                     ManualBillRequest, PlanBudgetRequest, PlanBudgetResponse)
 from gemini.extract import extract_bill as gemini_extract_bill, extract_nameplate as gemini_extract_nameplate
 from gemini.validate import GeminiValidationError, validate_bill
 from gemini.client import get_last_model_used
@@ -221,3 +222,27 @@ def analyze(payload: AnalyzeRequest):
     
     return data
 
+
+@app.post("/api/plan-budget", response_model=PlanBudgetResponse)
+def plan_budget(payload: PlanBudgetRequest):
+    """Analyze, then pick the actions that fit a budget.
+
+    Reuses /api/analyze wholesale rather than recomputing: identical bill and
+    appliances must produce identical numbers, and the only way to guarantee
+    that is to run the same code. Adds no AI call — the plan is a knapsack over
+    figures the deterministic engine already produced.
+    """
+    result = analyze(AnalyzeRequest(bill=payload.bill, appliances=payload.appliances))
+
+    # analyze() returns a JSONResponse for errors and for the DEMO_MODE cache.
+    if isinstance(result, JSONResponse):
+        if result.status_code != 200:
+            return result  # propagate the error unchanged
+        data = json.loads(bytes(result.body).decode("utf-8"))
+    else:
+        data = result
+
+    from engine.actions import plan_within_budget
+    data = dict(data)
+    data["budget_plan"] = plan_within_budget(data.get("actions") or [], payload.budget_rupees)
+    return JSONResponse(content=data)

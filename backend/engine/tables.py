@@ -89,6 +89,19 @@ IRRADIANCE_KWH_PER_KW_YEAR = 1450   # typical TN generation per kW installed
 COST_PER_KW = 60000                 # Rs, rooftop residential, installed
 SUBSIDY_TABLE = {1: 30000, 2: 60000, 3: 78000}   # PM Surya Ghar
 SOLAR_MIN_KW, SOLAR_MAX_KW = 1, 3   # residential band
+# One-off cost of the maintenance fix each symptom implies, in rupees.
+# Keyed by symptom so the cost is attached to the actual remedy rather than
+# guessed from the action text. Indicative Tamil Nadu service rates.
+MAINTENANCE_COST = {
+    "dirty_coils":   500,    # coil cleaning
+    "dirty_filters": 800,    # filter service
+    "low_gas":      2500,    # gas top-up
+    "ice_buildup":   500,    # defrost / freezer service
+    "door_seal":     600,    # gasket replacement
+    "scaled":        900,    # heating element descale
+}
+MAINTENANCE_COST_DEFAULT = 800
+
 REPLACEMENT_COST = {
     "ac": 38000,
     "fridge": 28000,

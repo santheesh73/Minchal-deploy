@@ -41,7 +41,24 @@ export interface BreakdownItem {
 export interface Action {
   tier: "free"|"cheap"|"investment"; text: string;
   saves_rupees: number; payback_months?: number;
+  // Additive: one-off cost of doing this action. 0 for free habit changes.
+  cost_rupees?: number;
 }
+export interface ExcludedAction {
+  tier: "free"|"cheap"|"investment"; text: string;
+  cost_rupees: number; saves_rupees: number;
+  annual_saving_rupees: number; reason: string;
+}
+export interface BudgetPlan {
+  budget_rupees: number;
+  selected: Action[];
+  excluded: ExcludedAction[];
+  total_cost_rupees: number;
+  total_annual_saving_rupees: number;
+  budget_remaining_rupees: number;
+}
+export interface PlanBudgetRequest extends AnalyzeRequest { budget_rupees: number; }
+export type PlanBudgetResponse = AnalyzeResponse & { budget_plan: BudgetPlan };
 export interface Insights {
   efficiency_gap_percent: number; efficiency_gap_rupees: number;
   efficiency_driver: string; energy_score: number;

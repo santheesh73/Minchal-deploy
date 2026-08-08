@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAudit } from '../store/AuditContext';
+import { AnalyzeRequest } from '../types/api';
 import { useExplainability } from '../hooks/useExplainability';
 import { validateAnalyzeResponse } from '../utils/responseValidation';
 import {
@@ -19,6 +20,7 @@ import {
   EfficiencyGapCard,
   BiggestSurpriseCard,
   ActionSection,
+  BudgetPlanner,
   CO2Card,
   SolarCard,
   AuditEmptyState,
@@ -29,6 +31,28 @@ export const AuditPage: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useAudit();
   const rawResult = state.analysisResult;
+
+  // Rebuilt exactly as useAnalysis builds it, so /api/plan-budget re-runs the
+  // SAME analysis and cannot return different rupee figures from the ones
+  // already on screen. Whitelisted for the same reason: this payload is a
+  // whitelist, and a field not listed is silently dropped.
+  const analyzeRequest: AnalyzeRequest | null =
+    state.billData && state.appliances?.length
+      ? {
+          bill: state.billData,
+          appliances: state.appliances.map((app) => ({
+            id: app.id,
+            type: app.type,
+            capacity: app.capacity,
+            star: app.star,
+            year: app.year,
+            hours_band: app.type === 'fridge' ? null : app.hours_band,
+            symptoms: app.symptoms || [],
+            runtime_confirmed: app.runtime_confirmed === true,
+          })),
+          language: state.language || 'en',
+        }
+      : null;
   const { activeContext, isOpen, openExplainability, closeExplainability } = useExplainability();
 
   if (!rawResult) {
@@ -122,6 +146,11 @@ export const AuditPage: React.FC = () => {
           actions={result.actions}
           onViewActionDetails={(action) => openExplainability(extractActionExplainability(action))}
         />
+      </ErrorBoundary>
+
+      {/* 6b. Budget-constrained plan — deterministic, no AI call */}
+      <ErrorBoundary fallbackTitle="Budget Planner Unavailable">
+        <BudgetPlanner request={analyzeRequest} />
       </ErrorBoundary>
 
       {/* 7. CO2 Environmental Footprint & Solar Opportunity */}

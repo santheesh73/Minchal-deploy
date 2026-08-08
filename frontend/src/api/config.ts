@@ -12,6 +12,7 @@ export const API_CONFIG = {
     // shape as extractBill, so it is a drop-in substitute.
     manualBill: '/api/manual-bill',
     analyze: '/api/analyze',
+    planBudget: '/api/plan-budget',
     whatif: '/api/whatif',
   },
 };

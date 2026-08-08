@@ -12,3 +12,4 @@ export * from './CO2Card';
 export * from './SolarCard';
 export * from './ExplainabilityPreview';
 export * from './AuditEmptyState';
+export * from './BudgetPlanner';
