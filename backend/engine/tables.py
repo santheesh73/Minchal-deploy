@@ -14,6 +14,11 @@ HOURS_BAND = {"0-1": 0.5, "1-2": 1.5, "2-4": 3.0,
               "4-6": 5.0, "6-8": 7.0, "8+": 9.0}   # band midpoints
 
 STAR_MULT = {1: 1.20, 2: 1.10, 3: 1.00, 4: 0.90, 5: 0.82}
+DUTY_CYCLE = {
+    "ac": 0.65,          # compressor cycles
+    "geyser": 0.90,      # mostly on-demand heating, small standby cycling
+}
+DUTY_CYCLE_DEFAULT = 1.0
 AGE_PER_YEAR = 0.015    # +1.5% consumption per year of age
 CURRENT_YEAR = 2026
 OTHER_SHARE = 0.15      # unlisted load as fraction of billed units

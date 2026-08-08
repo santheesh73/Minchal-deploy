@@ -63,11 +63,28 @@ async def extract_nameplate(image: UploadFile = File(...)):
 def analyze(payload: AnalyzeRequest):
     t_start = time.perf_counter()
     
-    # Simulate slight processing duration
-    time.sleep(0.01)
-    
     with open(get_mock_path("analyze.json"), "r", encoding="utf-8") as f:
         data = json.load(f)
+        
+    if not MOCK_MODE:
+        from engine.calculator import analyze as real_analyze, CalculatorError
+        try:
+            real_res = real_analyze(payload.bill, payload.appliances)
+            data["bill_total_rupees"] = real_res["bill_total_rupees"]
+            data["breakdown"] = real_res["breakdown"]
+            data["scale_factor"] = real_res["scale_factor"]
+            data["confidence_percent"] = real_res["confidence_percent"]
+            data["confidence_reasons"] = real_res["confidence_reasons"]
+        except CalculatorError as ce:
+            return JSONResponse(
+                status_code=ce.status_code,
+                content={"ok": False, "reason": ce.reason, "message": ce.message}
+            )
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"ok": False, "reason": "SERVER_ERROR", "message": str(e)}
+            )
         
     duration_ms = (time.perf_counter() - t_start) * 1000.0
     generated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
@@ -75,5 +92,5 @@ def analyze(payload: AnalyzeRequest):
     data["meta"]["duration_ms"] = duration_ms
     data["meta"]["generated_at"] = generated_at
     
-    # Keep response compliant with AnalyzeResponse schema validation
     return data
+

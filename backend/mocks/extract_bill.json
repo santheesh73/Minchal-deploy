@@ -1,11 +1,11 @@
 {
-  "units_consumed": 200.0,
-  "total_amount": 1000.0,
-  "billing_days": 30,
-  "period_end": "2023-10-01",
+  "units_consumed": 620.0,
+  "total_amount": 4800.0,
+  "billing_days": 61,
+  "period_end": "2026-08-01",
   "tariff_slab": "domestic",
-  "energy_charges": 800.0,
-  "fixed_charges": 100.0,
-  "taxes_and_duties": 100.0,
+  "energy_charges": 4200.0,
+  "fixed_charges": 200.0,
+  "taxes_and_duties": 400.0,
   "subsidy_applied": 0.0
 }
