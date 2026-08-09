@@ -4,8 +4,8 @@
   "description": "Production-quality responsive PWA for household electricity energy auditing",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#0d6e6e",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "/pwa-192x192.png",
