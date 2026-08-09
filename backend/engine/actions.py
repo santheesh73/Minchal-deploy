@@ -61,6 +61,7 @@ SYMPTOM_ACTION_TEXT_EN = {
 }
 
 DEFAULT_CHEAP_ACTION_TEXT_EN = {
+    "ac": "Clean AC air filters and check refrigerant gas pressure.",
     "fridge": "Clean condenser coils behind the refrigerator and check door gasket seal.",
     "geyser": "Descale heating element and flush tank mineral buildup.",
     "washing_machine": "Clean lint filter and drain pump filter monthly.",
@@ -71,6 +72,7 @@ DEFAULT_CHEAP_ACTION_TEXT_EN = {
 }
 
 DEFAULT_CHEAP_ACTION_TEXT_TA = {
+    "ac": "ஏசி வடிகட்டிகளை சுத்தம் செய்து குளிரூட்டும் அமைப்பை சரிபார்க்கவும்.",
     "fridge": "குளிர்சாதன பெட்டியின் பின் சுருள்கள் மற்றும் கதவு கேஸ்கெட்டை சுத்தம் செய்யவும்.",
     "geyser": "வாட்டர் ஹீட்டரின் வெப்பமூட்டும் உறுப்பில் உள்ள உப்புக் படிவுகளை அகற்றுங்கள்.",
     "washing_machine": "துணி துவைக்கும் இயந்திர டிரமை சுத்தம் செய்து பராமரிக்கவும்.",
@@ -230,12 +232,14 @@ def generate_actions(appliances: List[Any], breakdown: List[Dict[str, Any]], rat
 MONTHS_PER_YEAR = 12
 
 
-def plan_within_budget(actions: List[Dict[str, Any]], budget_rupees: float) -> Dict[str, Any]:
+def plan_within_budget(actions: List[Dict[str, Any]], budget_rupees: float, language: str = "en") -> Dict[str, Any]:
     """Picks the set of actions that maximises annual saving within a budget."""
     try:
         budget = max(0.0, float(budget_rupees))
     except (TypeError, ValueError):
         budget = 0.0
+
+    is_ta = language == "ta"
 
     def annual(a):
         return round(float(a.get("saves_rupees", 0.0)) * MONTHS_PER_YEAR, 2)
@@ -259,16 +263,18 @@ def plan_within_budget(actions: List[Dict[str, Any]], budget_rupees: float) -> D
             selected.append(a)
             spent += c
         else:
+            reason_str = (
+                f"செலவு ₹{c:,.0f}; ₹{budget:,.0f} பட்ஜெட்டில் ₹{budget - spent:,.0f} மட்டுமே பாக்கி இருந்தது."
+                if is_ta else
+                f"Costs Rs {c:,.0f}; only Rs {budget - spent:,.0f} of the Rs {budget:,.0f} budget was left."
+            )
             excluded.append({
                 "tier": a.get("tier"),
                 "text": a.get("text"),
                 "cost_rupees": c,
                 "saves_rupees": float(a.get("saves_rupees", 0.0)),
                 "annual_saving_rupees": annual(a),
-                "reason": (
-                    f"Costs Rs {c:,.0f}; only Rs {budget - spent:,.0f} of the "
-                    f"Rs {budget:,.0f} budget was left."
-                ),
+                "reason": reason_str,
             })
 
     total_annual = round(sum(annual(a) for a in selected), 2)

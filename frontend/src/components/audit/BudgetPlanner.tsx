@@ -62,17 +62,24 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ request }) => {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {PRESETS.map((p) => (
-          <button
-            key={p}
-            type="button"
-            disabled={loading}
-            onClick={() => { setBudget(String(p)); run(p); }}
-            className="px-3.5 py-1.5 rounded-full border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:border-brand-400 hover:text-brand-700 disabled:opacity-50 transition-colors"
-          >
-            {formatCurrency(p)}
-          </button>
-        ))}
+        {PRESETS.map((p) => {
+          const isActive = Number(budget) === p;
+          return (
+            <button
+              key={p}
+              type="button"
+              disabled={loading}
+              onClick={() => { setBudget(String(p)); run(p); }}
+              className={`px-3.5 py-1.5 rounded-full border text-sm font-semibold transition-all ${
+                isActive
+                  ? 'border-brand-600 bg-brand-50 text-brand-700 shadow-sm font-bold ring-2 ring-brand-500/20'
+                  : 'border-slate-200 bg-white text-slate-700 hover:border-brand-400 hover:text-brand-700'
+              } disabled:opacity-50`}
+            >
+              {formatCurrency(p)}
+            </button>
+          );
+        })}
       </div>
 
       <form onSubmit={submit} className="flex flex-col sm:flex-row gap-3 sm:items-end">
@@ -120,17 +127,20 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ request }) => {
             </div>
           ) : (
             <ul className="space-y-2">
-              {plan.selected.map((a, i) => (
-                <li key={`s-${i}`} className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200">
-                  <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <p className="text-sm text-slate-800">{a.text}</p>
-                    <p className="text-[11px] text-slate-500">
-                      {a.cost_rupees ? formatCurrency(a.cost_rupees) : t.freeAction} · {state.language === 'ta' ? 'சேமிப்பு' : 'saves'} {formatCurrency(a.saves_rupees)}/{state.language === 'ta' ? 'மாதம்' : 'mo'}
-                    </p>
-                  </div>
-                </li>
-              ))}
+              {plan.selected.map((a, i) => {
+                const annualSave = (a.saves_rupees || 0) * 12;
+                return (
+                  <li key={`s-${i}`} className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200 shadow-xs">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-slate-800">{a.text}</p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        {a.cost_rupees ? formatCurrency(a.cost_rupees) : t.freeAction} · {state.language === 'ta' ? 'சேமிப்பு' : 'saves'} <span className="font-semibold text-emerald-700">{formatCurrency(a.saves_rupees)}/{state.language === 'ta' ? 'மாதம்' : 'mo'}</span> ({formatCurrency(annualSave)}/{state.language === 'ta' ? 'ஆண்டு' : 'yr'})
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
 

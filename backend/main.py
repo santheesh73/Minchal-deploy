@@ -310,5 +310,9 @@ def plan_budget(payload: PlanBudgetRequest):
 
     from engine.actions import plan_within_budget
     data = dict(data)
-    data["budget_plan"] = plan_within_budget(data.get("actions") or [], payload.budget_rupees)
+    data["budget_plan"] = plan_within_budget(
+        data.get("actions") or [],
+        payload.budget_rupees,
+        language=payload.language or "en"
+    )
     return JSONResponse(content=data)
