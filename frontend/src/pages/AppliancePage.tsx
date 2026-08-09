@@ -12,10 +12,12 @@ import { AppliancePicker } from '../components/appliances/AppliancePicker';
 import { SelectedApplianceList } from '../components/appliances/SelectedApplianceList';
 import { ApplianceConfigModal } from '../components/appliances/ApplianceConfigModal';
 import { CustomApplianceForm } from '../components/appliances/CustomApplianceForm';
+import { getTranslation } from '../utils/translations';
 
 export const AppliancePage: React.FC = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useAudit();
+  const t = getTranslation(state.language);
   const [activeConfigInstance, setActiveConfigInstance] = useState<ApplianceInput | null>(null);
 
   const selectedAppliances = state.appliances;
@@ -37,7 +39,6 @@ export const AppliancePage: React.FC = () => {
     dispatch({ type: 'REMOVE_APPLIANCE', payload: id });
   };
 
-  /** A second AC is a separate instance with its own id, not a duplicate. */
   const handleAddAnother = (type: ApplianceType) => {
     dispatch({ type: 'ADD_ANOTHER_APPLIANCE', payload: type });
   };
@@ -46,12 +47,9 @@ export const AppliancePage: React.FC = () => {
     dispatch({ type: 'ADD_CUSTOM_APPLIANCE', payload: { label, rated_power_w, hours_band } });
   };
 
-  // Check if all selected appliances have completed configuration details
   const allConfigured =
     selectedAppliances.length > 0 &&
     selectedAppliances.every((app) => {
-      // A custom appliance has no catalogue entry; it is complete once the user
-      // has given it a wattage and a runtime.
       if (app.type === 'custom') {
         return !!app.rated_power_w && app.rated_power_w > 0 && app.hours_band !== null;
       }
@@ -68,15 +66,6 @@ export const AppliancePage: React.FC = () => {
     navigate('/audit/usage');
   };
 
-  /**
-   * Skip straight to the result using the defaults already applied when each
-   * appliance was added (star 3, year 2020, catalog runtime band, no symptoms).
-   *
-   * Reviewer feedback was that a normal user faces too many inputs before
-   * seeing anything. Nothing here is invented: the engine normalises every
-   * estimate against the real bill total, and confidence_reasons reports
-   * honestly that runtime was assumed rather than entered.
-   */
   const handleUseTypicalValues = () => {
     if (selectedAppliances.length === 0) return;
     dispatch({ type: 'SET_STEP', payload: 'usage' });
@@ -90,11 +79,11 @@ export const AppliancePage: React.FC = () => {
 
       {/* Page Header */}
       <PageHeader
-        title="Select & Configure Appliances"
-        subtitle="Select the major appliances present in your household and configure their rating, age, and usage patterns."
+        title={t.step2Title}
+        subtitle={t.step2Subtitle}
         showBack
         stepNumber={2}
-        totalSteps={4}
+        totalSteps={3}
       />
 
       {/* Main Appliance Catalog Picker */}
@@ -119,24 +108,21 @@ export const AppliancePage: React.FC = () => {
       {selectedAppliances.length === 0 ? (
         <div className="p-4 rounded-2xl bg-brand-50 border border-brand-200 text-brand-900 text-xs sm:text-sm font-medium flex items-center gap-2.5">
           <Info className="w-5 h-5 text-brand-600 shrink-0" />
-          <span>Please select at least one appliance above to proceed with your household energy audit.</span>
+          <span>{state.language === 'ta' ? 'மின் ஆற்றல் தணிக்கையைத் தொடங்க குறைந்தது ஒரு சாதனத்தையாவது தேர்ந்தெடுக்கவும்.' : 'Please select at least one appliance above to proceed with your household energy audit.'}</span>
         </div>
       ) : !allConfigured ? (
         <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs sm:text-sm font-medium flex items-center gap-2.5">
           <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
-          <span>Some selected appliances need configuration details (star rating, year, or runtime hours band). Click "Configure" to complete them.</span>
+          <span>{state.language === 'ta' ? 'சில சாதனங்களுக்கு கூடுதல் விவரங்கள் தேவை. "அமைப்புகளுக்குச் செல்" என்பதைக் கிளிக் செய்யவும்.' : 'Some selected appliances need configuration details (star rating, year, or runtime hours band). Click "Configure" to complete them.'}</span>
         </div>
       ) : null}
 
-      {/* Reassurance: the details are optional, and we say so before they ask */}
+      {/* Reassurance: default typical values applied */}
       {selectedAppliances.length > 0 && (
         <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm flex items-start gap-2.5">
           <Zap className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
           <span>
-            <span className="font-semibold">You can stop here.</span> We already use typical
-            values for star rating, age and runtime, and every estimate is scaled to match
-            your actual bill total. Adding details only sharpens the split — and we always
-            show you how confident we are.
+            <span className="font-semibold">{state.language === 'ta' ? 'இப்போதே முடிவைப் பார்க்கலாம்.' : 'You can stop here.'}</span> {state.language === 'ta' ? 'இயல்பான பொதுவான மதிப்புகள் ஏற்கனவே பயன்படுத்தப்பட்டுள்ளன. உங்கள் முடிவை உடனே காணலாம்.' : 'We already use typical values for star rating, age and runtime, and every estimate is scaled to match your actual bill total.'}
           </span>
         </div>
       )}
@@ -144,7 +130,7 @@ export const AppliancePage: React.FC = () => {
       {/* Bottom Sticky Action Bar */}
       <div className="pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-slate-200">
         <div className="text-xs text-slate-500 font-medium hidden sm:block">
-          {selectedAppliances.length} appliances selected • {allConfigured ? 'All configured' : 'Incomplete configuration'}
+          {selectedAppliances.length} {state.language === 'ta' ? 'சாதனங்கள் தேர்ந்தெடுக்கப்பட்டுள்ளன' : 'appliances selected'} • {allConfigured ? (state.language === 'ta' ? 'அனைத்தும் பூர்த்தி செய்யப்பட்டன' : 'All configured') : (state.language === 'ta' ? 'முழுமையடையவில்லை' : 'Incomplete configuration')}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -156,7 +142,7 @@ export const AppliancePage: React.FC = () => {
             rightIcon={<ArrowRight className="w-5 h-5" />}
             className="w-full sm:w-auto font-bold text-base shadow-md hover:shadow-lg"
           >
-            Show my result now
+            {state.language === 'ta' ? 'எனது தணிக்கை முடிவைக் காட்டு' : 'Show my result now'}
           </Button>
 
           <Button
@@ -166,7 +152,7 @@ export const AppliancePage: React.FC = () => {
             onClick={handleContinue}
             className="w-full sm:w-auto font-semibold text-base"
           >
-            Add usage details first
+            {state.language === 'ta' ? 'பயன்பாட்டு விவரங்களைச் சேர்க்கவும்' : 'Add usage details first'}
           </Button>
         </div>
       </div>

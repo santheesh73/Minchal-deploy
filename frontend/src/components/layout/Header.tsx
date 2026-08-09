@@ -2,9 +2,11 @@ import React from 'react';
 import { Globe, ShieldCheck } from 'lucide-react';
 import { useAudit } from '../../store/AuditContext';
 import { Logo } from '../ui/Logo';
+import { getTranslation } from '../../utils/translations';
 
 export const Header: React.FC = () => {
   const { state, dispatch } = useAudit();
+  const t = getTranslation(state.language);
 
   const toggleLanguage = () => {
     const nextLang = state.language === 'en' ? 'ta' : 'en';
@@ -22,7 +24,7 @@ export const Header: React.FC = () => {
           {/* Status Badge */}
           <div className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium border border-emerald-200">
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Deterministic Engine</span>
+            <span>{t.deterministicEngine}</span>
           </div>
 
           {/* Language Switcher Button */}

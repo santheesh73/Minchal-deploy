@@ -8,8 +8,13 @@ import { ExtractionLoading } from '../components/bill/ExtractionLoading';
 import { ExtractedBillDetails } from '../components/bill/ExtractedBillDetails';
 import { BillExtractionError } from '../components/bill/BillExtractionError';
 import { ManualBillEntry } from '../components/bill/ManualBillEntry';
+import { useAudit } from '../store/AuditContext';
+import { getTranslation } from '../utils/translations';
 
 export const BillUploadPage: React.FC = () => {
+  const { state } = useAudit();
+  const t = getTranslation(state.language);
+
   const {
     status,
     selectedFile,
@@ -29,11 +34,11 @@ export const BillUploadPage: React.FC = () => {
   return (
     <PageContainer maxWidth="md">
       <PageHeader
-        title="Upload Electricity Bill"
-        subtitle="Take a clear photo or select a PDF of your TNEB / Electricity Bill. Gemini Vision extracts units, billing period, and total bill amount."
+        title={t.step1Title}
+        subtitle={t.step1Subtitle}
         showBack
         stepNumber={1}
-        totalSteps={4}
+        totalSteps={3}
       />
 
       {/* State Machine UI Dispatcher */}

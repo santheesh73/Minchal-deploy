@@ -54,11 +54,13 @@ export interface Action {
   saves_rupees: number; payback_months?: number;
   // Additive: one-off cost of doing this action. 0 for free habit changes.
   cost_rupees?: number;
+  appliance_type?: string;
 }
 export interface ExcludedAction {
   tier: "free"|"cheap"|"investment"; text: string;
   cost_rupees: number; saves_rupees: number;
   annual_saving_rupees: number; reason: string;
+  appliance_type?: string;
 }
 export interface BudgetPlan {
   budget_rupees: number;

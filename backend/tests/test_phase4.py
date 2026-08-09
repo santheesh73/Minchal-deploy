@@ -145,3 +145,24 @@ def test_mock_mode_active():
         res = extract_bill(b"dummy")
         assert res["units_consumed"] == 620.0
         assert res["total_amount"] == 4800.0
+
+def test_normalize_bill_data_comma_formatting():
+    from gemini.extract import normalize_bill_data
+    raw = {
+        "units_consumed": "1,450 kWh",
+        "total_amount": "Rs. 12,180.50",
+        "energy_charges": "₹ 9,987.00",
+        "fixed_charges": "Rs 800",
+        "taxes_and_duties": "Rs. 1,393.50",
+        "subsidy_applied": "100.0",
+        "billing_days": "60 days",
+    }
+    norm = normalize_bill_data(raw)
+    assert norm["units_consumed"] == 1450.0
+    assert norm["total_amount"] == 12180.5
+    assert norm["energy_charges"] == 9987.0
+    assert norm["fixed_charges"] == 800.0
+    assert norm["taxes_and_duties"] == 1393.5
+    assert norm["subsidy_applied"] == 100.0
+    assert norm["billing_days"] == 60
+

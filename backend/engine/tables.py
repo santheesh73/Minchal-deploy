@@ -101,6 +101,12 @@ MAINTENANCE_COST = {
     "ice_buildup":   500,    # defrost / freezer service
     "door_seal":     600,    # gasket replacement
     "scaled":        900,    # heating element descale
+    "not_cold":     1200,    # AC compressor service
+    "leaking":       800,    # pipe / tank leak repair
+    "not_clean":     600,    # drum service
+    "slow":          500,    # motor lubrication / capacitor
+    "weak_flow":     800,    # pump impeller / bearing service
+    "filament":      500,    # LED bulb upgrade
 }
 MAINTENANCE_COST_DEFAULT = 800
 

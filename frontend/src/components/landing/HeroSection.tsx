@@ -83,47 +83,47 @@ export const HeroSection: React.FC = () => {
 
           {/* RIGHT COLUMN: Realistic Product Story Transformation Visual */}
           <div className="lg:col-span-5 relative">
-            <div className="relative mx-auto max-w-md lg:max-w-none rounded-3xl bg-slate-900 text-white p-6 sm:p-8 shadow-2xl border border-slate-800 space-y-6">
+            <div className="relative mx-auto max-w-md lg:max-w-none rounded-3xl bg-white text-slate-900 p-6 sm:p-8 shadow-2xl border border-slate-200/90 space-y-6">
               
               {/* Product Visual Bar */}
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center justify-between border-b border-slate-200/90 pb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-                  <span className="text-xs font-mono text-slate-400 ml-2">MINCHAL Product Preview</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-mono text-slate-500 font-semibold ml-2">MINCHAL Product Preview</span>
                 </div>
-                <div className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-brand-400 border border-slate-700">
+                <div className="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200/80 font-bold">
                   {animationStep === 0 ? 'Step 1 • Input' : animationStep === 1 ? 'Step 2 • Analyzing' : 'Step 3 • Breakdown'}
                 </div>
               </div>
 
               {/* CARD 1: ELECTRICITY BILL INPUT */}
-              <div className={`p-4 rounded-2xl bg-slate-800/90 border transition-all duration-500 ${
-                animationStep === 0 ? 'border-brand-500 shadow-glow ring-1 ring-brand-500/50' : 'border-slate-700/80 opacity-80'
+              <div className={`p-4 rounded-2xl bg-slate-50/90 border transition-all duration-500 ${
+                animationStep === 0 ? 'border-brand-500 shadow-md ring-2 ring-brand-500/20' : 'border-slate-200/80 opacity-90'
               }`}>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 text-slate-300 text-xs font-semibold">
-                    <FileText className="w-4 h-4 text-brand-400" />
+                  <div className="flex items-center gap-2 text-slate-800 text-xs font-bold">
+                    <FileText className="w-4 h-4 text-brand-600" />
                     <span>ELECTRICITY BILL</span>
                   </div>
-                  <span className="text-[11px] text-slate-400 font-mono">Apr 2026</span>
+                  <span className="text-[11px] text-slate-500 font-mono font-medium">Apr 2026</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-xs font-mono pt-1">
                   <div>
-                    <span className="text-slate-400 text-[10px] block">Units Consumed</span>
-                    <span className="text-base font-bold text-white">362 kWh</span>
+                    <span className="text-slate-500 text-[10px] block font-medium">Units Consumed</span>
+                    <span className="text-base font-bold text-slate-900">362 kWh</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] block">Total Amount</span>
-                    <span className="text-base font-bold text-emerald-400">₹2,843</span>
+                    <span className="text-slate-500 text-[10px] block font-medium">Total Amount</span>
+                    <span className="text-base font-bold text-emerald-600">₹2,843</span>
                   </div>
                 </div>
 
                 {/* Animated Scan Line */}
                 {animationStep === 1 && (
-                  <div className="mt-3 pt-2 border-t border-slate-700/60 flex items-center gap-2 text-[11px] text-amber-300 font-mono animate-pulse">
-                    <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                  <div className="mt-3 pt-2 border-t border-slate-200 flex items-center gap-2 text-[11px] text-amber-700 font-mono font-medium animate-pulse">
+                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
                     <span>MINCHAL calculating appliance loads...</span>
                   </div>
                 )}
@@ -131,21 +131,21 @@ export const HeroSection: React.FC = () => {
 
               {/* ARROW DOWN */}
               <div className="flex justify-center -my-2 relative z-10">
-                <div className="w-7 h-7 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs shadow-md">
+                <div className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shadow-md">
                   ↓
                 </div>
               </div>
 
               {/* CARD 2: MINCHAL ENERGY BREAKDOWN */}
-              <div className={`p-4 sm:p-5 rounded-2xl bg-slate-800/90 border transition-all duration-500 space-y-3.5 ${
-                animationStep === 2 ? 'border-emerald-500/80 shadow-glow ring-1 ring-emerald-500/40' : 'border-slate-700/80'
+              <div className={`p-4 sm:p-5 rounded-2xl bg-slate-50/90 border transition-all duration-500 space-y-3.5 ${
+                animationStep === 2 ? 'border-emerald-500 shadow-md ring-2 ring-emerald-500/20' : 'border-slate-200/80'
               }`}>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-white text-xs font-bold">
-                    <BarChart3 className="w-4 h-4 text-emerald-400" />
+                  <div className="flex items-center gap-2 text-slate-900 text-xs font-extrabold">
+                    <BarChart3 className="w-4 h-4 text-emerald-600" />
                     <span>YOUR ENERGY BREAKDOWN</span>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                     Audit Complete
                   </span>
                 </div>
@@ -153,40 +153,40 @@ export const HeroSection: React.FC = () => {
                 {/* Breakdown Rows */}
                 <div className="space-y-2.5 text-xs">
                   <div>
-                    <div className="flex justify-between text-slate-300 mb-1 text-[11px]">
+                    <div className="flex justify-between text-slate-700 mb-1 text-[11px] font-medium">
                       <span>Air Conditioner (1.5T 3★)</span>
-                      <span className="font-mono font-bold text-amber-400">40% • ₹1,137</span>
+                      <span className="font-mono font-bold text-amber-600">40% • ₹1,137</span>
                     </div>
-                    <div className="w-full bg-slate-700/80 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-amber-400 h-1.5 rounded-full transition-all duration-700" style={{ width: animationStep === 2 ? '40%' : '0%' }} />
+                    <div className="w-full bg-slate-200/80 rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-amber-500 h-1.5 rounded-full transition-all duration-700" style={{ width: animationStep === 2 ? '40%' : '0%' }} />
                     </div>
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-slate-300 mb-1 text-[11px]">
+                    <div className="flex justify-between text-slate-700 mb-1 text-[11px] font-medium">
                       <span>Kitchen Refrigerator (250L)</span>
-                      <span className="font-mono font-bold text-emerald-400">20% • ₹568</span>
+                      <span className="font-mono font-bold text-emerald-600">20% • ₹568</span>
                     </div>
-                    <div className="w-full bg-slate-700/80 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-emerald-400 h-1.5 rounded-full transition-all duration-700" style={{ width: animationStep === 2 ? '20%' : '0%' }} />
+                    <div className="w-full bg-slate-200/80 rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-emerald-500 h-1.5 rounded-full transition-all duration-700" style={{ width: animationStep === 2 ? '20%' : '0%' }} />
                     </div>
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-slate-300 mb-1 text-[11px]">
+                    <div className="flex justify-between text-slate-700 mb-1 text-[11px] font-medium">
                       <span>Bathroom Geyser (25L)</span>
-                      <span className="font-mono font-bold text-blue-400">15% • ₹426</span>
+                      <span className="font-mono font-bold text-blue-600">15% • ₹426</span>
                     </div>
-                    <div className="w-full bg-slate-700/80 rounded-full h-1.5 overflow-hidden">
+                    <div className="w-full bg-slate-200/80 rounded-full h-1.5 overflow-hidden">
                       <div className="bg-blue-400 h-1.5 rounded-full transition-all duration-700" style={{ width: animationStep === 2 ? '15%' : '0%' }} />
                     </div>
                   </div>
                 </div>
 
                 {/* Savings Callout */}
-                <div className="pt-2 border-t border-slate-700/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Potential Savings:</span>
-                  <span className="font-mono font-extrabold text-emerald-400 text-sm">
+                <div className="pt-2 border-t border-slate-200/90 flex items-center justify-between text-xs">
+                  <span className="text-slate-600 font-medium">Potential Savings:</span>
+                  <span className="font-mono font-extrabold text-emerald-600 text-sm">
                     ~₹1,246 / month
                   </span>
                 </div>
@@ -200,7 +200,7 @@ export const HeroSection: React.FC = () => {
                     type="button"
                     onClick={() => setAnimationStep(idx)}
                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                      animationStep === idx ? 'w-6 bg-brand-500' : 'w-1.5 bg-slate-700 hover:bg-slate-600'
+                      animationStep === idx ? 'w-6 bg-emerald-600' : 'w-1.5 bg-slate-300 hover:bg-slate-400'
                     }`}
                   />
                 ))}

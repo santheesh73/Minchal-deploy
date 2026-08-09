@@ -4,6 +4,7 @@ import { useAudit } from '../../store/AuditContext';
 import { formatEstimateRupees, formatUnits, formatDate } from '../../utils';
 import { Card } from '../ui/Card';
 import { DataTrustLabel } from '../explainability/DataTrustLabel';
+import { getTranslation } from '../../utils/translations';
 
 export interface BillSummaryCardProps {
   billTotalRupees: number;
@@ -12,6 +13,7 @@ export interface BillSummaryCardProps {
 export const BillSummaryCard: React.FC<BillSummaryCardProps> = ({ billTotalRupees }) => {
   const { state } = useAudit();
   const bill = state.billData;
+  const t = getTranslation(state.language);
 
   const totalRupees = bill?.total_amount || billTotalRupees;
 
@@ -24,10 +26,10 @@ export const BillSummaryCard: React.FC<BillSummaryCardProps> = ({ billTotalRupee
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <h3 className="font-bold text-slate-900 text-sm">Extracted Bill Summary</h3>
+              <h3 className="font-bold text-slate-900 text-sm">{t.extractedBillSummary}</h3>
               <DataTrustLabel category="extracted" />
             </div>
-            <p className="text-[11px] text-slate-500">Official DISCOM billing record</p>
+            <p className="text-[11px] text-slate-500">{state.language === 'ta' ? 'அதிகாரப்பூர்வ மின் கட்டணப் பதிவு' : 'Official DISCOM billing record'}</p>
           </div>
         </div>
 
@@ -42,7 +44,7 @@ export const BillSummaryCard: React.FC<BillSummaryCardProps> = ({ billTotalRupee
         <div className="p-3 bg-slate-50 rounded-xl space-y-0.5 border border-slate-100">
           <span className="text-[10px] text-slate-400 font-semibold uppercase flex items-center gap-1">
             <Tag className="w-3 h-3 text-emerald-600" />
-            Total Billed
+            {state.language === 'ta' ? 'மொத்த கட்டணம்' : 'Total Billed'}
           </span>
           <p className="text-base font-bold text-slate-900 font-mono">
             {formatEstimateRupees(totalRupees)}
@@ -52,7 +54,7 @@ export const BillSummaryCard: React.FC<BillSummaryCardProps> = ({ billTotalRupee
         <div className="p-3 bg-slate-50 rounded-xl space-y-0.5 border border-slate-100">
           <span className="text-[10px] text-slate-400 font-semibold uppercase flex items-center gap-1">
             <Layers className="w-3 h-3 text-brand-600" />
-            Consumption
+            {state.language === 'ta' ? 'மின் நுகர்வு' : 'Consumption'}
           </span>
           <p className="text-base font-bold text-slate-900 font-mono">
             {bill?.units_consumed ? formatUnits(bill.units_consumed) : '—'}
@@ -62,10 +64,10 @@ export const BillSummaryCard: React.FC<BillSummaryCardProps> = ({ billTotalRupee
         <div className="p-3 bg-slate-50 rounded-xl space-y-0.5 border border-slate-100 col-span-2 sm:col-span-1">
           <span className="text-[10px] text-slate-400 font-semibold uppercase flex items-center gap-1">
             <Calendar className="w-3 h-3 text-blue-600" />
-            Billing Cycle
+            {state.language === 'ta' ? 'கட்டணக் சுழற்சி' : 'Billing Cycle'}
           </span>
           <p className="text-xs font-bold text-slate-900">
-            {bill?.billing_days ? `${bill.billing_days} Days` : 'Standard Cycle'}
+            {bill?.billing_days ? `${bill.billing_days} ${state.language === 'ta' ? 'நாட்கள்' : 'Days'}` : (state.language === 'ta' ? 'சாதாரண சுழற்சி' : 'Standard Cycle')}
             {bill?.period_end && <span className="text-[10px] text-slate-500 font-normal block">{formatDate(bill.period_end)}</span>}
           </p>
         </div>
@@ -74,29 +76,29 @@ export const BillSummaryCard: React.FC<BillSummaryCardProps> = ({ billTotalRupee
       {/* Charge Items Table Breakdown */}
       {bill && (bill.energy_charges !== null || bill.fixed_charges !== null) && (
         <div className="pt-2 border-t border-slate-100 text-xs space-y-1.5">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Charge Breakdown</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{state.language === 'ta' ? 'கட்டண விவரங்களின் பட்டியல்' : 'Charge Breakdown'}</span>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-slate-600">
             {bill.energy_charges !== null && (
               <div className="flex justify-between">
-                <span>Energy Charges:</span>
+                <span>{state.language === 'ta' ? 'மின்சாரக் கட்டணம்:' : 'Energy Charges:'}</span>
                 <span className="font-mono font-semibold text-slate-900">{formatEstimateRupees(bill.energy_charges)}</span>
               </div>
             )}
             {bill.fixed_charges !== null && (
               <div className="flex justify-between">
-                <span>Fixed / Demand:</span>
+                <span>{state.language === 'ta' ? 'நிலையானக் கட்டணம்:' : 'Fixed / Demand:'}</span>
                 <span className="font-mono font-semibold text-slate-900">{formatEstimateRupees(bill.fixed_charges)}</span>
               </div>
             )}
             {bill.taxes_and_duties !== null && (
               <div className="flex justify-between">
-                <span>Taxes & Duties:</span>
+                <span>{state.language === 'ta' ? 'வரிகள் & வரிகள்:' : 'Taxes & Duties:'}</span>
                 <span className="font-mono font-semibold text-slate-900">{formatEstimateRupees(bill.taxes_and_duties)}</span>
               </div>
             )}
             {bill.subsidy_applied !== null && bill.subsidy_applied > 0 && (
               <div className="flex justify-between text-emerald-700 font-medium">
-                <span>Govt Subsidy:</span>
+                <span>{state.language === 'ta' ? 'அரசு மானியம்:' : 'Govt Subsidy:'}</span>
                 <span className="font-mono font-bold">-{formatEstimateRupees(bill.subsidy_applied)}</span>
               </div>
             )}

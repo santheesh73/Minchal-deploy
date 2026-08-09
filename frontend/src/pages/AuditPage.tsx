@@ -60,6 +60,17 @@ export const AuditPage: React.FC = () => {
       : null;
   const { activeContext, isOpen, openExplainability, closeExplainability } = useExplainability();
 
+  // Track language changes to re-analyze if language toggle is switched on result page
+  const prevLangRef = React.useRef(state.language);
+  React.useEffect(() => {
+    if (prevLangRef.current !== state.language) {
+      prevLangRef.current = state.language;
+      if (state.billData && state.appliances?.length) {
+        navigate('/audit/analyzing');
+      }
+    }
+  }, [state.language, state.billData, state.appliances, navigate]);
+
   if (!rawResult) {
     return (
       <PageContainer maxWidth="md" className="py-8 sm:py-12">

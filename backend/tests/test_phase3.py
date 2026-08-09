@@ -154,7 +154,7 @@ def test_edge_cases():
     assert round(raw, 2) == 146.25
     assumptions = build_assumptions(ac_no_hours)
     # Check if there is an ok=False runtime assumption
-    runtime_ass = next(a for a in assumptions if "பயன்பாட்டு நேரம்" in a["text"])
+    runtime_ass = next(a for a in assumptions if "Usage hours" in a["text"] or "பயன்பாட்டு நேரம்" in a["text"])
     assert runtime_ass["ok"] is False
 
     # total == 0 -> raise CalculatorError SERVER_ERROR

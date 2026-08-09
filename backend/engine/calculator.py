@@ -141,7 +141,7 @@ def estimate_kwh(appliance: Any, days: int) -> Tuple[float, List[Dict[str, str]]
     return raw_kwh, working_steps
 
 
-def build_assumptions(appliance: Any) -> List[Dict[str, Any]]:
+def build_assumptions(appliance: Any, language: str = "en") -> List[Dict[str, Any]]:
     """ok=False when a value was defaulted rather than provided.
     At minimum: runtime entered vs assumed, nameplate read vs picker default,
     symptoms reported vs none asked."""
@@ -158,42 +158,43 @@ def build_assumptions(appliance: Any) -> List[Dict[str, Any]]:
 
 
     assumptions = []
+    is_ta = language == "ta"
 
     # Runtime check (only relevant for Mode B on-demand appliances)
     if app_type != "fridge":
         if hours_band is None:
             assumptions.append({
                 "ok": False,
-                "text": "பயன்பாட்டு நேரம் குறிப்பிடப்படவில்லை; சராசரியாக 4-6 மணிநேரம் கொள்ளப்பட்டது."
+                "text": "பயன்பாட்டு நேரம் குறிப்பிடப்படவில்லை; சராசரியாக 4-6 மணிநேரம் கொள்ளப்பட்டது." if is_ta else "Usage hours not specified; assumed 4-6 hours average."
             })
         else:
             assumptions.append({
                 "ok": True,
-                "text": f"பயன்பாட்டு நேரம்: {hours_band} மணிநேரம்."
+                "text": f"பயன்பாட்டு நேரம்: {hours_band} மணிநேரம்." if is_ta else f"Usage hours: {hours_band} hours."
             })
 
     # Capacity nameplate check
     if capacity is None:
         assumptions.append({
             "ok": False,
-            "text": "சாதனத்தின் திறன் இயல்புநிலை மதிப்பாகக் கொள்ளப்பட்டது."
+            "text": "சாதனத்தின் திறன் இயல்புநிலை மதிப்பாகக் கொள்ளப்பட்டது." if is_ta else "Appliance capacity derived from typical default."
         })
     else:
         assumptions.append({
             "ok": True,
-            "text": f"சாதனத்தின் திறன் ({capacity}) லேபிளிலிருந்து பெறப்பட்டது."
+            "text": f"சாதனத்தின் திறன் ({capacity}) லேபிளிலிருந்து பெறப்பட்டது." if is_ta else f"Appliance capacity ({capacity}) retrieved from label."
         })
 
     # Symptoms check
     if not symptoms:
         assumptions.append({
             "ok": True,
-            "text": "சாதனத்தில் பழுதுகள் ஏதும் கண்டறியப்படவில்லை."
+            "text": "சாதனத்தில் பழுதுகள் ஏதும் கண்டறியப்படவில்லை." if is_ta else "No appliance fault symptoms reported."
         })
     else:
         assumptions.append({
             "ok": False,
-            "text": f"{len(symptoms)} பழுது அறிகுறிகள் கணக்கில் கொள்ளப்பட்டன."
+            "text": f"{len(symptoms)} பழுது அறிகுறிகள் கணக்கில் கொள்ளப்பட்டன." if is_ta else f"{len(symptoms)} fault symptoms taken into account."
         })
 
     return assumptions
@@ -202,7 +203,7 @@ def build_assumptions(appliance: Any) -> List[Dict[str, Any]]:
 RUNTIME_ASSUMED_FLOOR = 0.60
 
 
-def confidence(bill: Any, appliances: List[Any], scale: float) -> Tuple[int, List[Dict[str, Any]]]:
+def confidence(bill: Any, appliances: List[Any], scale: float, language: str = "en") -> Tuple[int, List[Dict[str, Any]]]:
     """ocr     = non-null bill fields / expected fields
        runtime = 0.60 .. 1.00, by the fraction of appliances whose runtime the
                  user CONFIRMED (runtime_confirmed=True), not merely those with
@@ -225,16 +226,6 @@ def confidence(bill: Any, appliances: List[Any], scale: float) -> Tuple[int, Lis
     ocr = non_null_fields / len(fields)
 
     # 2. Runtime completeness (Mode B only)
-    #
-    # Counts runtime the USER confirmed, not merely a value that happens to be
-    # present. The frontend pre-fills a per-appliance default on add, so
-    # "hours_band is not None" was always true and this term was always 1.0 —
-    # confidence read 100% on a path where nothing had been confirmed, and the
-    # "runtime entered, not assumed" tick claimed the opposite of the truth.
-    #
-    # runtime_confirmed=None (absent) means not confirmed, never an assertion.
-    # A supplied hours_band still improves the ESTIMATE; it just no longer
-    # inflates the CONFIDENCE. Those are different claims and were conflated.
     mode_b_total = 0
     mode_b_filled = 0
     for app in appliances:
@@ -253,13 +244,6 @@ def confidence(bill: Any, appliances: List[Any], scale: float) -> Tuple[int, Lis
                 mode_b_filled += 1
     confirmed_fraction = (mode_b_filled / mode_b_total) if mode_b_total > 0 else 1.0
 
-    # The terms multiply, so a raw 0/1 fraction would drive confidence to 0%
-    # the moment nothing is confirmed — and 0% is as wrong as the old 100%.
-    # Assumed runtime is not no information: the per-appliance defaults are
-    # reasonable, and every estimate is still normalised against the real bill
-    # total, which is the strongest signal we have. So assumed runtime floors
-    # this term rather than zeroing it, and confirming appliances walks it up.
-    #   nothing confirmed -> 0.60      all confirmed -> 1.00
     runtime = RUNTIME_ASSUMED_FLOOR + (1.0 - RUNTIME_ASSUMED_FLOOR) * confirmed_fraction
 
     # 3. Scale quality
@@ -278,26 +262,41 @@ def confidence(bill: Any, appliances: List[Any], scale: float) -> Tuple[int, Lis
     # Clamp confidence percent [0, 100]
     percent = max(0, min(100, percent))
 
-
-    reasons = [
-        {
-            "ok": ocr >= 1.0,
-            "text": "கட்டண விவரங்கள் முழுமையாகப் படிக்கப்பட்டுள்ளன." if ocr >= 1.0 else "கட்டண விவரங்கள் முழுமையற்றவை."
-        },
-        {
-            "ok": runtime >= 1.0,
-            "text": "அனைத்து சாதனங்களின் பயன்பாட்டு நேரம் குறிப்பிடப்பட்டுள்ளது." if runtime >= 1.0 else "சில சாதனங்களின் பயன்பாட்டு நேரம் யூகிக்கப்பட்டுள்ளது."
-        },
-        {
-            "ok": 0.85 <= scale <= 1.15,
-            "text": "மின் நுகர்வு கணக்கீடு மற்றும் கட்டணம் சரியாகப் பொருந்துகின்றன." if 0.85 <= scale <= 1.15 else "மின் நுகர்வு மற்றும் கட்டண விவரங்களில் முரண்பாடுகள் உள்ளன."
-        }
-    ]
+    if language == "ta":
+        reasons = [
+            {
+                "ok": ocr >= 1.0,
+                "text": "கட்டண விவரங்கள் முழுமையாகப் படிக்கப்பட்டுள்ளன." if ocr >= 1.0 else "கட்டண விவரங்கள் முழுமையற்றவை."
+            },
+            {
+                "ok": runtime >= 1.0,
+                "text": "அனைத்து சாதனங்களின் பயன்பாட்டு நேரம் குறிப்பிடப்பட்டுள்ளது." if runtime >= 1.0 else "சில சாதனங்களின் பயன்பாட்டு நேரம் யூகிக்கப்பட்டுள்ளது."
+            },
+            {
+                "ok": 0.85 <= scale <= 1.15,
+                "text": "மின் நுகர்வு கணக்கீடு மற்றும் கட்டணம் சரியாகப் பொருந்துகின்றன." if 0.85 <= scale <= 1.15 else "மின் நுகர்வு மற்றும் கட்டண விவரங்களில் முரண்பாடுகள் உள்ளன."
+            }
+        ]
+    else:
+        reasons = [
+            {
+                "ok": ocr >= 1.0,
+                "text": "Bill details were fully extracted." if ocr >= 1.0 else "Bill details are partially incomplete."
+            },
+            {
+                "ok": runtime >= 1.0,
+                "text": "Usage hours specified for all appliances." if runtime >= 1.0 else "Usage hours assumed for some appliances."
+            },
+            {
+                "ok": 0.85 <= scale <= 1.15,
+                "text": "Calculated consumption matches bill total well." if 0.85 <= scale <= 1.15 else "Discrepancy detected between bill and appliance loads."
+            }
+        ]
 
     return percent, reasons
 
 
-def analyze(bill: Any, appliances: List[Any]) -> Dict[str, Any]:
+def analyze(bill: Any, appliances: List[Any], language: str = "en") -> Dict[str, Any]:
     """1. raw estimate per appliance (with working steps)
        2. other_raw = OTHER_SHARE * bill.units_consumed
        3. total = sum(raw) + other_raw
@@ -340,7 +339,7 @@ def analyze(bill: Any, appliances: List[Any]) -> Dict[str, Any]:
             "percent": 100.0,
             "rank": 1
         }
-        conf_pct, conf_reasons = confidence(bill, [], 1.0)
+        conf_pct, conf_reasons = confidence(bill, [], 1.0, language=language)
         return {
             "bill_total_rupees": float(total_amount),
             "breakdown": [other_item],
@@ -417,9 +416,6 @@ def analyze(bill: Any, appliances: List[Any]) -> Dict[str, Any]:
             {"label": "Final Calibrated Consumption", "value": f"{final_units:.2f} kWh"}
         ])
 
-        # A custom appliance shows the name the USER gave it. Falling back to
-        # the generic catalogue label would hide which device a row refers to
-        # as soon as someone adds two of them.
         if isinstance(app, dict):
             user_label = app.get("label")
         else:
@@ -433,7 +429,7 @@ def analyze(bill: Any, appliances: List[Any]) -> Dict[str, Any]:
             "rupees": round(final_rupees, 2),
             "percent": float(round(final_units / units_consumed * 100)),
             "working": steps_copy,
-            "assumptions": build_assumptions(app)
+            "assumptions": build_assumptions(app, language=language)
         }
         breakdown_list.append(item)
 
@@ -458,7 +454,7 @@ def analyze(bill: Any, appliances: List[Any]) -> Dict[str, Any]:
     other_item["rank"] = len(breakdown_list) + 1
     breakdown_list.append(other_item)
 
-    conf_pct, conf_reasons = confidence(bill, appliances, scale)
+    conf_pct, conf_reasons = confidence(bill, appliances, scale, language=language)
 
     return {
         "bill_total_rupees": float(total_amount),

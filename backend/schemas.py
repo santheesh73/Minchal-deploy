@@ -154,6 +154,7 @@ class BudgetPlan(BaseModel):
 class AnalyzeRequest(BaseModel):
     bill: BillData
     appliances: List[ApplianceInput]
+    language: Optional[str] = "en"
 
 class AnalyzeResponse(BaseModel):
     ok: Literal[True] = True

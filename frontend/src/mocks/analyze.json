@@ -92,19 +92,148 @@
   "actions": [
     {
       "tier": "free",
-      "text": "ஏசியின் வெப்பநிலையை 24°C ஆக அமைத்து பயன்பாட்டு நேரத்தைக் குறைக்கவும்.",
-      "saves_rupees": 150.0
+      "appliance_type": "ac",
+      "text": "Set AC temperature to 26°C and reduce operating duration.",
+      "saves_rupees": 743.0
     },
     {
       "tier": "cheap",
-      "text": "குளிர்சாதனப் பெட்டியின் கதவு கேஸ்கெட்டை சரிசெய்யவும் மற்றும் ஏசி வடிகட்டிகளை சுத்தம் செய்யவும்.",
-      "saves_rupees": 300.0
+      "appliance_type": "ac",
+      "text": "Clean AC air filters and check refrigerant gas pressure.",
+      "saves_rupees": 536.83,
+      "cost_rupees": 800.0
     },
     {
       "tier": "investment",
-      "text": "தற்போதைய பழைய ஏசிக்கு பதிலாக 5-நட்சத்திர மதிப்பீடு கொண்ட புதிய இன்வெர்ட்டர் ஏசியை வாங்கவும்.",
-      "saves_rupees": 650.0,
+      "appliance_type": "ac",
+      "text": "Replace old AC with a new 5-star inverter AC.",
+      "saves_rupees": 890.0,
+      "cost_rupees": 38000.0,
       "payback_months": 18.0
+    },
+    {
+      "tier": "free",
+      "appliance_type": "fridge",
+      "text": "Maintain 5cm wall clearance for back airflow and avoid storing warm food.",
+      "saves_rupees": 185.0
+    },
+    {
+      "tier": "cheap",
+      "appliance_type": "fridge",
+      "text": "Clean condenser coils behind the refrigerator and check door gasket seal.",
+      "saves_rupees": 240.0,
+      "cost_rupees": 600.0
+    },
+    {
+      "tier": "investment",
+      "appliance_type": "fridge",
+      "text": "Replace old refrigerator with a new 5-star energy-efficient model.",
+      "saves_rupees": 450.0,
+      "cost_rupees": 28000.0,
+      "payback_months": 24.0
+    },
+    {
+      "tier": "free",
+      "appliance_type": "geyser",
+      "text": "Turn off geyser 5 minutes before finishing shower & lower temperature to 50°C.",
+      "saves_rupees": 210.0
+    },
+    {
+      "tier": "cheap",
+      "appliance_type": "geyser",
+      "text": "Descale heating element and flush tank mineral buildup.",
+      "saves_rupees": 280.0,
+      "cost_rupees": 900.0
+    },
+    {
+      "tier": "investment",
+      "appliance_type": "geyser",
+      "text": "Replace old water heater with a new 5-star rated water heater.",
+      "saves_rupees": 520.0,
+      "cost_rupees": 9000.0,
+      "payback_months": 14.0
+    },
+    {
+      "tier": "free",
+      "appliance_type": "washing_machine",
+      "text": "Operate full loads on cold water / eco mode cycle.",
+      "saves_rupees": 160.0
+    },
+    {
+      "tier": "cheap",
+      "appliance_type": "washing_machine",
+      "text": "Clean lint filter and drain pump filter monthly.",
+      "saves_rupees": 190.0,
+      "cost_rupees": 500.0
+    },
+    {
+      "tier": "investment",
+      "appliance_type": "washing_machine",
+      "text": "Upgrade to a new 5-star rated inverter washing machine.",
+      "saves_rupees": 380.0,
+      "cost_rupees": 25000.0,
+      "payback_months": 30.0
+    },
+    {
+      "tier": "free",
+      "appliance_type": "fan",
+      "text": "Turn off ceiling fans when leaving unoccupied rooms.",
+      "saves_rupees": 140.0
+    },
+    {
+      "tier": "cheap",
+      "appliance_type": "fan",
+      "text": "Service fan motor bearings and inspect speed regulator.",
+      "saves_rupees": 170.0,
+      "cost_rupees": 500.0
+    },
+    {
+      "tier": "investment",
+      "appliance_type": "fan",
+      "text": "Replace old 75W ceiling fans with 28W BLDC energy-saving fans.",
+      "saves_rupees": 420.0,
+      "cost_rupees": 2500.0,
+      "payback_months": 12.0
+    },
+    {
+      "tier": "free",
+      "appliance_type": "motor_pump",
+      "text": "Install automatic water level controller to prevent tank overflow.",
+      "saves_rupees": 220.0
+    },
+    {
+      "tier": "cheap",
+      "appliance_type": "motor_pump",
+      "text": "Service water pump motor bearings and check impeller.",
+      "saves_rupees": 260.0,
+      "cost_rupees": 800.0
+    },
+    {
+      "tier": "investment",
+      "appliance_type": "motor_pump",
+      "text": "Upgrade old pump with a new 5-star rated energy efficient motor pump.",
+      "saves_rupees": 510.0,
+      "cost_rupees": 12000.0,
+      "payback_months": 20.0
+    },
+    {
+      "tier": "free",
+      "appliance_type": "tv",
+      "text": "Turn off main wall power switch to eliminate TV standby power draw.",
+      "saves_rupees": 90.0
+    },
+    {
+      "tier": "free",
+      "appliance_type": "lights",
+      "text": "Switch off lights when leaving unoccupied rooms.",
+      "saves_rupees": 110.0
+    },
+    {
+      "tier": "cheap",
+      "appliance_type": "lights",
+      "text": "Replace high-power filament or CFL bulbs with 9W LED bulbs.",
+      "saves_rupees": 320.0,
+      "cost_rupees": 500.0
     }
   ],
   "insights": {

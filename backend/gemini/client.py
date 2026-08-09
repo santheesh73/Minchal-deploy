@@ -6,12 +6,19 @@ from google import genai
 from google.genai import types
 from google.genai.errors import APIError
 
+try:
+    types.ThinkingConfig.model_config['extra'] = 'allow'
+    types.ThinkingConfig.model_rebuild(force=True)
+except Exception:
+    pass
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Lazy singleton
 _client = None
-MOCK_MODE = not os.getenv("GEMINI_API_KEY")
+_raw_api_key = os.getenv("GEMINI_API_KEY", "").strip()
+MOCK_MODE = not _raw_api_key or _raw_api_key.startswith("test_key")
 
 # Models tried in order, all vision-capable (bill extraction needs image input).
 #

@@ -16,6 +16,7 @@ import { formatEstimateRupees, formatUnits } from '../../utils';
 import { Card } from '../ui/Card';
 import { ProgressBar } from '../ui/ProgressBar';
 import { DataTrustLabel } from '../explainability/DataTrustLabel';
+import { useAudit } from '../../store/AuditContext';
 
 export interface ApplianceResultCardProps {
   item: BreakdownItem;
@@ -33,14 +34,34 @@ const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
   motor_pump: Gauge,
 };
 
+const TA_LABEL_MAP: Record<string, string> = {
+  ac: 'ஏர் கண்டிஷனர்',
+  fridge: 'குளிர்சாதனப் பெட்டி',
+  geyser: 'வாட்டர் ஹீட்டர்',
+  washing_machine: 'துணி துவைக்கும் இயந்திரம்',
+  fan: 'மின்விசிறி',
+  tv: 'தொலைக்காட்சி',
+  lights: 'மின்விளக்குகள்',
+  motor_pump: 'மோட்டார் பம்ப்',
+  other: 'மற்ற மின் பயன்பாடு',
+};
+
 export const ApplianceResultCard: React.FC<ApplianceResultCardProps> = ({
   item,
   onViewWorking,
 }) => {
+  const { state } = useAudit();
+  const isTa = state.language === 'ta';
+
   const catalog = item.type !== 'other' ? getApplianceCatalogItem(item.type) : undefined;
   const IconComponent = (item.type !== 'other' && ICON_MAP[item.type]) || Flame;
 
   const isHighestRank = item.rank === 1;
+
+  // Determine display label: if Tamil is active, use Tamil label unless custom name given
+  const displayLabel = isTa
+    ? TA_LABEL_MAP[item.type] || item.label || item.type
+    : item.label || catalog?.label || item.type;
 
   return (
     <Card
@@ -63,12 +84,12 @@ export const ApplianceResultCard: React.FC<ApplianceResultCardProps> = ({
           <div>
             <div className="flex items-center gap-1.5">
               <h4 className="font-bold text-slate-900 text-sm">
-                {item.label || catalog?.label || item.type}
+                {displayLabel}
               </h4>
               <DataTrustLabel category="estimated" />
             </div>
             <span className="text-[11px] text-slate-500">
-              Rank #{item.rank} load contributor
+              {isTa ? `வரிசை #${item.rank} மின் நுகர்வு காரணி` : `Rank #${item.rank} load contributor`}
             </span>
           </div>
         </div>
@@ -80,21 +101,25 @@ export const ApplianceResultCard: React.FC<ApplianceResultCardProps> = ({
               : 'bg-slate-100 text-slate-700'
           }`}
         >
-          {item.percent}% share
+          {item.percent}% {isTa ? 'பங்கு' : 'share'}
         </span>
       </div>
 
       {/* Numerical Metrics Grid */}
       <div className="grid grid-cols-2 gap-2 text-xs">
         <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-          <span className="text-[10px] text-slate-400 font-semibold uppercase block">Monthly Cost</span>
+          <span className="text-[10px] text-slate-400 font-semibold uppercase block">
+            {isTa ? 'மாதாந்திர செலவு' : 'Monthly Cost'}
+          </span>
           <p className="font-bold text-slate-900 font-mono text-sm">
             {formatEstimateRupees(item.rupees)}
           </p>
         </div>
 
         <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-          <span className="text-[10px] text-slate-400 font-semibold uppercase block">Energy Consumption</span>
+          <span className="text-[10px] text-slate-400 font-semibold uppercase block">
+            {isTa ? 'மின் நுகர்வு' : 'Energy Consumption'}
+          </span>
           <p className="font-bold text-brand-600 font-mono text-sm">
             {formatUnits(item.units)}
           </p>
@@ -104,7 +129,7 @@ export const ApplianceResultCard: React.FC<ApplianceResultCardProps> = ({
       {/* Usage Share Percentage Bar */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600">
-          <span>Household Share</span>
+          <span>{isTa ? 'வீட்டு மின்சாரப் பங்கு' : 'Household Share'}</span>
           <span className="font-mono text-slate-900">{item.percent}%</span>
         </div>
         <ProgressBar
@@ -119,14 +144,14 @@ export const ApplianceResultCard: React.FC<ApplianceResultCardProps> = ({
         <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
           <span className="text-[11px] text-slate-500 flex items-center gap-1">
             <TrendingUp className="w-3 h-3 text-slate-400" />
-            {item.working?.length || 0} math steps
+            {item.working?.length || 0} {isTa ? 'கணக்கீட்டு படிகள்' : 'math steps'}
           </span>
           <button
             type="button"
             onClick={() => onViewWorking(item)}
             className="text-xs font-semibold text-brand-600 hover:text-brand-700 underline focus:outline-none"
           >
-            How was this estimated?
+            {isTa ? 'இது எவ்வாறு கணக்கிடப்பட்டது?' : 'How was this estimated?'}
           </button>
         </div>
       )}

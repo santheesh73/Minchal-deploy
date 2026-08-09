@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ShieldCheck, ChevronDown, ChevronUp, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Assumption } from '../../types/api';
 import { Card } from '../ui/Card';
+import { useAudit } from '../../store/AuditContext';
+import { getTranslation } from '../../utils/translations';
 
 export interface ConfidenceCardProps {
   confidencePercent: number;
@@ -12,9 +14,17 @@ export const ConfidenceCard: React.FC<ConfidenceCardProps> = ({
   confidencePercent,
   reasons = [],
 }) => {
+  const { state } = useAudit();
+  const t = getTranslation(state.language);
+
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getConfidenceLevel = (pct: number) => {
+    if (state.language === 'ta') {
+      if (pct >= 80) return { label: 'உயர்ந்த துல்லியம்', variant: 'bg-emerald-100 text-emerald-800 border-emerald-300' };
+      if (pct >= 60) return { label: 'நல்ல துல்லியம்', variant: 'bg-blue-100 text-blue-800 border-blue-300' };
+      return { label: 'மிதமான துல்லியம்', variant: 'bg-amber-100 text-amber-800 border-amber-300' };
+    }
     if (pct >= 80) return { label: 'High Confidence', variant: 'bg-emerald-100 text-emerald-800 border-emerald-300' };
     if (pct >= 60) return { label: 'Good Confidence', variant: 'bg-blue-100 text-blue-800 border-blue-300' };
     return { label: 'Moderate Confidence', variant: 'bg-amber-100 text-amber-800 border-amber-300' };
@@ -30,8 +40,8 @@ export const ConfidenceCard: React.FC<ConfidenceCardProps> = ({
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 text-sm">Audit Calculation Confidence</h3>
-            <p className="text-[11px] text-slate-500">Based on bill clarity & appliance details</p>
+            <h3 className="font-bold text-slate-900 text-sm">{t.confidenceTitle}</h3>
+            <p className="text-[11px] text-slate-500">{state.language === 'ta' ? 'கட்டணம் மற்றும் சாதன விவரங்களின் அடிப்படையில்' : 'Based on bill clarity & appliance details'}</p>
           </div>
         </div>
 
@@ -52,7 +62,7 @@ export const ConfidenceCard: React.FC<ConfidenceCardProps> = ({
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-xs font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1 focus:outline-none"
           >
-            <span>{isExpanded ? 'Hide confidence details' : 'View confidence factors'}</span>
+            <span>{isExpanded ? (state.language === 'ta' ? 'விவரங்களை மறை' : 'Hide confidence details') : (state.language === 'ta' ? 'விவரங்களைக் காட்டு' : 'View confidence factors')}</span>
             {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
 

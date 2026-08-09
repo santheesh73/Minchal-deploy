@@ -337,7 +337,7 @@ DEMO_RESPONSE: Dict[str, Any] = json.loads(DEMO_RESPONSE_JSON)
 DEMO_BILL_HASH = bill_hash(DEMO_BILL)
 
 
-def demo_response(bill: Any) -> Optional[Dict[str, Any]]:
+def demo_response(bill: Any, language: str = "en") -> Optional[Dict[str, Any]]:
     """Returns a copy of the cached response if this is the demo bill.
 
     Returns None otherwise, so any other bill falls through to the real engine
@@ -349,6 +349,60 @@ def demo_response(bill: Any) -> Optional[Dict[str, Any]]:
         return None
 
     data = json.loads(json.dumps(DEMO_RESPONSE))
-    # DELETE-ON-SWAP: this marker exists only while the data is synthetic.
     data["meta"]["data_source"] = "placeholder" if PLACEHOLDER_DATA else "cached"
+    
+    if language == "ta":
+        data["actions"] = [
+            {"tier": "free", "appliance_type": "ac", "text": "ஏசியின் வெப்பநிலையை 26°C ஆக அமைத்து பயன்பாட்டு நேரத்தைக் குறைக்கவும்.", "saves_rupees": 654.93},
+            {"tier": "cheap", "appliance_type": "ac", "text": "ஏசி வடிகட்டிகளை சுத்தம் செய்து குளிரூட்டும் அமைப்பை சரிபார்க்கவும்.", "saves_rupees": 536.83, "cost_rupees": 800.0},
+            {"tier": "investment", "appliance_type": "ac", "text": "பழைய ஏசிக்கு பதிலாக புதிய 5-நட்சத்திர இன்வெர்ட்டர் ஏசியை வாங்கவும்.", "saves_rupees": 890.0, "cost_rupees": 38000.0, "payback_months": 18},
+            {"tier": "free", "appliance_type": "fridge", "text": "குளிர்சாதனப் பெட்டியின் பின்புறம் 5 செ.மீ இடைவெளி விட்டு காற்றோட்டத்தை சீராக்கவும்.", "saves_rupees": 185.0},
+            {"tier": "cheap", "appliance_type": "fridge", "text": "குளிர்சாதன பெட்டியின் பின் சுருள்கள் மற்றும் கதவு கேஸ்கெட்டை சுத்தம் செய்யவும்.", "saves_rupees": 240.0, "cost_rupees": 600.0},
+            {"tier": "investment", "appliance_type": "fridge", "text": "பழைய குளிர்சாதனப் பெட்டிக்கு பதிலாக புதிய 5-நட்சத்திர இன்வெர்ட்டர் மாடலை வாங்கவும்.", "saves_rupees": 450.0, "cost_rupees": 28000.0, "payback_months": 24},
+            {"tier": "free", "appliance_type": "geyser", "text": "குளிப்பதற்கு 5 நிமிடங்களுக்கு முன்பே வாட்டர் ஹீட்டரை அணைக்கவும்.", "saves_rupees": 196.24},
+            {"tier": "cheap", "appliance_type": "geyser", "text": "வாட்டர் ஹீட்டரின் வெப்பமூட்டும் உறுப்பில் உள்ள உப்புக் படிவுகளை அகற்றுங்கள்.", "saves_rupees": 261.65, "cost_rupees": 900.0},
+            {"tier": "investment", "appliance_type": "geyser", "text": "பழைய ஹீட்டருக்கு பதிலாக 5-நட்சத்திர இன்ஸ்டன்ட் அல்லது சோலார் ஹீட்டரை வாங்கவும்.", "saves_rupees": 520.0, "cost_rupees": 9000.0, "payback_months": 14},
+            {"tier": "free", "appliance_type": "washing_machine", "text": "துணிகளை மொத்தமாக சேர்த்து குளிர் நீரில் அலசும் முறையைப் பயன்படுத்தவும்.", "saves_rupees": 160.0},
+            {"tier": "cheap", "appliance_type": "washing_machine", "text": "துணி துவைக்கும் இயந்திர டிரமை சுத்தம் செய்து பராமரிக்கவும்.", "saves_rupees": 190.0, "cost_rupees": 500.0},
+            {"tier": "investment", "appliance_type": "washing_machine", "text": "பழைய வாஷிங் மெஷினுக்கு பதிலாக 5-நட்சத்திர இன்வெர்ட்டர் மெஷினை வாங்கவும்.", "saves_rupees": 380.0, "cost_rupees": 25000.0, "payback_months": 30},
+            {"tier": "free", "appliance_type": "fan", "text": "ஆள் இல்லாத அறைகளில் மின்விசிறிகளை அணைத்து வைக்கவும்.", "saves_rupees": 140.0},
+            {"tier": "cheap", "appliance_type": "fan", "text": "மின்விசிறி மோட்டாருக்கு எண்ணெய் ஊற்றி கெபாசிட்டரை சரிபார்க்கவும்.", "saves_rupees": 170.0, "cost_rupees": 500.0},
+            {"tier": "investment", "appliance_type": "fan", "text": "பழைய மின்விசிறிகளுக்கு பதிலாக புதிய 28W BLDC மின்விசிறிகளைப் பயன்படுத்தவும்.", "saves_rupees": 420.0, "cost_rupees": 2500.0, "payback_months": 12},
+            {"tier": "free", "appliance_type": "motor_pump", "text": "தண்ணீர் தொட்டி நிரம்பி வழிவதைத் தடுக்க தானியங்கி கட்டுப்பாட்டமைப்பை பொருத்தவும்.", "saves_rupees": 220.0},
+            {"tier": "cheap", "appliance_type": "motor_pump", "text": "மோட்டார் பம்ப் இம்பெல்லர் மற்றும் பேரிங்கை சரிபார்க்கவும்.", "saves_rupees": 260.0, "cost_rupees": 800.0},
+            {"tier": "investment", "appliance_type": "motor_pump", "text": "பழைய பம்பிற்கு பதிலாக புதிய 5-நட்சத்திர மோட்டார் பம்பை வாங்கவும்.", "saves_rupees": 510.0, "cost_rupees": 12000.0, "payback_months": 20},
+            {"tier": "free", "appliance_type": "tv", "text": "தொலைக்காட்சியை பயன்படுத்தாத போது முதன்மை சுவிட்சை அணைத்து வைக்கவும்.", "saves_rupees": 90.0},
+            {"tier": "free", "appliance_type": "lights", "text": "ஆள் இல்லாத அறைகளில் மின்விளக்குகளை அணைத்து வைக்கவும்.", "saves_rupees": 110.0},
+            {"tier": "cheap", "appliance_type": "lights", "text": "பழைய பல்புகளுக்கு பதிலாக 9W எல்இடி பல்புகளை பயன்படுத்தவும்.", "saves_rupees": 320.0, "cost_rupees": 500.0}
+        ]
+    else:
+        data["confidence_reasons"] = [
+            {"ok": True, "text": "Bill details were fully extracted."},
+            {"ok": True, "text": "Usage hours specified for all appliances."},
+            {"ok": False, "text": "Discrepancy detected between bill and appliance loads."}
+        ]
+        data["explanation"] = "Air Conditioner accounts for the largest portion of your electricity bill, costing ₹2,976.97 out of ₹5,420.00 total. Set AC temperature to 26°C and reduce operating hours to save approximately ₹654.93 per month."
+        data["actions"] = [
+            {"tier": "free", "appliance_type": "ac", "text": "Set AC temperature to 26°C and reduce operating duration.", "saves_rupees": 654.93},
+            {"tier": "cheap", "appliance_type": "ac", "text": "Clean AC air filters and check refrigerant gas pressure.", "saves_rupees": 536.83, "cost_rupees": 800.0},
+            {"tier": "investment", "appliance_type": "ac", "text": "Replace old AC with a new 5-star inverter AC.", "saves_rupees": 890.0, "cost_rupees": 38000.0, "payback_months": 18},
+            {"tier": "free", "appliance_type": "fridge", "text": "Maintain 5cm wall clearance for back airflow and avoid storing warm food.", "saves_rupees": 185.0},
+            {"tier": "cheap", "appliance_type": "fridge", "text": "Clean condenser coils behind the refrigerator and check door gasket seal.", "saves_rupees": 240.0, "cost_rupees": 600.0},
+            {"tier": "investment", "appliance_type": "fridge", "text": "Replace old refrigerator with a new 5-star energy-efficient model.", "saves_rupees": 450.0, "cost_rupees": 28000.0, "payback_months": 24},
+            {"tier": "free", "appliance_type": "geyser", "text": "Turn off geyser 5 minutes before finishing shower & lower temperature to 50°C.", "saves_rupees": 196.24},
+            {"tier": "cheap", "appliance_type": "geyser", "text": "Descale heating element and flush tank mineral buildup.", "saves_rupees": 261.65, "cost_rupees": 900.0},
+            {"tier": "investment", "appliance_type": "geyser", "text": "Replace old water heater with a new 5-star rated water heater.", "saves_rupees": 520.0, "cost_rupees": 9000.0, "payback_months": 14},
+            {"tier": "free", "appliance_type": "washing_machine", "text": "Operate full loads on cold water / eco mode cycle.", "saves_rupees": 160.0},
+            {"tier": "cheap", "appliance_type": "washing_machine", "text": "Clean lint filter and drain pump filter monthly.", "saves_rupees": 190.0, "cost_rupees": 500.0},
+            {"tier": "investment", "appliance_type": "washing_machine", "text": "Upgrade to a new 5-star rated inverter washing machine.", "saves_rupees": 380.0, "cost_rupees": 25000.0, "payback_months": 30},
+            {"tier": "free", "appliance_type": "fan", "text": "Turn off ceiling fans when leaving unoccupied rooms.", "saves_rupees": 140.0},
+            {"tier": "cheap", "appliance_type": "fan", "text": "Service fan motor bearings and inspect speed regulator.", "saves_rupees": 170.0, "cost_rupees": 500.0},
+            {"tier": "investment", "appliance_type": "fan", "text": "Replace old 75W ceiling fans with 28W BLDC energy-saving fans.", "saves_rupees": 420.0, "cost_rupees": 2500.0, "payback_months": 12},
+            {"tier": "free", "appliance_type": "motor_pump", "text": "Install automatic water level controller to prevent tank overflow.", "saves_rupees": 220.0},
+            {"tier": "cheap", "appliance_type": "motor_pump", "text": "Service water pump motor bearings and check impeller.", "saves_rupees": 260.0, "cost_rupees": 800.0},
+            {"tier": "investment", "appliance_type": "motor_pump", "text": "Upgrade old pump with a new 5-star rated energy efficient motor pump.", "saves_rupees": 510.0, "cost_rupees": 12000.0, "payback_months": 20},
+            {"tier": "free", "appliance_type": "tv", "text": "Turn off main wall power switch to eliminate TV standby power draw.", "saves_rupees": 90.0},
+            {"tier": "free", "appliance_type": "lights", "text": "Switch off lights when leaving unoccupied rooms.", "saves_rupees": 110.0},
+            {"tier": "cheap", "appliance_type": "lights", "text": "Replace high-power filament or CFL bulbs with 9W LED bulbs.", "saves_rupees": 320.0, "cost_rupees": 500.0}
+        ]
     return data

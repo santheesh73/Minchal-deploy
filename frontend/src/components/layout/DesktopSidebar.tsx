@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAudit } from '../../store/AuditContext';
 import { Logo } from '../ui/Logo';
+import { getTranslation } from '../../utils/translations';
 
 export interface DesktopSidebarProps {
   isCollapsed: boolean;
@@ -25,6 +26,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
 }) => {
   const location = useLocation();
   const { state, dispatch } = useAudit();
+  const t = getTranslation(state.language);
 
   const toggleLanguage = () => {
     const nextLang = state.language === 'en' ? 'ta' : 'en';
@@ -32,11 +34,11 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   };
 
   const navItems = [
-    { to: '/', label: 'Home Landing', icon: Home, exact: true },
-    { to: '/audit/bill', label: '1. Bill Upload', icon: FileText },
-    { to: '/audit/appliances', label: '2. Appliances', icon: Cpu },
-    { to: '/audit/analyzing', label: '3. Analysis Engine', icon: Calculator },
-    { to: '/audit/result', label: '4. Energy Audit', icon: BarChart2 },
+    { to: '/', label: t.home, icon: Home, exact: true },
+    { to: '/audit/bill', label: `1. ${t.billUpload}`, icon: FileText },
+    { to: '/audit/appliances', label: `2. ${t.appliances}`, icon: Cpu },
+    { to: '/audit/analyzing', label: `3. ${state.language === 'ta' ? 'பகுப்பாய்வு' : 'Analysis Engine'}`, icon: Calculator },
+    { to: '/audit/result', label: `4. ${t.auditResults}`, icon: BarChart2 },
   ];
 
   return (
@@ -93,10 +95,10 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
           <div className="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1 text-xs text-slate-700">
             <div className="flex items-center gap-1.5 font-bold text-emerald-800 text-[11px]">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Deterministic Engine</span>
+              <span>{t.deterministicEngine}</span>
             </div>
             <p className="text-[10px] text-slate-500 leading-relaxed">
-              FastAPI backend calculations
+              {state.language === 'ta' ? 'துல்லியமான FastAPI கணக்கீடு' : 'FastAPI backend calculations'}
             </p>
           </div>
         )}

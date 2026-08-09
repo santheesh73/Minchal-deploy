@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { RotateCcw, ShieldCheck, Sparkles, AlertTriangle, RefreshCw } from 'lucide-react';
 import { useAudit } from '../../store/AuditContext';
 import { Button } from '../ui/Button';
+import { getTranslation } from '../../utils/translations';
 
 export interface AuditHeaderProps {
   explanation?: string;
@@ -16,7 +17,8 @@ export const AuditHeader: React.FC<AuditHeaderProps> = ({
   onReanalyze,
 }) => {
   const navigate = useNavigate();
-  const { dispatch } = useAudit();
+  const { state, dispatch } = useAudit();
+  const t = getTranslation(state.language);
 
   const handleRestart = () => {
     dispatch({ type: 'RESET_AUDIT' });
@@ -29,9 +31,9 @@ export const AuditHeader: React.FC<AuditHeaderProps> = ({
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold">
             <ShieldCheck className="w-3.5 h-3.5 text-brand-600" />
-            <span>MINCHAL Household Energy Audit</span>
+            <span>{state.language === 'ta' ? 'மின்சல் வீட்டு ஆற்றல் தணிக்கை' : 'MINCHAL Household Energy Audit'}</span>
           </div>
-          <h1 className="text-h1 text-slate-900">Your Energy Audit Dashboard</h1>
+          <h1 className="text-h1 text-slate-900">{t.step3Title}</h1>
         </div>
 
         <Button
@@ -41,7 +43,7 @@ export const AuditHeader: React.FC<AuditHeaderProps> = ({
           leftIcon={<RotateCcw className="w-4 h-4 text-slate-600" />}
           className="shrink-0 font-semibold text-xs border-slate-300"
         >
-          New Energy Audit
+          {state.language === 'ta' ? 'புதிய தணிக்கை' : 'New Energy Audit'}
         </Button>
       </div>
 
@@ -51,7 +53,7 @@ export const AuditHeader: React.FC<AuditHeaderProps> = ({
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
             <span>
-              <strong>Audit Inputs Changed:</strong> This energy audit is based on earlier bill or appliance inputs.
+              <strong>{state.language === 'ta' ? 'தகவல்கள் மாற்றப்பட்டுள்ளன:' : 'Audit Inputs Changed:'}</strong> {state.language === 'ta' ? 'முந்தைய கட்டணம் அல்லது சாதனங்களின் விவரங்களின் அடிப்படையில் இந்த தணிக்கை உள்ளது.' : 'This energy audit is based on earlier bill or appliance inputs.'}
             </span>
           </div>
           {onReanalyze && (
@@ -62,7 +64,7 @@ export const AuditHeader: React.FC<AuditHeaderProps> = ({
               leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
               className="shrink-0 font-bold text-xs shadow-sm"
             >
-              Re-analyze Energy Audit
+              {state.language === 'ta' ? 'மீண்டும் பகுப்பாய்வு செய்க' : 'Re-analyze Energy Audit'}
             </Button>
           )}
         </div>

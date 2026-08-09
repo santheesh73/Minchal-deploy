@@ -10,7 +10,7 @@ from gemini.client import (
 
 logger = logging.getLogger(__name__)
 
-def generate_explanation(bill: Any, breakdown: List[Dict[str, Any]], actions: List[Dict[str, Any]], language: str = "ta") -> str:
+def generate_explanation(bill: Any, breakdown: List[Dict[str, Any]], actions: List[Dict[str, Any]], language: str = "en") -> str:
     """Generates natural language explanation from raw parameters. Falls back to a template on error."""
     bill_units = getattr(bill, "units_consumed", None)
     if bill_units is None and isinstance(bill, dict):
@@ -59,8 +59,9 @@ def generate_explanation(bill: Any, breakdown: List[Dict[str, Any]], actions: Li
         breakdown_str = ", ".join(items_strs)
 
         # Construct prompt
+        lang_name = "Tamil" if language == "ta" else "English"
         prompt = (
-            f"Write a short explanation in {language} using ONLY these numbers:\n\n"
+            f"Write a short explanation in {lang_name} using ONLY these numbers:\n\n"
             f"Bill total: Rs {bill_total} for {bill_units} units over {bill_days} days.\n"
             f"Breakdown: {breakdown_str}\n"
             f"Top action: {top_action_text}, saving about Rs {savings_val}/month.\n\n"
@@ -69,8 +70,8 @@ def generate_explanation(bill: Any, breakdown: List[Dict[str, Any]], actions: Li
             "- Do NOT round differently than given.\n"
             "- Name the single largest consumer in the first sentence.\n"
             "- 2 short sentences, then 1 recommendation sentence.\n"
-            "- Plain conversational {language}. No technical jargon.\n"
-            "- If the language is Tamil, do not use English technical words."
+            f"- Plain conversational {lang_name}. No technical jargon.\n"
+            f"- Output MUST be in {lang_name}."
         )
 
         def api_call(model: str):
@@ -78,7 +79,11 @@ def generate_explanation(bill: Any, breakdown: List[Dict[str, Any]], actions: Li
 
         response = call_with_fallback(api_call)
         if response.text and response.text.strip():
-            return response.text.strip()
+            res_text = response.text.strip()
+            if language != "ta" and any("\u0b80" <= ch <= "\u0bff" for ch in res_text):
+                logger.warning("Gemini returned Tamil text when English was requested. Falling back to English template.")
+                return fallback_text
+            return res_text
     except Exception as e:
         logger.error(f"Gemini explanation generation failed: {e}. Falling back to template.")
 

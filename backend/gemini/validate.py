@@ -110,25 +110,22 @@ def validate_bill(data: Dict[str, Any]) -> Dict[str, Any]:
             message="Billing amount is missing or invalid. Please check the photo."
         )
 
-    # 3. billing_days check
+    # 3. billing_days check - default None to 60 (standard TNEB cycle), but validate explicit values
     if days is None:
-        # Default or raise? Spec says: billing_days < 15 or > 95 -> INVALID_BILL
-        raise GeminiValidationError(
-            reason="OCR_MISSING_FIELD",
-            message="Billing cycle days not found. Try a clearer photo of the dates section."
-        )
-    try:
-        days_val = int(days)
-    except (ValueError, TypeError):
-        raise GeminiValidationError(
-            reason="INVALID_BILL",
-            message="The billing days count is invalid."
-        )
-    if days_val < 15 or days_val > 95:
-        raise GeminiValidationError(
-            reason="INVALID_BILL",
-            message=f"Billing cycle days ({days_val}) is outside the supported range (15 to 95 days)."
-        )
+        days_val = 60
+    else:
+        try:
+            days_val = int(days)
+        except (ValueError, TypeError):
+            raise GeminiValidationError(
+                reason="INVALID_BILL",
+                message="The billing days count is invalid."
+            )
+        if days_val < 15 or days_val > 95:
+            raise GeminiValidationError(
+                reason="INVALID_BILL",
+                message=f"Billing cycle days ({days_val}) is outside the supported range (15 to 95 days)."
+            )
 
     # 4. implied rate check, banded.
     #

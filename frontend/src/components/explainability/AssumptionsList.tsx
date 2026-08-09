@@ -1,12 +1,16 @@
 import React from 'react';
 import { ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { Assumption } from '../../types/api';
+import { useAudit } from '../../store/AuditContext';
 
 export interface AssumptionsListProps {
   assumptions: Assumption[];
 }
 
 export const AssumptionsList: React.FC<AssumptionsListProps> = ({ assumptions }) => {
+  const { state } = useAudit();
+  const isTa = state.language === 'ta';
+
   if (!assumptions || assumptions.length === 0) {
     return null;
   }
@@ -15,7 +19,7 @@ export const AssumptionsList: React.FC<AssumptionsListProps> = ({ assumptions })
     <div className="space-y-2 pt-3 border-t border-slate-200">
       <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 uppercase tracking-wider">
         <ShieldAlert className="w-4 h-4 text-amber-600" />
-        <span>What MINCHAL Had To Assume (Assumptions)</span>
+        <span>{isTa ? 'கணக்கீட்டு அனுமானங்கள்' : 'What MINCHAL Had To Assume (Assumptions)'}</span>
       </div>
 
       <div className="space-y-1.5 bg-amber-50/40 p-3 rounded-xl border border-amber-200/70 text-xs text-slate-700">
