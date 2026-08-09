@@ -36,7 +36,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         /* Application Routes View (/audit/*) - Unchanged Application Shell */
         <>
           {/* Mobile View (< 1024px): Application Mobile Shell */}
-          <div className="lg:hidden min-h-screen flex flex-col pb-16 sm:pb-8">
+          <div className="lg:hidden min-h-screen flex flex-col pb-20 lg:pb-0">
             <Header />
             <div className="flex-1 w-full">{children}</div>
             <BottomNavigation />
