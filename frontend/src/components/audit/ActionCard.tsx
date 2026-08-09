@@ -342,22 +342,20 @@ export const ActionCard: React.FC<ActionCardProps> = ({ action }) => {
   const [showSteps, setShowSteps] = useState(true);
 
   // Match guide by appliance_type and tier
-  const appType = action.appliance_type || 'ac';
+  const appType = action.appliance_type || '';
   const tier = action.tier || 'free';
   
-  const appGuides = APPLIANCE_ACTION_GUIDES[appType] || APPLIANCE_ACTION_GUIDES.ac;
-  const guide = appGuides[tier] || appGuides.free || APPLIANCE_ACTION_GUIDES.ac.free;
+  const appGuides = APPLIANCE_ACTION_GUIDES[appType];
+  const guide = appGuides ? (appGuides[tier] || appGuides.free) : null;
 
   // Appliance Badge text
   const appLabelObj = APPLIANCE_NAME_LABELS[appType] || { en: appType, ta: appType };
-  const applianceBadge = isTa ? appLabelObj.ta : appLabelObj.en;
+  const applianceBadge = isTa ? appLabelObj.ta : (appLabelObj.en || appType);
 
-  // Fallback to server text if specific guide not mapped
-  const displayTitle = isTa
-    ? (guide.titleTa || action.text)
-    : (guide.titleEn || action.text);
+  // ALWAYS use the server-provided action.text for the title!
+  const displayTitle = action.text;
     
-  const steps = isTa ? guide.stepsTa : guide.stepsEn;
+  const steps = guide ? (isTa ? guide.stepsTa : guide.stepsEn) : null;
 
   const getTierBadge = (tier: string) => {
     switch (tier) {

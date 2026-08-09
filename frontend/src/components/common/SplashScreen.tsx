@@ -34,9 +34,9 @@ export const SplashScreen: React.FC = () => {
       {/* Opening Logo Showcase */}
       <div className="relative z-10 flex flex-col items-center space-y-6 transform transition-transform duration-700">
         <img
-          src="/logo/logo.svg"
+          src="/logo/logo-full.png"
           alt="MINCHAL — AI-Powered Home Energy Audit"
-          className="h-28 sm:h-36 w-auto object-contain drop-shadow-md animate-pulse"
+          className="h-32 sm:h-40 w-auto object-contain drop-shadow-md animate-pulse"
         />
 
         {/* Shimmer Progress Indicator Bar */}

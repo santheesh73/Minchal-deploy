@@ -21,7 +21,7 @@ export const Logo: React.FC<LogoProps> = ({
   return (
     <Link to="/" className={`inline-flex items-center gap-2.5 group ${className}`}>
       <img
-        src="/logo/mark.svg"
+        src="/logo/mark.png"
         alt="MINCHAL Logo"
         className={`${heights[size]} w-auto object-contain shrink-0 group-hover:scale-105 transition-transform`}
       />
