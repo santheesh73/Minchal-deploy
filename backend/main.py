@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timezone
 import json
 from fastapi import FastAPI, UploadFile, File, HTTPException, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -20,6 +21,18 @@ from demo_cache import demo_response, demo_mode_enabled, PLACEHOLDER_DATA, DEMO_
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc: RequestValidationError):
+    logger.error(f"[VALIDATION_ERROR] {request.url.path}: {exc.errors()}")
+    first_err = exc.errors()[0] if exc.errors() else {}
+    msg = first_err.get("msg", "Invalid input parameters")
+    loc = ".".join(str(x) for x in first_err.get("loc", []) if x != "body")
+    error_msg = f"Field error ({loc}): {msg}" if loc else msg
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=ApiError(ok=False, reason="INVALID_BILL", message=error_msg).model_dump()
+    )
 
 app.add_middleware(
     CORSMiddleware,

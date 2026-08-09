@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Literal, Union
 
 ApplianceType = Literal[
@@ -16,13 +16,23 @@ ErrorCode = Literal["OCR_BLUR", "OCR_MISSING_FIELD", "INVALID_BILL", "APPLIANCE_
 class BillData(BaseModel):
     units_consumed: float
     total_amount: float
-    billing_days: int
-    period_end: str
-    tariff_slab: str
+    billing_days: Optional[int] = 60
+    period_end: Optional[str] = None
+    tariff_slab: Optional[str] = "LT-1A Domestic"
     energy_charges: Optional[float] = None
     fixed_charges: Optional[float] = None
     taxes_and_duties: Optional[float] = None
     subsidy_applied: Optional[float] = None
+
+    @field_validator("billing_days", mode="before")
+    @classmethod
+    def clean_billing_days(cls, v):
+        if v is None or v == "":
+            return 60
+        try:
+            return int(round(float(v)))
+        except (ValueError, TypeError):
+            return 60
 
 class ManualBillRequest(BaseModel):
     """Manual-entry kill switch (POST /api/manual-bill).
@@ -35,7 +45,7 @@ class ManualBillRequest(BaseModel):
     units_consumed: float
     total_amount: float
     billing_days: int
-    tariff_slab: str
+    tariff_slab: Optional[str] = "LT-1A Domestic"
     # Optional so the user types four fields, not nine. Present in the response
     # regardless, so the shape matches extraction.
     period_end: Optional[str] = None
@@ -55,8 +65,8 @@ class ApplianceInput(BaseModel):
     id: str
     type: ApplianceType
     capacity: Optional[float] = None
-    star: int
-    year: int
+    star: Optional[int] = 3
+    year: Optional[int] = 2022
     hours_band: Optional[HoursBand] = None
     symptoms: List[str] = Field(default_factory=list)
     # Additive, optional, no existing field touched.
@@ -73,6 +83,40 @@ class ApplianceInput(BaseModel):
     rated_power_w: Optional[float] = None
     # What the user calls this device, shown instead of a catalogue label.
     label: Optional[str] = None
+
+    @field_validator("hours_band", mode="before")
+    @classmethod
+    def clean_hours_band(cls, v):
+        if not v or v == "":
+            return None
+        return v
+
+    @field_validator("star", mode="before")
+    @classmethod
+    def clean_star(cls, v):
+        if v is None:
+            return 3
+        try:
+            return int(round(float(v)))
+        except (ValueError, TypeError):
+            return 3
+
+    @field_validator("year", mode="before")
+    @classmethod
+    def clean_year(cls, v):
+        if v is None:
+            return 2022
+        try:
+            return int(round(float(v)))
+        except (ValueError, TypeError):
+            return 2022
+
+    @field_validator("symptoms", mode="before")
+    @classmethod
+    def clean_symptoms(cls, v):
+        if v is None:
+            return []
+        return v
 
 class WorkingStep(BaseModel):
     label: str

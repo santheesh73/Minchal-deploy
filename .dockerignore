@@ -1,0 +1,16 @@
+.env
+.env.*
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.git/
+.github/
+node_modules/
+frontend/
+dist/
+*.pyc
+*.pyo
+*.log
+backend/cloudflared.exe
+test-assets/

@@ -67,23 +67,28 @@ export function useAnalysis() {
 
     // Construct cleaned AnalyzeRequest payload
     const cleanedPayload: AnalyzeRequest = {
-      bill: state.billData!,
+      bill: {
+        ...state.billData!,
+        units_consumed: Number(state.billData!.units_consumed),
+        total_amount: Number(state.billData!.total_amount),
+        billing_days: state.billData!.billing_days ? Math.round(Number(state.billData!.billing_days)) : 60,
+      },
       appliances: state.appliances.map((app) => ({
         id: app.id,
         type: app.type,
-        capacity: app.capacity,
-        star: app.star,
-        year: app.year,
-        hours_band: app.type === 'fridge' ? null : app.hours_band, // Preserve null for fridge
-        symptoms: app.symptoms || [],
+        capacity: app.capacity !== null && app.capacity !== undefined ? Number(app.capacity) : null,
+        star: app.star ? Math.round(Number(app.star)) : 3,
+        year: app.year ? Math.round(Number(app.year)) : 2022,
+        hours_band: app.type === 'fridge' || !app.hours_band ? null : app.hours_band,
+        symptoms: Array.isArray(app.symptoms) ? app.symptoms : [],
         // Must be forwarded explicitly — this payload is a whitelist, so a new
         // field is silently dropped unless listed here. Confidence depends on it.
         runtime_confirmed: app.runtime_confirmed === true,
         // Custom appliances carry a user-supplied wattage and name. The
         // backend REJECTS a custom appliance without the wattage, so dropping
         // these here would turn "add your own appliance" into a 400.
-        rated_power_w: app.rated_power_w ?? null,
-        label: app.label ?? null,
+        rated_power_w: app.rated_power_w !== null && app.rated_power_w !== undefined ? Number(app.rated_power_w) : null,
+        label: app.label ? String(app.label).trim() : null,
       })),
       language: state.language || 'en',
     };
