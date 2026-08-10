@@ -34,9 +34,22 @@ async def validation_exception_handler(request, exc: RequestValidationError):
         content=ApiError(ok=False, reason="INVALID_BILL", message=error_msg).model_dump()
     )
 
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
+origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:8080",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:8080",
+]
+if allowed_origins_env:
+    origins.extend([o.strip() for o in allowed_origins_env.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

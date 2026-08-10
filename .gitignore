@@ -3,6 +3,7 @@ dist/
 .venv/
 __pycache__/
 .env
+.vite/
 .DS_Store
 
 # Photographed bills and nameplates are never committed: they carry consumer
