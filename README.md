@@ -28,7 +28,7 @@ MINCHAL resolves a fundamental trust issue in AI applications: **LLMs should not
 
 ## 1. The Problem
 
-Over 300 million households across India receive monthly electricity bills with a single total rupee figure, but zero visibility into which specific appliances drive the cost. 
+Over 300 million households across India receive monthly electricity bills with the single total rupee figure, but zero visibility into which specific appliances drive the cost. 
 
 Traditional appliance-level energy monitoring requires expensive hardware—such as smart meters, IoT current clamps, or smart plugs. As a result, low and middle-income families cannot identify energy waste or make informed efficiency investments.
 
